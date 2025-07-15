@@ -1,0 +1,37 @@
+### IntelliJ IDEA ###
+out/                            # Ignore IDEA's default build output directory
+!**/src/main/**/out/           # Except: keep 'out' directories under src/main
+!**/src/test/**/out/           # Except: keep 'out' directories under src/test
+.idea/easycode.ignore          # Ignore EasyCode plugin configuration
+.idea/                         # Ignore all IntelliJ IDEA project settings
+
+### Avoid committing IDEA settings ###
+.idea/                         # Ensure IDEA configs are excluded
+
+### Maven output ###
+target/                        # Ignore Maven build output
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
