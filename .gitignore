@@ -1,14 +1,15 @@
 ### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-.idea/easycode.ignore
+out/                            # Ignore IDEA's default build output directory
+!**/src/main/**/out/           # Except: keep 'out' directories under src/main
+!**/src/test/**/out/           # Except: keep 'out' directories under src/test
+.idea/easycode.ignore          # Ignore EasyCode plugin configuration
+.idea/                         # Ignore all IntelliJ IDEA project settings
 
-### Avoid Update Idea Setting
-.idea/
+### Avoid committing IDEA settings ###
+.idea/                         # Ensure IDEA configs are excluded
 
-
-target/
+### Maven output ###
+target/                        # Ignore Maven build output
 
 ### Eclipse ###
 .apt_generated
