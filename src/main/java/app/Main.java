@@ -2,7 +2,7 @@ package app;
 
 import javax.swing.JFrame;
 
-import com.formdev.flatlaf.FlatDarkLaf;       // You can also use FlatDarkLaf
+import com.formdev.flatlaf.FlatDarkLaf;      // You can also use FlatDarkLaf
 import javax.swing.*;
 import java.awt.*;
 
