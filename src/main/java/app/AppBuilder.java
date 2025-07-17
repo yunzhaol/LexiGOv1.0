@@ -8,6 +8,7 @@ import javax.swing.WindowConstants;
 
 import data_access.InMemoryUserDataAccessObject;
 import entity.CommonUserFactory;
+import entity.SecurityUserFactory;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.change_password.ChangePasswordController;
@@ -30,9 +31,7 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
-import use_case.signup.SignupInputBoundary;
-import use_case.signup.SignupInteractor;
-import use_case.signup.SignupOutputBoundary;
+import use_case.signup.*;
 import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
@@ -49,11 +48,12 @@ import view.ViewManager;
 //                  your team to think about ways to refactor the code to resolve these
 //                  if your team decides to work with this as your starter code
 //                  for your final project this term.
-public class AppBuilder {
+public class AppBuicdlder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
     // thought question: is the hard dependency below a problem?
     private final UserFactory userFactory = new CommonUserFactory();
+    private final UserFactory securityUserFactory = new SecurityUserFactory();
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
@@ -115,7 +115,9 @@ public class AppBuilder {
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
                 userDataAccessObject, signupOutputBoundary, userFactory);
 
-        final SignupController controller = new SignupController(userSignupInteractor);
+        final SignupSecurityInputBoundary securityuserSignupInteractor =
+                new SignupSecurityInteractor(userDataAccessObject, signupOutputBoundary, securityUserFactory);
+        final SignupController controller = new SignupController(userSignupInteractor, securityuserSignupInteractor);
         signupView.setSignupController(controller);
         return this;
     }
@@ -126,7 +128,7 @@ public class AppBuilder {
      */
     public AppBuilder addLoginUseCase() {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                loggedInViewModel, loginViewModel);
+                loggedInViewModel, loginViewModel, signupViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
@@ -182,5 +184,6 @@ public class AppBuilder {
         viewManagerModel.firePropertyChanged();
 
         return application;
+
     }
 }
