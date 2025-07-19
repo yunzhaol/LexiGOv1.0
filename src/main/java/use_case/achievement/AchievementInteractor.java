@@ -6,10 +6,10 @@ import java.util.List;
 public class AchievementInteractor implements AchievementInputBoundary {
 
     private final AchievementOutputBoundary presenter;
-    private final UserProgressDataAccessInterface userData;
+    private final AchievementDataAccessInterface userData;
 
     public AchievementInteractor(AchievementOutputBoundary presenter,
-                                 UserProgressDataAccessInterface userData) {
+                                 AchievementDataAccessInterface userData) {
         this.presenter = presenter;
         this.userData = userData;
     }

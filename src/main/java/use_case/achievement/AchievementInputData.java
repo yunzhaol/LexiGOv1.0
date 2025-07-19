@@ -4,6 +4,7 @@ public class AchievementInputData {
     private final String userId;
 
     public AchievementInputData(String userId) {
+
         this.userId = userId;
     }
 
