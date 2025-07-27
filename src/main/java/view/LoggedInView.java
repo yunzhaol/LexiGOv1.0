@@ -1,146 +1,217 @@
 package view;
 
-import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import interface_adapter.achievement.AchievementController;
 import interface_adapter.change_password.ChangePasswordController;
+import interface_adapter.profile.ProfileController;
 import interface_adapter.session.LoggedInState;
 import interface_adapter.session.LoggedInViewModel;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.rank.RankController;
+import interface_adapter.view_history.ViewHistoryController;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
- * The View for when the user is logged into the program.
+ * Main panel displayed after user login. Provides navigation and loads corresponding subviews.
  */
 public class LoggedInView extends JPanel implements PropertyChangeListener {
 
-    private final String viewName = "logged in";
-    private final LoggedInViewModel loggedInViewModel;
-    private final JLabel passwordErrorField = new JLabel();
-    private ChangePasswordController changePasswordController;
+    // Constants for view identification
+    public static final String VIEW_NAME = "logged in";
+    private static final String CARD_PROFILE       = "card_profile";
+    private static final String CARD_CHECKIN       = "card_checkin";
+    private static final String CARD_ACHIEVE       = "card_achieve";
+    private static final String CARD_RANK          = "card_rank";
+    private static final String CARD_PASSWORD      = "card_password";
+    private static final String CARD_LOGOUT        = "card_logout";
+    private static final String CARD_HISTORY       = "card_study_history";
+
+    // Dependency-injected controllers for handling user actions
+    private AchievementController achievementController;
     private LogoutController logoutController;
+    private RankController rankController;
+    private ViewHistoryController viewHistoryController;
+    private ProfileController profileController;
+    private ChangePasswordController changePasswordController;
+    private final LoggedInViewModel vm;
 
-    private final JLabel username;
+    // Layout managers and components
+    private final CardLayout cards = new CardLayout();
+    private final JPanel contentPanel = new JPanel(cards);   // Container for card layout views
+    private final Map<String, JToggleButton> navButtons = new HashMap<>();
+    private final ButtonGroup navGroup = new ButtonGroup();
 
-    private final JButton logOut;
+    /**
+     * Constructor: sets up UI, binds view model, and initializes default view.
+     * @param vm the view model containing login state and observers
+     */
+    public LoggedInView(LoggedInViewModel vm) {
+        this.vm = vm;
+        vm.addPropertyChangeListener(this);
 
-    private final JTextField passwordInputField = new JTextField(15);
-    private final JButton changePassword;
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel) {
-        this.loggedInViewModel = loggedInViewModel;
-        this.loggedInViewModel.addPropertyChangeListener(this);
+        // Left-side navigation buttons panel
+        JPanel nav = new JPanel();
+        nav.setLayout(new BoxLayout(nav, BoxLayout.Y_AXIS));
 
-        final JLabel title = new JLabel("Logged In Screen");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel("Password"), passwordInputField);
-
-        final JLabel usernameInfo = new JLabel("Currently logged in: ");
-        username = new JLabel();
-
-        final JPanel buttons = new JPanel();
-        logOut = new JButton("Log Out");
-        buttons.add(logOut);
-
-        changePassword = new JButton("Change Password");
-        buttons.add(changePassword);
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
-                final LoggedInState currentState = loggedInViewModel.getState();
-                currentState.setPassword(passwordInputField.getText());
-                loggedInViewModel.setState(currentState);
+        addToggle(nav, "Profile", CARD_PROFILE, () -> {
+            if (profileController != null) {
+                String user = vm.getState().getUsername();
+                profileController.execute(user);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
+        });
+        addToggle(nav, "Daily Check-in", CARD_CHECKIN, null);
+        addToggle(nav, "Change Password", CARD_PASSWORD, () -> {
+            if (changePasswordController != null) {
+                String user = vm.getState().getUsername();
+                changePasswordController.execute(user);
             }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
+        });
+        addToggle(nav, "Achievement", CARD_ACHIEVE, () -> {
+            if (achievementController != null) {
+                String user = vm.getState().getUsername();
+                achievementController.showAchievements(user);
             }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
+        });
+        addToggle(nav, "View Study History", CARD_HISTORY, () -> {
+            if (viewHistoryController != null) {
+                String user = vm.getState().getUsername();
+                viewHistoryController.execute(user);
+            }
+        });
+        addToggle(nav, "Rank", CARD_RANK, () -> {
+            if (rankController != null) {
+                String user = vm.getState().getUsername();
+                rankController.execute(user);
+            }
+        });
+        addToggle(nav, "Log out", CARD_LOGOUT, () -> {
+            if (logoutController != null) {
+                String user = vm.getState().getUsername();
+                logoutController.execute(user);
             }
         });
 
-        changePassword.addActionListener(
-                // This creates an anonymous subclass of ActionListener and instantiates it.
-                evt -> {
-                    if (evt.getSource().equals(changePassword)) {
-                        final LoggedInState currentState = loggedInViewModel.getState();
+        // Wrap navigation panel to enforce fixed width
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setPreferredSize(new Dimension(160, 0));
+        wrapper.add(nav, BorderLayout.CENTER);
+        add(wrapper, BorderLayout.WEST);
 
-                        this.changePasswordController.execute(
-                                currentState.getUsername(),
-                                currentState.getPassword()
-                        );
-                    }
-                }
-        );
+        // Default content panel (profile view)
+        contentPanel.add(new ProfilePanel(), CARD_PROFILE);
+        add(contentPanel, BorderLayout.CENTER);
 
-        logOut.addActionListener(
-                // This creates an anonymous subclass of ActionListener and instantiates it.
-                evt -> {
-                    if (evt.getSource().equals(logOut)) {
-
-                        // 1. get the state out of the loggedInViewModel. It contains the username.
-                        // 2. Execute the logout Controller.
-                        final LoggedInState loggedInState = this.loggedInViewModel.getState();
-                        this.logoutController.execute(loggedInState.getUsername());
-
-                    }
-                }
-        );
-
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(username);
-
-        this.add(passwordInfo);
-        this.add(passwordErrorField);
-        this.add(buttons);
+        // Select and show profile view by default
+        navButtons.get(CARD_PROFILE).setSelected(true);
+        cards.show(contentPanel, CARD_PROFILE);
     }
 
+    /**
+     * Helper to create and register a navigation toggle button.
+     * @param parent   the panel to add the button to
+     * @param text     the button label
+     * @param cardName the card identifier in CardLayout
+     * @param onSelect optional callback when this card is selected
+     */
+    private void addToggle(JPanel parent, String text, String cardName, Runnable onSelect) {
+        JToggleButton btn = new JToggleButton(text);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.putClientProperty("JButton.buttonType", "roundRect");
+        btn.addActionListener(e -> {
+            cards.show(contentPanel, cardName);
+            btn.setSelected(true);
+            if (onSelect != null) onSelect.run();
+        });
+        navGroup.add(btn);
+        navButtons.put(cardName, btn);
+        parent.add(btn);
+        parent.add(Box.createVerticalStrut(8));
+    }
+
+    /**
+     * Handles property change events from the view model.
+     * @param evt the property change event
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("state")) {
-            final LoggedInState state = (LoggedInState) evt.getNewValue();
-            username.setText(state.getUsername());
+        if ("state".equals(evt.getPropertyName())) {
+            LoggedInState s = (LoggedInState) evt.getNewValue();
+            // TODO: propagate new state (e.g., username) to subviews as needed
         }
-        else if (evt.getPropertyName().equals("password")) {
-            final LoggedInState state = (LoggedInState) evt.getNewValue();
-            JOptionPane.showMessageDialog(null, "password updated for " + state.getUsername());
-        }
-
     }
 
-    public String getViewName() {
-        return viewName;
+    // ------------------ Dependency Injection ------------------
+
+    public void setProfileController(ProfileController profileController) {
+        this.profileController = profileController;
+    }
+
+    public void setViewHistoryController(ViewHistoryController viewHistoryController) {
+        this.viewHistoryController = viewHistoryController;
+    }
+
+    public void setLogoutController(LogoutController logoutController) {
+        this.logoutController = logoutController;
+    }
+
+    public void setRankController(RankController rankController) {
+        this.rankController = rankController;
+    }
+
+    public void setAchievementController(AchievementController achievementController) {
+        this.achievementController = achievementController;
     }
 
     public void setChangePasswordController(ChangePasswordController changePasswordController) {
         this.changePasswordController = changePasswordController;
     }
 
-    public void setLogoutController(LogoutController logoutController) {
-        this.logoutController = logoutController;
+    // ------------------ Dynamic Subview Injection ------------------
+
+    public void addStartCheckInPage(JComponent checkInView) {
+        contentPanel.add(checkInView, CARD_CHECKIN);
+    }
+
+    public void addAchievementPage(JComponent achievementView) {
+        contentPanel.add(achievementView, CARD_ACHIEVE);
+    }
+
+    public void addChangePasswordPage(ChangePasswordView changePasswordView) {
+        contentPanel.add(changePasswordView, CARD_PASSWORD);
+    }
+
+    public void addRankPage(RankView rankView) {
+        contentPanel.add(rankView, CARD_RANK);
+    }
+
+    public void addViewHistoryPage(ViewHistoryView viewHistory) {
+        contentPanel.add(viewHistory, CARD_HISTORY);
+    }
+
+    public void addProfilePage(ProfileView profileView) {
+        contentPanel.add(profileView, CARD_PROFILE);
+    }
+
+    /**
+     * Returns the name of this view for navigation purposes.
+     * @return view name
+     */
+    public String getViewName() { return VIEW_NAME; }
+
+
+    /**
+     * Placeholder profile panel shown by default; can be replaced by real ProfileView.
+     */
+    private static class ProfilePanel extends JPanel {
+        ProfilePanel() { add(new JLabel("Profile Page")); }
     }
 }
