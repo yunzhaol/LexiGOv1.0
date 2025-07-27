@@ -1,78 +1,79 @@
-# LexiGOv1.0
+# LexiGO v1.0
 
-# Lexigo
-
-**Domain:** Foreign language learning app  
-**Platform:** Java Swing desktop application  
+*A Java‑Swing desktop app that helps learners master foreign languages through spaced‑repetition study sessions, daily streaks, and friendly competition.*
 
 ---
 
-## Team
+## 🧭 Overview
 
-| Name               | GitHub Username | Assigned User Story                         |
-| ------------------ | --------------- | -------------------------------------------- |
-| Jacky Huo          | Jackymn25       | Flip‑card vocabulary study                   |
-| Jacob Ke           | Y0m1ya          | Change password with identity verification   |
-| Jincheng Liang     | Godoftitan      | Leaderboard ranking         |
-| Heyuan Zhou        | HeyuanZ621      | Earning achievements for milestones          |
-| Yunzhao Li         | yunzhaol        | Profile settings (language switch) & Signup* |
+| Item            | Details                                        |
+|-----------------|------------------------------------------------|
+| **Domain**      | Foreign‑language learning                      |
+| **Tech stack**  | Java 17 · Maven · Swing UI                     |
+| **Architecture**| **Clean Architecture** + SOLID principles      |
+| **Core Modules**| Authentication & Profile · Flash‑Card Study · Gamification |
 
-\* **Team story:** Yunzhao’s “Sign up” flow is the team story. He also helps fix bugs of this part.
+---
+## 🎬 Live Demos
+
+| Platform | Link |
+|----------|------|
+| YouTube  | [▶ Watch the LexiGO demo](https://youtu.be/4ua4_WRky7s) |
+| Bilibili | [▶ 哔哩哔哩演示视频](https://www.bilibili.com/video/BV1kb8ezxEbn/) |
 
 ---
 
-## Table of User Stories
+## 👥 Team & Use‑Case Owners
 
-| #  | As a…                          | I want to…                                                                                       | So that…                                          | Assigned to       | Team Story? |
-| -- | ------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- | ----------------- | ----------- |
-| 1  | Language learner               | study with flip cards showing target‑language words and mother‑tongue translations                 | I can memorize vocabulary efficiently             | Jacky Huo         |             |
-| 2  | Multilingual learner           | change my profile settings (username, mother/target languages)                                    | I can switch between language courses flexibly    | Yunzhao Li        |             |
-| 3  | Security‑conscious user        | change my password with identity verification                                                    | I can maintain account security                   | Jacob Ke          |             |
-| 4  | Motivated language learner     | earn achievements for completing learning milestones                                             | I can feel rewarded and stay motivated            | Heyuan Zhou       |             |
-| 5  | Competitive learner            | check in daily and see my position on the leaderboard                                           | I can track my streak and compete with friends    | Jincheng Liang    |             |
-| 6  | First‑time user                | sign up with email, nickname, and password                                                       | I can start learning my target language           | Team        | **✔**       |
+| Member | GitHub | Primary Use‑Cases |
+|--------|--------|-------------------|
+| **Jacky Huo**      | `@Jackymn25` | Start‑check‑in • Study‑session |
+| **Jacob Ke**       | `@Y0m1ya`    | View study history • Change password |
+| **Jincheng Liang** | `@Godoftitan`| Rank leaderboard • Word detail |
+| **Heyuan Zhou**    | `@HeyuanZ621`| Achievement system |
+| **Yunzhao Li**     | `@yunzhaol`  | Profile settings • Finish check‑in |
 
----
-
-## Basic proposed Domain Entities
-
-- **User**  
-
-- **Profile**  
-
-- **Word**  
-
-- **WordBook**  
-
-- **Achievement**  
+> **Team story:** refine signup rules & polish registration / login flow (handled by the whole team).
 
 ---
 
-## Software Specification
+## 📝 User‑Story Matrix
 
-- Built in **Java Swing** for cross‑platform desktop use.  
-- Core modules:
-  1. **Authentication & Profile** (signup, login, language settings)  
-  2. **Flashcard Study** (flip cards UI, word book management)  
-  3. **Gamification** (daily check‑in, achievements, leaderboard)  
-  4. **API Integration** for dictionary & translation data  
-
----
-
-## External APIs
-
-- **Free Dictionary API / Oxford API**  
-  - Word definitions, examples, audio, forms, translations.  
-
-- **DeepL API**  
-  - Fluent full‑sentence translations, context‑sensitive.
+| # | As a…               | I want to…                                    | So that…                             | Owner | Team Story |
+|---|---------------------|-----------------------------------------------|--------------------------------------|-------|-----------|
+| 1 | Language learner    | Start a check‑in and study with flip cards    | Keep my daily learning streak        | Jacky |           |
+| 2 | Security‑conscious  | Change my password with identity verification | Protect my account                   | Jacob |           |
+| 3 | Reflective learner  | View my historical study stats                | Track progress over time             | Jacob |           |
+| 4 | Competitive learner | See the leaderboard rankings                  | Compete with friends                 | Jincheng |         |
+| 5 | Inquisitive learner | Inspect word details during a study session   | Deepen understanding of each word    | Jincheng |         |
+| 6 | Motivated learner   | Earn achievements for milestones              | Feel rewarded and engaged            | Heyuan |           |
+| 7 | Multilingual user   | Manage profile (username, languages)          | Switch between courses easily        | Yunzhao |           |
+| 8 | Learner finishing session | Complete a session & finalize check‑in | Log progress and update streak       | Yunzhao |           |
+| 9 | **First‑time user** | Sign up with （Security Question and Answer）(OPTIONAL)                 | Start learning immediately           | **Team** | ✔ |
 
 ---
 
-## Communication & Meetings
+## 🗄️ Domain Entities (high‑level)
 
-- **Lab sessions:** Every Thursday (in‑person)  
-- **Stand‑up / Sync:** Every Friday (Zoom or in‑person)  
-- **Chat:** WeChat group for ad hoc questions  
+| Entity      | Purpose |
+|-------------|---------|
+| **User**        | Credentials & unique identifier |
+| **Profile**     | Display name, native / target language |
+| **Word**        | Vocabulary item (text, audio, metadata) |
+| **WordBook**    | A deck of words for a lesson |
+| **Achievement** | Badge definition & unlock progress |
 
 ---
+
+## 🛠 Project Setup (Maven)
+
+```bash
+# clone
+git clone https://github.com/Jackymn25/LexiGOv1.0
+cd LexiGOv1.0
+
+# build & test
+mvn clean verify
+
+# run desktop app
+mvn exec:java -Dexec.mainClass="app.Main"
