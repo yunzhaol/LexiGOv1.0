@@ -13,12 +13,11 @@ import java.util.List;
 public class AchievementPresenter implements AchievementOutputBoundary {
 
     private final AchievementViewModel achievementViewModel;
-    private final ViewManagerModel achievementViewManagerModel;
+    //private final ViewManagerModel achievementViewManagerModel;
 
-    public AchievementPresenter(AchievementViewModel achievementViewModel,
-                                ViewManagerModel achievementViewManagerModel) {
+    public AchievementPresenter(AchievementViewModel achievementViewModel) {
         this.achievementViewModel = achievementViewModel;
-        this.achievementViewManagerModel = achievementViewManagerModel;
+        //this.achievementViewManagerModel = achievementViewManagerModel;
     }
 
     /**
@@ -32,12 +31,11 @@ public class AchievementPresenter implements AchievementOutputBoundary {
         AchievementState currentState = achievementViewModel.getState();
 
         currentState.setUnlockedAchievements(achievementOutputData.getUnlockedAchievements());
-        currentState.setShouldShowAchievements(true);
 
         achievementViewModel.setState(currentState);
         achievementViewModel.firePropertyChanged();
 
-        achievementViewManagerModel.setState(achievementViewModel.getViewName());  // "achievement"
-        achievementViewManagerModel.firePropertyChanged();
+//        achievementViewManagerModel.setState(achievementViewModel.getViewName());  // "achievement"
+//        achievementViewManagerModel.firePropertyChanged();
     }
 }
