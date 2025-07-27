@@ -1,6 +1,10 @@
 package interface_adapter.signup;
 
-import use_case.signup.*;
+
+import use_case.signup.SignupInputBoundary;
+import use_case.signup.SignupInputData;
+import use_case.signup.SignupSecurityInputBoundary;
+import use_case.signup.SignupSecurityInputData;
 
 /**
  * Controller for the Signup Use Case.
@@ -8,7 +12,6 @@ import use_case.signup.*;
 public class SignupController {
 
     private final SignupInputBoundary userSignupUseCaseInteractor;
-
     private final SignupSecurityInputBoundary securityuserSignupUseCaseInteractor;
     public SignupController(SignupInputBoundary userSignupUseCaseInteractor,
                             SignupSecurityInputBoundary securityuserSignupUseCaseInteractor) {
@@ -36,7 +39,6 @@ public class SignupController {
             securityuserSignupUseCaseInteractor.execute(signupSecurityInputData);
 
         }
-
 
     }
 

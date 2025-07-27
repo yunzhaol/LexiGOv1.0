@@ -1,9 +1,7 @@
 package entity;
 
-/**
- * Factory for creating CommonUser objects.
- */
-public class CommonUserFactory implements UserFactory {
+/** Produces CommonUser instances. */
+public final class CommonUserFactory implements UserFactory {
 
     @Override
     public User create(String name, String password) {
@@ -11,7 +9,10 @@ public class CommonUserFactory implements UserFactory {
     }
 
     @Override
-    public User create(String name, String password, String securityQuestion, String securityAnswer) {
-        return null;
+    public User create(String name, String password,
+                       String securityQuestion,
+                       String securityAnswer) {
+        throw new UnsupportedOperationException(
+                "CommonUser does not support security questions.");
     }
 }
