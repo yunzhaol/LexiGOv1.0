@@ -9,11 +9,11 @@ import java.util.Objects;
  */
 public class Achievement {
 
-    private final String id;              // Internal identifier
-    private final String name;            // Display name, eg, "🔥 5-Day Streak"
-    private final String description;     // Description for tooltip
-    private final String iconUnicode;     // emoji icon
-    private LocalDate dateUnlocked;       // Null if still locked
+    private final String id;
+    private final String name;
+    private final String description;
+    private final String iconUnicode;
+    private LocalDate dateUnlocked;
 
     /**
      * Constructs a new Achievement. By default it‘s locked (dateUnlocked is null).
@@ -77,8 +77,6 @@ public class Achievement {
         }
     }
 
-    // Equals and hashCode (based only on ID, which should be unique)
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,7 +90,6 @@ public class Achievement {
         return Objects.hash(id);
     }
 
-    // Optional: String representation, may delete later
 
     @Override
     public String toString() {
