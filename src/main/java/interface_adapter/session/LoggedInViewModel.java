@@ -1,5 +1,4 @@
-package interface_adapter.change_password;
-
+package interface_adapter.session;
 import interface_adapter.ViewModel;
 
 /**
