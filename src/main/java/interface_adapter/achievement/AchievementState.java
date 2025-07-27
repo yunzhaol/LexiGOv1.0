@@ -8,7 +8,6 @@ import java.util.List;
  */
 public class AchievementState {
     private List<String> unlockedAchievements = new ArrayList<>();
-    private boolean shouldShowAchievements = false;
 
     /*
     getters
@@ -17,19 +16,10 @@ public class AchievementState {
         return unlockedAchievements;
     }
 
-    public boolean getShouldShowAchievements() {
-        return shouldShowAchievements;
-    }
-
     /*
     setters
      */
     public void setUnlockedAchievements(List<String> unlockedAchievements) {
         this.unlockedAchievements = unlockedAchievements;
-    }
-
-
-    public void setShouldShowAchievements(boolean shouldShowAchievements) {
-        this.shouldShowAchievements = shouldShowAchievements;
     }
 }

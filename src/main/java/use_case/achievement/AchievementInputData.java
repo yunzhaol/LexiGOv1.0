@@ -1,14 +1,14 @@
 package use_case.achievement;
 
 public class AchievementInputData {
-    private final String userId;
+    private final String username;
 
-    public AchievementInputData(String userId) {
+    public AchievementInputData(String username) {
 
-        this.userId = userId;
+        this.username = username;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 }

@@ -36,5 +36,8 @@ public class AchievementPresenter implements AchievementOutputBoundary {
 
         achievementViewModel.setState(currentState);
         achievementViewModel.firePropertyChanged();
+
+        achievementViewManagerModel.setState(achievementViewModel.getViewName());  // "achievement"
+        achievementViewManagerModel.firePropertyChanged();
     }
 }
