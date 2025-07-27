@@ -111,7 +111,6 @@ import view.*;
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    // thought question: is the hard dependency below a problem?
     private final WordDeckFactory wordDeckFactory = new CommonWordDeckFactory();
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();

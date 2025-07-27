@@ -5,9 +5,10 @@ import interface_adapter.session.LoggedInState;
 import interface_adapter.session.LoggedInViewModel;
 import interface_adapter.signup.SignupState;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.start_checkin.StartCheckInState;
+import interface_adapter.start_checkin.StartCheckInViewModel;
 import use_case.login.LoginOutputBoundary;
 import use_case.login.LoginOutputData;
-import use_case.signup.SignupSecurityInputBoundary;
 
 /**
  * The Presenter for the Login Use Case.
@@ -18,15 +19,17 @@ public class LoginPresenter implements LoginOutputBoundary {
     private final LoggedInViewModel loggedInViewModel;
     private final ViewManagerModel viewManagerModel;
     private final SignupViewModel signupViewModel;
+    private final StartCheckInViewModel startCheckInViewModel;
 
     public LoginPresenter(ViewManagerModel viewManagerModel,
                           LoggedInViewModel loggedInViewModel,
                           LoginViewModel loginViewModel,
-                          SignupViewModel signupViewModel) {
+                          SignupViewModel signupViewModel, StartCheckInViewModel startCheckInViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
         this.signupViewModel = signupViewModel;
+        this.startCheckInViewModel = startCheckInViewModel;
     }
 
     @Override
@@ -37,6 +40,11 @@ public class LoginPresenter implements LoginOutputBoundary {
         loggedInState.setUsername(response.getUsername());
         this.loggedInViewModel.setState(loggedInState);
         this.loggedInViewModel.firePropertyChanged();
+
+        StartCheckInState startState = startCheckInViewModel.getState();
+        startState.setUsername(response.getUsername());
+        this.startCheckInViewModel.setState(startState);
+        this.startCheckInViewModel.firePropertyChanged();
 
         this.viewManagerModel.setState(loggedInViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
