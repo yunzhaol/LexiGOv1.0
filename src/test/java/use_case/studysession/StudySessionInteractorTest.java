@@ -1,4 +1,4 @@
-package use_case.start_checkin;
+package use_case.studysession;
 
 import data_access.*;
 import entity.CommonWordDeckFactory;
