@@ -4,13 +4,12 @@ import java.util.List;
 
 public class RankOutputData {
 
-
     private final String currentUser;
-    private final List<RankEntryData> leaderboard;
+    private final List<UserScore> leaderboard;
     private final int myPosition;
 
     public RankOutputData(String currentUser,
-                          List<RankEntryData> leaderboard,
+                          List<UserScore> leaderboard,
                           int myPosition) {
         this.currentUser  = currentUser;
         this.leaderboard  = leaderboard;
@@ -18,6 +17,6 @@ public class RankOutputData {
     }
 
     public String currentUser()              { return currentUser;  }
-    public List<RankEntryData> leaderboard() { return leaderboard;  }
+    public List<UserScore> leaderboard() { return leaderboard;  }
     public int myPosition()                  { return myPosition;   }
 }
