@@ -12,11 +12,8 @@ import use_case.signup.SignupSecurityInputData;
 public class SignupController {
 
     private final SignupInputBoundary userSignupUseCaseInteractor;
-    private final SignupSecurityInputBoundary securityuserSignupUseCaseInteractor;
-    public SignupController(SignupInputBoundary userSignupUseCaseInteractor,
-                            SignupSecurityInputBoundary securityuserSignupUseCaseInteractor) {
+    public SignupController(SignupInputBoundary userSignupUseCaseInteractor) {
         this.userSignupUseCaseInteractor = userSignupUseCaseInteractor;
-        this.securityuserSignupUseCaseInteractor = securityuserSignupUseCaseInteractor;
     }
 
     /**
@@ -36,7 +33,7 @@ public class SignupController {
         } else {
             final SignupSecurityInputData signupSecurityInputData = new SignupSecurityInputData(
                     username, password1, password2, securityQuestion, securityAnswer);
-            securityuserSignupUseCaseInteractor.execute(signupSecurityInputData);
+            userSignupUseCaseInteractor.execute(signupSecurityInputData);
 
         }
 

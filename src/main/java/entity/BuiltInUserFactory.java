@@ -8,7 +8,7 @@ package entity;
 public enum BuiltInUserFactory implements UserFactory {
 
     /** Factory for plain users without security questions. */
-    COMMON(new CommonUserFactory()),
+    COMMON(new DefaultUserFactory()),
 
     /** Factory for users that include a security question / answer. */
     SECURITY(new SecurityUserFactory());

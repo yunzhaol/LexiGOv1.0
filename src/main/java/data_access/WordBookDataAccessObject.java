@@ -26,8 +26,22 @@ import java.util.UUID;
  * and convert it to a CommonWordBook.
  */
 public class WordBookDataAccessObject implements WordBookAccessInterface {
-    private static Path FILE;
-    static {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private final Path filePath;
+    private final Map<String, List<UUID>> cache;
+
+    public WordBookDataAccessObject() {
+        this.filePath = resolveDefaultPath();
+        this.cache = load();
+    }
+
+    public WordBookDataAccessObject(String path) {
+        this.filePath = Paths.get(path);
+        this.cache = load();
+    }
+
+    private static Path resolveDefaultPath() {
         try {
             URL resource = WordBookDataAccessObject.class
                     .getClassLoader()
@@ -37,40 +51,31 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
                 throw new IllegalStateException("wordbook.json not found in resources");
             }
 
-            FILE = Paths.get(resource.toURI());
+            return Paths.get(resource.toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid URI for wordbook.json", e);
         }
-    }
-
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    /** simple in‑memory cache */
-    private Map<String, List<UUID>> cache;
-
-    public WordBookDataAccessObject() {
-        this.cache = load();
     }
 
     @Override
     public WordBook get() {
         if (cache.isEmpty())
             throw new IllegalStateException("No word book found in JSON file");
-        // choose the first entry as default; or inject a book name in the ctor
         Map.Entry<String, List<UUID>> entry = cache.entrySet().iterator().next();
         return new CommonWordBook(entry.getKey(), entry.getValue());
     }
 
     private Map<String, List<UUID>> load() {
         try {
-            if (Files.notExists(FILE)) {
-                Files.createDirectories(FILE.getParent());
-                Files.writeString(FILE, "{}");
+            if (Files.notExists(filePath)) {
+                Files.createDirectories(filePath.getParent());
+                Files.writeString(filePath, "{}");
             }
-            return mapper.readValue(Files.newInputStream(FILE),
+            return mapper.readValue(Files.newInputStream(filePath),
                     new TypeReference<Map<String, List<UUID>>>() {});
         } catch (IOException e) {
             throw new IllegalStateException("Cannot read wordbook.json", e);
         }
     }
 }
+

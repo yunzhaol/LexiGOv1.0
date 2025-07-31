@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * The Signup Interactor.
  */
-public class SignupInteractor implements SignupInputBoundary {
+public class SignupInteractor implements SignupInputBoundary, SignupSecurityInputBoundary {
 
     private final SignupUserDataAccessInterface userDataAccessObject;
     private final SignupOutputBoundary userPresenter;
@@ -52,6 +52,28 @@ public class SignupInteractor implements SignupInputBoundary {
 
         SignupOutputData out = new SignupOutputData(user.getName(), false);
         userPresenter.prepareSuccessView(out);
+    }
+
+    @Override
+    public void execute(SignupSecurityInputData signupInputData) {
+        if (userDataAccessObject.existsByName(signupInputData.getUsername())) {
+            userPresenter.prepareFailView("User already exists.");
+        }
+        else if (!signupInputData.getPassword().equals(signupInputData.getRepeatPassword())) {
+            userPresenter.prepareFailView("Passwords don't match.");
+        }
+        else if (!PASSWORD_RULE.matcher(signupInputData.getPassword()).matches()) {
+            userPresenter.prepareFailView(
+                    "Password must be at least 6 characters and contain both letters and numbers.");
+        }
+        else {
+            final User user = userFactory.create(signupInputData.getUsername(), signupInputData.getPassword(),
+                    signupInputData.getSecurityQuestion(), signupInputData.getSecurityAnswer());
+            userDataAccessObject.save(user);
+
+            final SignupOutputData signupOutputData = new SignupOutputData(user.getName(), false);
+            userPresenter.prepareSuccessView(signupOutputData);
+        }
     }
 
     @Override

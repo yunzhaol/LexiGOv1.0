@@ -90,7 +90,6 @@ public class Achievement {
         return Objects.hash(id);
     }
 
-
     @Override
     public String toString() {
         return (isUnlocked() ? "✅" : "🔒") +
