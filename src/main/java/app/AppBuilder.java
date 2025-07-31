@@ -239,7 +239,7 @@ public class AppBuilder {
 
         rankViewModel = new RankViewModel();
         final RankOutputBoundary rankPresenter = new RankPresenter(rankViewModel);
-        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter);
+        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, 10);
         final RankController rankController = new RankController(rankInteractor);
         rankView = new RankView(rankViewModel, rankController);
 

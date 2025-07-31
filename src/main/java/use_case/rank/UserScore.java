@@ -1,12 +1,11 @@
 package use_case.rank;
 
-public class RankEntryData {
-    private int rank;
+public class UserScore {
+    private final int rank;
+    private final int score;
+    private final String username;
 
-    private int score;
-    private String username;
-
-    public RankEntryData(int rank, String username, int score) {
+    public UserScore(int rank, String username, int score) {
         this.rank = rank;
         this.username = username;
         this.score = score;
