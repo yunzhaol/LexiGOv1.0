@@ -27,14 +27,15 @@ public final class JsonUserDataAccessObject implements
         ChangePasswordUserTypeDataAccessInterface,
         UserPasswordDataAccessInterface {
 
-    private static final String FILE_PATH = "resources\\data\\users.json";
+    private static final String DEFAULT_FILE_PATH = "resources//data//users.json";
     private static final Gson   GSON      = new GsonBuilder().setPrettyPrinting().create();
+    private File store;
 
-    private final File                    store  = new File(FILE_PATH);
     private final Map<String, User>       users  = new HashMap<>();
     private       String                  currentUsername;
 
-    public JsonUserDataAccessObject() throws IOException {
+    public JsonUserDataAccessObject(String filePath) throws IOException {
+        store = new File(filePath);
         File parent = store.getParentFile();
         if (!parent.exists() && !parent.mkdirs()) {
             throw new IOException("Cannot create data dir: " + parent);
@@ -42,8 +43,12 @@ public final class JsonUserDataAccessObject implements
         if (store.exists()) {
             load();
         } else if (!store.createNewFile()) {
-            throw new IOException("Cannot create " + FILE_PATH);
+            throw new IOException("Cannot create " + filePath);
         }
+    }
+
+    public JsonUserDataAccessObject() throws IOException {
+        this(DEFAULT_FILE_PATH);
     }
 
     @Override

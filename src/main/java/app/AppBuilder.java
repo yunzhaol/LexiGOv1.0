@@ -114,6 +114,7 @@ public class AppBuilder {
     private final WordDeckFactory wordDeckFactory = new CommonWordDeckFactory();
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();
+    private final DefaultUserFactory userFactory = new DefaultUserFactory();
 
 
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
@@ -313,16 +314,12 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addSignupUseCase() {
-        UserFactory commonUserFactory   = BuiltInUserFactory.COMMON;
-        UserFactory securityUserFactory = BuiltInUserFactory.SECURITY;
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
-                userDataAccessObject, signupOutputBoundary, commonUserFactory);
+                userDataAccessObject, signupOutputBoundary, userFactory);
 
-        final SignupSecurityInputBoundary securityuserSignupInteractor =
-                new SignupSecurityInteractor(userDataAccessObject, signupOutputBoundary, securityUserFactory);
-        final SignupController controller = new SignupController(userSignupInteractor, securityuserSignupInteractor);
+        final SignupController controller = new SignupController(userSignupInteractor);
         signupView.setSignupController(controller);
         return this;
     }

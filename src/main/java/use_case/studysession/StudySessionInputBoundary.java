@@ -4,5 +4,5 @@ public interface StudySessionInputBoundary {
 
     void handleNextRequest(StudySessionInputData in);
     void handlePrevRequest(StudySessionInputData in);
-    void switchTologgedView();
+    //void switchTologgedView();
 }

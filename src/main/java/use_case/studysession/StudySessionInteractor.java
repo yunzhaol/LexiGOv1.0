@@ -56,9 +56,4 @@ public class StudySessionInteractor implements StudySessionInputBoundary {
         );
         presenter.prepareSuccessView(out);
     }
-
-    @Override
-    public void switchTologgedView() {
-
-    }
 }

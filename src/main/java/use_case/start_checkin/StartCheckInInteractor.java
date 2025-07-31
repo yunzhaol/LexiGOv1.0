@@ -111,9 +111,9 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
     }
 
     /* Optional navigation trigger */
-    @Override
-    public void switchToDeckView() {
-        presenter.switchToDeckView();
-    }
+//    @Override
+//    public void switchToDeckView() {
+//        presenter.switchToDeckView();
+//    }
 }
 

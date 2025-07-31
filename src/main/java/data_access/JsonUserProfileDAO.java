@@ -35,7 +35,7 @@ public class JsonUserProfileDAO implements ProfileSetUserDataAccessInterface,
 
     /** Default directory on Windows; can be overridden via ctor. */
     private static final String DEFAULT_DIR =
-            "resources\\data";
+            "resources//data";
 
     private static final String FILE_NAME = "profiles.json";
 

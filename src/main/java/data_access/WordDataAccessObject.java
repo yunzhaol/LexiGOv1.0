@@ -13,38 +13,33 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Read a JSON file like:
- * {
- *   "550e8400-e29b-41d4-a716-446655440000": "apple",
- *   "3fa85f64-5717-4562-b3fc-2c963f66afa6": "table"
- * }
- * and expose word text lookup by UUID.
- */
 public class WordDataAccessObject implements WordDataAccessInterface {
 
-    private static Path FILE;
+    private final Path filePath;
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final Map<UUID, String> dictionary;
 
-    static {
+    public WordDataAccessObject() {
+        this.filePath = resolveDefaultPath();
+        this.dictionary = load();
+    }
+
+    public WordDataAccessObject(String path) {
+        this.filePath = Paths.get(path);
+        this.dictionary = load();
+    }
+
+    private static Path resolveDefaultPath() {
         try {
-            URL resource = WordBookDataAccessObject.class.getClassLoader()
+            URL resource = WordDataAccessObject.class.getClassLoader()
                     .getResource("data/words.json");
             if (resource == null) {
                 throw new IllegalStateException("words.json not found in resources");
             }
-            FILE = Paths.get(resource.toURI());
+            return Paths.get(resource.toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid URI for words.json", e);
         }
-    }
-
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    /** cached whole dictionary: UUID → word */
-    private final Map<UUID, String> dictionary;
-
-    public WordDataAccessObject() {
-        this.dictionary = load();
     }
 
     @Override
@@ -58,12 +53,12 @@ public class WordDataAccessObject implements WordDataAccessInterface {
 
     private Map<UUID, String> load() {
         try {
-            if (Files.notExists(FILE)) {
-                Files.createDirectories(FILE.getParent());
-                Files.writeString(FILE, "{}");
+            if (Files.notExists(filePath)) {
+                Files.createDirectories(filePath.getParent());
+                Files.writeString(filePath, "{}");
             }
             return mapper.readValue(
-                    Files.newInputStream(FILE),
+                    Files.newInputStream(filePath),
                     new TypeReference<Map<UUID, String>>() {});
         } catch (IOException e) {
             throw new IllegalStateException("Cannot read words.json", e);

@@ -1,0 +1,22 @@
+{
+  "test01": [
+    {
+      "username": "test01",
+      "endTime": "2025-07-30T02:33:07.7664567",
+      "learnwords": [
+        "7fc55970-6bf1-462c-b644-a8c75abf73c2",
+        "f9c6c06e-047d-4eea-b69c-3f8ef7e09a5a",
+        "572a86db-75a1-40cb-8a17-c6c4c03fcbfd"
+      ]
+    },
+    {
+      "username": "test01",
+      "endTime": "2025-07-30T19:41:53.2323909",
+      "learnwords": [
+        "482e391c-3d24-453d-8ae7-f1827b6d6fe5",
+        "c83523f6-b5a8-49de-8285-1f05d3f9cc4d",
+        "53813600-af36-46f3-99fa-bcfb94399e6b"
+      ]
+    }
+  ]
+}
