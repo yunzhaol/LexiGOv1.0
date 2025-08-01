@@ -45,10 +45,12 @@ class StartCheckInInteractorTest {
         userRecordDataAccessObject = new JsonUserRecordDataAccessObject("src/test/resources/learn_record.json");
 
         mockTranslator = mock(DeepLAPIAdapter.class);
-        when(mockTranslator.getTranslation("dream", Language.ZH)).thenReturn("梦想");
-        when(mockTranslator.getTranslation("zeal", Language.ZH)).thenReturn("热情");
-        when(mockTranslator.getTranslation("trust", Language.ZH)).thenReturn("信任");
-        when(mockTranslator.getTranslation("truth", Language.ZH)).thenReturn("真理");
+        Language lan = Language.ZH;
+        when(mockTranslator.getTranslation("dream", lan)).thenReturn("梦想");
+        when(mockTranslator.getTranslation("zeal", lan)).thenReturn("热情");
+        when(mockTranslator.getTranslation("trust", lan)).thenReturn("信任");
+        when(mockTranslator.getTranslation("truth", lan)).thenReturn("真理");
+        assertEquals(lan.displayName(), "Chinese");
 
         mockFreeDictionary = mock(FreeDictionaryApiAdapter.class);
         when(mockFreeDictionary.getWordExample("dream")).thenReturn("No example found");

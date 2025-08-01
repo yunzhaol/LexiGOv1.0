@@ -38,23 +38,23 @@ public class AchievementInteractor implements AchievementInputBoundary {
         for (LearnRecord learnedLearned : wordsLearned) {
             wordsLearnedNumber += learnedLearned.getLearnedWordIds().size();
         }
-        if (totalLearnedTimes >= 7) {
-            newlyUnlocked.add("👋 You have learned 7 times");
+        if (totalLearnedTimes >= 1) {
+            newlyUnlocked.add("You have learned 1 time");
         }
-        if (totalLearnedTimes >= 15) {
-            newlyUnlocked.add("🔥 You have learned 15 times");
+        if (totalLearnedTimes >= 2) {
+            newlyUnlocked.add("You have learned 2 times");
         }
-        if (totalLearnedTimes >= 30) {
-            newlyUnlocked.add("🔥 You have learned 30 times");
+        if (totalLearnedTimes >= 3) {
+            newlyUnlocked.add("You have learned 3 times");
         }
         if (wordsLearnedNumber >= 1) {
-            newlyUnlocked.add("👋 First Word I Learned");
+            newlyUnlocked.add("First Word I Learned");
         }
-        if (wordsLearnedNumber >= 20) {
-            newlyUnlocked.add("🎉 20 Words Learned");
+        if (wordsLearnedNumber >= 3) {
+            newlyUnlocked.add("3 Words Learned");
         }
-        if (wordsLearnedNumber >= 50) {
-            newlyUnlocked.add("🎉 50 Words Learned");
+        if (wordsLearnedNumber >= 5) {
+            newlyUnlocked.add("5 Words Learned");
         }
     }
 }

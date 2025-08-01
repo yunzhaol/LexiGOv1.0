@@ -11,6 +11,11 @@
     "securityAnswer": "test01",
     "type": "SECURITY"
   },
+  "tester": {
+    "name": "tester",
+    "password": "Aaa111",
+    "type": "COMMON"
+  },
   "test1": {
     "name": "test1",
     "password": "123qwe",

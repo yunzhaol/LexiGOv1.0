@@ -15,5 +15,10 @@
     "name": "test1",
     "password": "123qwe",
     "type": "COMMON"
+  },
+  "test08": {
+    "name": "test08",
+    "password": "111",
+    "type": "COMMON"
   }
 }

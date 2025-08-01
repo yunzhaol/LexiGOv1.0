@@ -18,7 +18,7 @@ public class CommonWordBook implements WordBook{
         return words;
     }
 
-    public String getName() {
-        return name;
-    }
+//    public String getName() {
+//        return name;
+//    }
 }
