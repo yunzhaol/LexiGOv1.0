@@ -33,17 +33,4 @@ public enum Language {
         return displayName;
     }
 
-    /**
-     * Lookup by ISO code (case‑insensitive).
-     * Returns null if not found.
-     */
-    public static Language fromCode(String code) {
-        if (code == null) return null;
-        for (Language lang : values()) {
-            if (lang.code.equalsIgnoreCase(code)) {
-                return lang;
-            }
-        }
-        return null;
-    }
 }
