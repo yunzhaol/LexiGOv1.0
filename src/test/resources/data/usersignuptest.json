@@ -1,0 +1,12 @@
+{
+  "test01": {
+    "name": "test01",
+    "password": "Aaa111",
+    "type": "COMMON"
+  },
+  "tester": {
+    "name": "tester",
+    "password": "Aaa111",
+    "type": "COMMON"
+  }
+}
