@@ -83,6 +83,10 @@ import use_case.rank.RankInputBoundary;
 import use_case.rank.RankInteractor;
 import use_case.rank.RankOutputBoundary;
 import use_case.signup.*;
+import use_case.signup.common.SignupInputBoundary;
+import use_case.signup.common.SignupInteractor;
+import use_case.signup.security.SignupSecurityInputBoundary;
+import use_case.signup.security.SignupSecurityInteractor;
 import use_case.start_checkin.StartCheckInInputBoundary;
 import use_case.start_checkin.StartCheckInInteractor;
 import use_case.start_checkin.StartCheckInOutputBoundary;
@@ -318,13 +322,13 @@ public class AppBuilder {
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
                 userDataAccessObject, signupOutputBoundary, userFactory);
+        final SignupSecurityInputBoundary userSecuritySignupInteractor = new SignupSecurityInteractor(
+                userDataAccessObject, signupOutputBoundary, userFactory);
 
-        final SignupController controller = new SignupController(userSignupInteractor);
+        final SignupController controller = new SignupController(userSignupInteractor, userSecuritySignupInteractor);
         signupView.setSignupController(controller);
         return this;
     }
-
-
 
     /**
      * Adds the Login Use Case to the application.
