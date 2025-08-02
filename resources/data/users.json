@@ -18,6 +18,13 @@
     "securityAnswer": "testnull",
     "type": "SECURITY"
   },
+  "testnew": {
+    "name": "testnew",
+    "password": "Aaa111",
+    "securityQuestion": "name",
+    "securityAnswer": "new",
+    "type": "SECURITY"
+  },
   "kkk": {
     "name": "kkk",
     "password": "Aaa111111",

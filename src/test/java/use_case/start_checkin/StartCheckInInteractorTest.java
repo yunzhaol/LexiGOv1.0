@@ -6,6 +6,7 @@ import data_access.JsonUserProfileDAO;
 import data_access.JsonUserRecordDataAccessObject;
 import data_access.WordBookDataAccessObject;
 import data_access.WordDataAccessObject;
+import entity.CommonCardFactory;
 import entity.CommonWordDeckFactory;
 import entity.Language;
 import entity.WordDeckFactory;
@@ -37,6 +38,7 @@ class StartCheckInInteractorTest {
     private DeepLAPIAdapter                mockTranslator;
     private FreeDictionaryApiAdapter       mockFreeDictionary;
     private WordDeckFactory                factory;
+    private CommonCardFactory              commonCardFactory;
 
     /**
      * Initialize all DAOs, adapters, and mocks before each test.
@@ -126,7 +128,8 @@ class StartCheckInInteractorTest {
                 presenter,
                 mockTranslator,
                 mockFreeDictionary,
-                factory
+                factory,
+                commonCardFactory
         );
         interactor.execute(in3);
     }
@@ -166,7 +169,8 @@ class StartCheckInInteractorTest {
                 presenter,
                 mockTranslator,
                 mockFreeDictionary,
-                factory
+                factory,
+                commonCardFactory
         );
         interactor.execute(in0);
         interactor.execute(in51);
