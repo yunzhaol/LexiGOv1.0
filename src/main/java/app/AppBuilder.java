@@ -10,10 +10,7 @@ import javax.swing.WindowConstants;
 import data_access.*;
 import data_access.JsonUserProfileDAO;
 import entity.*;
-import infrastructure.DeepLAPIAdapter;
-import infrastructure.FreeDictionaryApiAdapter;
-import infrastructure.LearnWordsGenerator;
-import infrastructure.TimeGenerator;
+import infrastructure.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.achievement.AchievementController;
 import interface_adapter.achievement.AchievementPresenter;
@@ -244,7 +241,7 @@ public class AppBuilder {
 
         rankViewModel = new RankViewModel();
         final RankOutputBoundary rankPresenter = new RankPresenter(rankViewModel);
-        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, 10);
+        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
         final RankController rankController = new RankController(rankInteractor);
         rankView = new RankView(rankViewModel, rankController);
 

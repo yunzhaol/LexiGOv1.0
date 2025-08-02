@@ -1,6 +1,8 @@
 package use_case.rank;
 
 import data_access.JsonUserRecordDataAccessObject;
+import infrastructure.DefaultLeaderboardSelector;
+import infrastructure.DefaultScoreSort;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +27,7 @@ public class RankInteractorTest {
             }
         };
 
-        RankInteractor interactor = new RankInteractor(dao, successPresenter, 10);
+        RankInteractor interactor = new RankInteractor(dao, successPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
         interactor.execute(inputData);
     }
 }

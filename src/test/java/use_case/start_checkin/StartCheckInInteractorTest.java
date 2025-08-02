@@ -89,6 +89,7 @@ class StartCheckInInteractorTest {
                 .thenReturn("He always tells the truth.");
 
         factory = new CommonWordDeckFactory();
+        commonCardFactory = new CommonCardFactory();
     }
 
     /**
