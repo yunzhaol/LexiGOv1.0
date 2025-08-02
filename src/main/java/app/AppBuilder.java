@@ -221,7 +221,7 @@ public class AppBuilder {
         final ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         changePasswordView = new ChangePasswordView(changeViewModel);
         final MakePasswordChangeOutputBoundary  presenter = new MakePasswordChangePresenter(changeViewModel);
-        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject, BuiltInUserFactory.COMMON, BuiltInUserFactory.SECURITY);
+        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject, userFactory);
         final MakePasswordChangeController controller = new MakePasswordChangeController(interactor);
         changePasswordView.setController(controller);
 
