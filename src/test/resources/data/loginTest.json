@@ -1,0 +1,19 @@
+{
+  "test2": {
+    "name": "test2",
+    "password": "123qwe",
+    "type": "COMMON"
+  },
+  "test01": {
+    "name": "test01",
+    "password": "Aaa111",
+    "securityQuestion": "name",
+    "securityAnswer": "test01",
+    "type": "SECURITY"
+  },
+  "test1": {
+    "name": "test1",
+    "password": "123qwe",
+    "type": "COMMON"
+  }
+}

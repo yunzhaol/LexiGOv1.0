@@ -1,6 +1,5 @@
 package use_case.change_password.make_password_change;
 
-import entity.BuiltInUserFactory;
 import entity.User;
 import entity.UserFactory;
 
@@ -8,16 +7,14 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
 
     private final MakePasswordChangeOutputBoundary presenter;
     private final UserPasswordDataAccessInterface userDAO;
-    private final UserFactory commomUserFactory;
-    private final UserFactory securityUserFactory;
+    private final UserFactory userFactory;
 
     public MakePasswordChangeInteractor(MakePasswordChangeOutputBoundary presenter,
                                         UserPasswordDataAccessInterface userDAO,
-                                        UserFactory commomUserFactory, UserFactory securityUserFactory) {
+                                        UserFactory userFactory) {
         this.presenter = presenter;
         this.userDAO = userDAO;
-        this.commomUserFactory = commomUserFactory;
-        this.securityUserFactory = securityUserFactory;
+        this.userFactory = userFactory;
     }
 
     @Override
@@ -29,7 +26,7 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
                         // new output
                 return;
             }
-            User newuser = commomUserFactory.create(in.getUsername(), in.getNewPassword());
+            User newuser = userFactory.create(in.getUsername(), in.getNewPassword());
             userDAO.update(in.getUsername(), newuser);
             presenter.presentSuccess();
             return;
@@ -43,7 +40,7 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
                 // new output
                 return;
             }
-            User newuser = securityUserFactory.create(in.getUsername(), in.getNewPassword(), userDAO.getQuestion(in.getUsername()), in.getSecurityAnswer());
+            User newuser = userFactory.create(in.getUsername(), in.getNewPassword(), userDAO.getQuestion(in.getUsername()), in.getSecurityAnswer());
             userDAO.update(in.getUsername(), newuser);
             presenter.presentSuccess();
         }
