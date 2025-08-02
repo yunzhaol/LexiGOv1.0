@@ -1,6 +1,7 @@
-package use_case.rank;
+package infrastructure;
 
 import entity.LearnRecord;
+import use_case.rank.ScoreSortService;
 
 import java.util.AbstractMap;
 import java.util.List;
