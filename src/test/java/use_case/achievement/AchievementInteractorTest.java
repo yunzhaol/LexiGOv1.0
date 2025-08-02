@@ -13,7 +13,7 @@ class AchievementInteractorTest {
     @BeforeEach
     void setUp() {
         mockDataAccess = new JsonUserRecordDataAccessObject(
-                "src/test/resources/testAchievement.json");
+                "src/test/resources/data/testAchievement.json");
     }
 
     @Test
@@ -38,7 +38,7 @@ class AchievementInteractorTest {
     @Test
     void testOnlyFirstWordAchievementUnlocked() {
         mockDataAccess = new JsonUserRecordDataAccessObject(
-                "src/test/resources/AchievementFirsttest.json");
+                "src/test/resources/data/AchievementFirsttest.json");
         AchievementOutputBoundary presenter = new AchievementOutputBoundary() {
             @Override
             public void present(AchievementOutputData responseModel) {

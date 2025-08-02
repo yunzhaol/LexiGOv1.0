@@ -11,6 +11,25 @@
     "securityAnswer": "test01",
     "type": "SECURITY"
   },
+  "testnull": {
+    "name": "testnull",
+    "password": "111111",
+    "securityQuestion": "name",
+    "securityAnswer": "testnull",
+    "type": "SECURITY"
+  },
+  "kkk": {
+    "name": "kkk",
+    "password": "Aaa111111",
+    "type": "COMMON"
+  },
+  "kkkkkk": {
+    "name": "kkkkkk",
+    "password": "Aaa111111",
+    "securityQuestion": "name",
+    "securityAnswer": "kkkkkk",
+    "type": "SECURITY"
+  },
   "test1": {
     "name": "test1",
     "password": "123qwe",

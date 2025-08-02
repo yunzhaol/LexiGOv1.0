@@ -32,17 +32,18 @@ class StartCheckInInteractorTest {
     @BeforeEach
     void setUp() {
         try {
-            userdata = new JsonUserDataAccessObject("src/test/resources/users.json");
+            userdata = new JsonUserDataAccessObject("src/test/resources/data/users.json");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        bookgetter = new WordBookDataAccessObject("src/test/resources/wordbook.json");
-        wordgetter = new WordDataAccessObject("src/test/resources/words.json");
-        userprofiledao = new JsonUserProfileDAO("src/test/resources/");
+        bookgetter = new WordBookDataAccessObject("src/test/resources/data/wordbook.json");
+        wordgetter = new WordDataAccessObject("src/test/resources/data/words.json");
+        userprofiledao = new JsonUserProfileDAO("src/test/resources/data/");
         cardDeck = new InMemoryDeckDataAccessObejct();
         learnWordsGenerator = new LearnWordsGenerator();
-        userRecordDataAccessObject = new JsonUserRecordDataAccessObject("src/test/resources/learn_record.json");
+        userRecordDataAccessObject = new JsonUserRecordDataAccessObject(
+                "src/test/resources/data/learn_record.json");
 
         mockTranslator = mock(DeepLAPIAdapter.class);
         Language lan = Language.ZH;
