@@ -119,6 +119,7 @@ public class AppBuilder {
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();
     private final DefaultUserFactory userFactory = new DefaultUserFactory();
+    private final CommonCardFactory commonCardFactory = new CommonCardFactory();
 
 
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
@@ -306,7 +307,7 @@ public class AppBuilder {
         final StartCheckInInputBoundary interactor
                 = new StartCheckInInteractor(userRecordDataAccessObject,
                 wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDAO,
-                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory);
+                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory, commonCardFactory);
         final StartCheckInController controller = new StartCheckInController(interactor, presenter);
         startCheckInView.setController(controller);
         return this;
