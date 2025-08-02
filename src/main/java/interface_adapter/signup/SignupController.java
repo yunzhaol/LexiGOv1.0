@@ -1,48 +1,58 @@
 package interface_adapter.signup;
 
-
-import use_case.signup.SignupInputBoundary;
-import use_case.signup.SignupInputData;
-import use_case.signup.SignupSecurityInputBoundary;
-import use_case.signup.SignupSecurityInputData;
+import use_case.signup.common.SignupInputBoundary;
+import use_case.signup.security.SignupSecurityInputBoundary;
+import use_case.signup.common.SignupInputData;
+import use_case.signup.security.SignupSecurityInputData;
 
 /**
  * Controller for the Signup Use Case.
  */
 public class SignupController {
 
-    private final SignupInputBoundary userSignupUseCaseInteractor;
-    public SignupController(SignupInputBoundary userSignupUseCaseInteractor) {
-        this.userSignupUseCaseInteractor = userSignupUseCaseInteractor;
+    private final SignupInputBoundary basicSignupUseCase;
+    private final SignupSecurityInputBoundary securitySignupUseCase;
+
+    public SignupController(SignupInputBoundary basicSignupUseCase,
+                            SignupSecurityInputBoundary securitySignupUseCase) {
+        this.basicSignupUseCase = basicSignupUseCase;
+        this.securitySignupUseCase = securitySignupUseCase;
     }
 
     /**
-     * Executes the Signup Use Case.
-     * @param username the username to sign up
-     * @param password1 the password
-     * @param password2 the password repeated
+     * Executes basic signup without security questions.
      */
-    public void execute(String username, String password1, String password2,
-                        String securityQuestion, String securityAnswer) {
+    public void signup(String username,
+                       String password1,
+                       String password2) {
+        basicSignupUseCase.execute(
+                new SignupInputData(username, password1, password2)
+        );
+    }
 
-        if (securityQuestion.isBlank() || securityAnswer.isBlank()) {
-            final SignupInputData signupInputData = new SignupInputData(
-                    username, password1, password2);
-            userSignupUseCaseInteractor.execute(signupInputData);
-
-        } else {
-            final SignupSecurityInputData signupSecurityInputData = new SignupSecurityInputData(
-                    username, password1, password2, securityQuestion, securityAnswer);
-            userSignupUseCaseInteractor.execute(signupSecurityInputData);
-
-        }
-
+    /**
+     * Executes signup with security questions.
+     */
+    public void signupWithSecurity(String username,
+                                   String password1,
+                                   String password2,
+                                   String securityQuestion,
+                                   String securityAnswer) {
+        securitySignupUseCase.execute(
+                new SignupSecurityInputData(
+                        username,
+                        password1,
+                        password2,
+                        securityQuestion,
+                        securityAnswer
+                )
+        );
     }
 
     /**
      * Executes the "switch to LoginView" Use Case.
      */
     public void switchToLoginView() {
-        userSignupUseCaseInteractor.switchToLoginView();
+        basicSignupUseCase.switchToLoginView();
     }
 }

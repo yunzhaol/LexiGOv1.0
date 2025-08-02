@@ -22,11 +22,20 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
     private final UserCheckInDeckAccessInterface userDeckAccessObject;
     private final WordDataAccessInterface        wordDataAccessObject;
     private final UserProfileDataAccessInterface userProfileDataAccessObject;
+
+    // outer algorithms
     private final LearnDeckGenerator             generator;
+
+    // presenter
     private final StartCheckInOutputBoundary     presenter;
+
+    // APIs
     private final WordTranslationAPI             translator;
     private final WordDetailAPI                  detailGenerator;
+
+    // factories
     private final WordDeckFactory                wordDeckFactory;
+    private final CommonCardFactory                commonCardFactory;
 
     /* ====== CONSTRUCTOR ====== */
     public StartCheckInInteractor(
@@ -39,7 +48,7 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
             StartCheckInOutputBoundary     presenter,
             WordTranslationAPI             translator,
             WordDetailAPI                  detailGenerator,
-            WordDeckFactory wordDeckFactory) {
+            WordDeckFactory wordDeckFactory, CommonCardFactory commonCardFactory) {
 
         this.userDataAccessObject        = userDataAccessObject;
         this.wordBookAccessObject        = wordBookAccessObject;
@@ -51,6 +60,7 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
         this.translator                  = translator;
         this.detailGenerator             = detailGenerator;
         this.wordDeckFactory             = wordDeckFactory;
+        this.commonCardFactory = commonCardFactory;
     }
 
     /* ====== MAIN BUSINESS METHOD ====== */
@@ -105,15 +115,11 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
                 userProfileDataAccessObject.getLanguage(username);
 
         String translation = translator.getTranslation(text, targetLang);
+
         String example     = detailGenerator.getWordExample(text);
 
-        return new CommonCard(wordId, text, translation, example);
+        CommonCard card =  commonCardFactory.create(wordId, text, translation, example);
+        return card;
     }
-
-    /* Optional navigation trigger */
-//    @Override
-//    public void switchToDeckView() {
-//        presenter.switchToDeckView();
-//    }
 }
 

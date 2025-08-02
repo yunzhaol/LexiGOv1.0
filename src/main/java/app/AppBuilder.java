@@ -10,10 +10,7 @@ import javax.swing.WindowConstants;
 import data_access.*;
 import data_access.JsonUserProfileDAO;
 import entity.*;
-import infrastructure.DeepLAPIAdapter;
-import infrastructure.FreeDictionaryApiAdapter;
-import infrastructure.LearnWordsGenerator;
-import infrastructure.TimeGenerator;
+import infrastructure.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.achievement.AchievementController;
 import interface_adapter.achievement.AchievementPresenter;
@@ -83,6 +80,10 @@ import use_case.rank.RankInputBoundary;
 import use_case.rank.RankInteractor;
 import use_case.rank.RankOutputBoundary;
 import use_case.signup.*;
+import use_case.signup.common.SignupInputBoundary;
+import use_case.signup.common.SignupInteractor;
+import use_case.signup.security.SignupSecurityInputBoundary;
+import use_case.signup.security.SignupSecurityInteractor;
 import use_case.start_checkin.StartCheckInInputBoundary;
 import use_case.start_checkin.StartCheckInInteractor;
 import use_case.start_checkin.StartCheckInOutputBoundary;
@@ -115,6 +116,7 @@ public class AppBuilder {
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();
     private final DefaultUserFactory userFactory = new DefaultUserFactory();
+    private final CommonCardFactory commonCardFactory = new CommonCardFactory();
 
 
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
@@ -217,7 +219,7 @@ public class AppBuilder {
         final ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         changePasswordView = new ChangePasswordView(changeViewModel);
         final MakePasswordChangeOutputBoundary  presenter = new MakePasswordChangePresenter(changeViewModel);
-        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject, BuiltInUserFactory.COMMON, BuiltInUserFactory.SECURITY);
+        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject, userFactory);
         final MakePasswordChangeController controller = new MakePasswordChangeController(interactor);
         changePasswordView.setController(controller);
 
@@ -244,7 +246,7 @@ public class AppBuilder {
 
         rankViewModel = new RankViewModel();
         final RankOutputBoundary rankPresenter = new RankPresenter(rankViewModel);
-        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, 10);
+        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
         final RankController rankController = new RankController(rankInteractor);
         rankView = new RankView(rankViewModel, rankController);
 
@@ -307,7 +309,7 @@ public class AppBuilder {
         final StartCheckInInputBoundary interactor
                 = new StartCheckInInteractor(userRecordDataAccessObject,
                 wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDAO,
-                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory);
+                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory, commonCardFactory);
         final StartCheckInController controller = new StartCheckInController(interactor, presenter);
         startCheckInView.setController(controller);
         return this;
@@ -323,13 +325,13 @@ public class AppBuilder {
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
                 userDataAccessObject, signupOutputBoundary, userFactory);
+        final SignupSecurityInputBoundary userSecuritySignupInteractor = new SignupSecurityInteractor(
+                userDataAccessObject, signupOutputBoundary, userFactory);
 
-        final SignupController controller = new SignupController(userSignupInteractor);
+        final SignupController controller = new SignupController(userSignupInteractor, userSecuritySignupInteractor);
         signupView.setSignupController(controller);
         return this;
     }
-
-
 
     /**
      * Adds the Login Use Case to the application.

@@ -1,5 +1,8 @@
 package use_case.rank;
 
+import infrastructure.DefaultLeaderboardSelector;
+import infrastructure.DefaultScoreSort;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,10 +13,6 @@ public class RankInteractor implements RankInputBoundary {
     private final LeaderboardSelector leaderboardSelector;
     private final ScoreSortService scoreSortService;
     private final int limit;
-
-    public RankInteractor(RankUserDataAccessInterface dao, RankOutputBoundary presenter, int limit) {
-        this(dao, presenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(), limit);
-    }
 
     public RankInteractor(RankUserDataAccessInterface dao, RankOutputBoundary presenter, LeaderboardSelector leaderboardSelector, ScoreSortService scoreSortService, int limit) {
         this.dao = dao;

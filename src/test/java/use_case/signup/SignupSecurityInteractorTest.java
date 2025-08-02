@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import use_case.signup.common.SignupInputData;
 import use_case.signup.common.SignupInteractor;
+import use_case.signup.security.SignupSecurityInputData;
+import use_case.signup.security.SignupSecurityInteractor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,11 +19,11 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit tests for {@link SignupInteractor}.
+ * Unit tests for {@link SignupSecurityInteractor}.
  * <p>
  * Uses a JSON file as the data store and clears it after each test.
  */
-public class SignupInteractorTest {
+public class SignupSecurityInteractorTest {
 
     /** Path to the JSON file used during testing. */
     private static final Path TEST_DATA_PATH =
@@ -31,7 +33,7 @@ public class SignupInteractorTest {
     private UserFactory factory;
 
     /**
-     * Initialize the JSON DAO and the user factory before each test.
+     * Initialize the JSON DAO and user factory before each test.
      */
     @BeforeEach
     public void setup() {
@@ -45,7 +47,7 @@ public class SignupInteractorTest {
     }
 
     /**
-     * Clean up the JSON file by truncating it to zero length.
+     * Truncate the test JSON file after each test to ensure isolation.
      */
     @AfterEach
     public void cleanUp() throws IOException {
@@ -55,12 +57,12 @@ public class SignupInteractorTest {
     }
 
     /**
-     * Scenario: successful signup with matching passwords.
+     * Scenario: successful signup with security question.
      */
     @Test
     public void successTest() {
-        SignupInputData inSuccess =
-                new SignupInputData("tester", "Aaa111", "Aaa111");
+        SignupSecurityInputData input =
+                new SignupSecurityInputData("tester", "Aaa111", "Aaa111", "name", "jam");
 
         // Presenter that verifies success and persisted data
         SignupOutputBoundary presenter = new SignupOutputBoundary() {
@@ -74,13 +76,13 @@ public class SignupInteractorTest {
                         userDataAccessObject.get(outputData.getUsername()).getPassword());
                 assertEquals(true,
                         userDataAccessObject.existsByName(outputData.getUsername()));
-                assertEquals(null,
+                assertEquals("name",
                         userDataAccessObject.getQuestion(outputData.getUsername()));
-                assertEquals(null,
+                assertEquals("jam",
                         userDataAccessObject.getAnswer(outputData.getUsername()));
-                assertEquals(null,
+                assertEquals("name",
                         userDataAccessObject.getSecurityQuestion(outputData.getUsername()));
-                assertEquals("COMMON",
+                assertEquals("SECURITY",
                         userDataAccessObject.getType(outputData.getUsername()));
             }
 
@@ -91,27 +93,27 @@ public class SignupInteractorTest {
 
             @Override
             public void switchToLoginView() {
-                // Not used in this test
+                // Not used here
             }
         };
 
-        SignupInteractor interactor =
-                new SignupInteractor(userDataAccessObject, presenter, factory);
-        interactor.execute(inSuccess);
+        SignupSecurityInteractor interactor =
+                new SignupSecurityInteractor(userDataAccessObject, presenter, factory);
+        interactor.execute(input);
     }
 
     /**
-     * Scenario: password fails the complexity rule.
+     * Scenario: password fails complexity rule.
      */
     @Test
     public void failPasswordRuleTest() {
-        SignupInputData inFail =
-                new SignupInputData("tester", "1", "1");
+        SignupSecurityInputData input =
+                new SignupSecurityInputData("tester", "1", "1", "name", "jam");
 
         SignupOutputBoundary presenter = new SignupOutputBoundary() {
             @Override
             public void prepareSuccessView(SignupOutputData outputData) {
-                // Not used in this scenario
+                // Not used here
             }
 
             @Override
@@ -134,13 +136,13 @@ public class SignupInteractorTest {
 
             @Override
             public void switchToLoginView() {
-                // Not used in this test
+                // Not relevant
             }
         };
 
-        SignupInteractor interactor =
-                new SignupInteractor(userDataAccessObject, presenter, factory);
-        interactor.execute(inFail);
+        SignupSecurityInteractor interactor =
+                new SignupSecurityInteractor(userDataAccessObject, presenter, factory);
+        interactor.execute(input);
     }
 
     /**
@@ -148,8 +150,8 @@ public class SignupInteractorTest {
      */
     @Test
     public void failRepeatPasswordTest() {
-        SignupInputData inFail =
-                new SignupInputData("tester", "Aaa111", "1");
+        SignupSecurityInputData input =
+                new SignupSecurityInputData("tester", "Aaa111", "Aaa1112", "name", "jam");
 
         SignupOutputBoundary presenter = new SignupOutputBoundary() {
             @Override
@@ -174,13 +176,13 @@ public class SignupInteractorTest {
 
             @Override
             public void switchToLoginView() {
-                // noop
+                // No-op
             }
         };
 
-        SignupInteractor interactor =
-                new SignupInteractor(userDataAccessObject, presenter, factory);
-        interactor.execute(inFail);
+        SignupSecurityInteractor interactor =
+                new SignupSecurityInteractor(userDataAccessObject, presenter, factory);
+        interactor.execute(input);
     }
 
     /**
@@ -188,20 +190,22 @@ public class SignupInteractorTest {
      */
     @Test
     public void failUsernameExistsTest() {
-        // First, successful signup
-        SignupInputData inSuccess =
-                new SignupInputData("tester", "Aaa111", "Aaa111");
-        SignupInteractor firstInteractor =
-                new SignupInteractor(userDataAccessObject, new SignupOutputBoundary() {
+        // First, perform a successful signup
+        SignupSecurityInputData firstInput =
+                new SignupSecurityInputData("tester", "Aaa111", "Aaa111", "name", "jam");
+        new SignupSecurityInteractor(
+                userDataAccessObject,
+                new SignupOutputBoundary() {
                     @Override public void prepareSuccessView(SignupOutputData o) {}
                     @Override public void prepareFailView(String m) {}
                     @Override public void switchToLoginView() {}
-                }, factory);
-        firstInteractor.execute(inSuccess);
+                },
+                factory
+        ).execute(firstInput);
 
-        // Then attempt to sign up with the same username
-        SignupInputData inExists =
-                new SignupInputData("tester", "Aaa111", "Aaa111");
+        // Then attempt to sign up again with the same username
+        SignupSecurityInputData secondInput =
+                new SignupSecurityInputData("tester", "Aaa111", "Aaa111", "name", "jam");
 
         SignupOutputBoundary presenter = new SignupOutputBoundary() {
             @Override
@@ -214,13 +218,13 @@ public class SignupInteractorTest {
                 assertEquals("User already exists.", errorMessage);
                 assertEquals(true,
                         userDataAccessObject.existsByName("tester"));
-                assertEquals(null,
+                assertEquals("name",
                         userDataAccessObject.getQuestion("tester"));
-                assertEquals(null,
+                assertEquals("jam",
                         userDataAccessObject.getAnswer("tester"));
-                assertEquals(null,
+                assertEquals("name",
                         userDataAccessObject.getSecurityQuestion("tester"));
-                assertEquals("COMMON",
+                assertEquals("SECURITY",
                         userDataAccessObject.getType("tester"));
             }
 
@@ -230,9 +234,9 @@ public class SignupInteractorTest {
             }
         };
 
-        SignupInteractor interactor2 =
-                new SignupInteractor(userDataAccessObject, presenter, factory);
-        interactor2.execute(inExists);
+        SignupSecurityInteractor interactor2 =
+                new SignupSecurityInteractor(userDataAccessObject, presenter, factory);
+        interactor2.execute(secondInput);
     }
 
     /**
@@ -245,12 +249,12 @@ public class SignupInteractorTest {
             @Override public void prepareFailView(String m) {}
             @Override
             public void switchToLoginView() {
-                assertEquals(1, 1, "switchToLoginView should be called");
+                assertEquals(true, true, "switchToLoginView should be called");
             }
         };
 
-        SignupInteractor interactor =
-                new SignupInteractor(userDataAccessObject, presenter, factory);
+        SignupSecurityInteractor interactor =
+                new SignupSecurityInteractor(userDataAccessObject, presenter, factory);
         interactor.switchToLoginView();
     }
 }

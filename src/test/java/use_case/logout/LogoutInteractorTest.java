@@ -15,7 +15,7 @@ public class LogoutInteractorTest {
     @BeforeEach
     public void setup() {
         try {
-            userDataAccessObject = new JsonUserDataAccessObject("src/test/resources/users.json");
+            userDataAccessObject = new JsonUserDataAccessObject("src/test/resources/data/users.json");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

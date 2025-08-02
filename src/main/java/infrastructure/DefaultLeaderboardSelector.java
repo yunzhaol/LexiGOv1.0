@@ -1,4 +1,8 @@
-package use_case.rank;
+package infrastructure;
+
+import use_case.rank.LeaderboardSelector;
+import use_case.rank.LeaderboardStat;
+import use_case.rank.UserScore;
 
 import java.util.ArrayList;
 import java.util.List;
