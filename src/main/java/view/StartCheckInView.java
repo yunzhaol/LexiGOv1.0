@@ -34,14 +34,18 @@ public class StartCheckInView extends JPanel implements PropertyChangeListener {
         /* -------------------------  build UI  ------------------------- */
         JLabel title = new JLabel("Daily Check‑In");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
 
         LabelTextPanel numberInfo = new LabelTextPanel(new JLabel("Words to learn"), numberField);
-
+        numberInfo.setFont(title.getFont().deriveFont(17f));
+        startButton.setFont(title.getFont().deriveFont(17f));
         JPanel buttons = new JPanel();
         buttons.add(startButton);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        add(Box.createVerticalStrut(63));
         add(title);
+        add(Box.createVerticalStrut(30));
         add(numberInfo);
         add(numberError);
         add(buttons);

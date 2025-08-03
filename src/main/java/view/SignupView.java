@@ -35,7 +35,30 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.signupViewModel = signupViewModel;
         signupViewModel.addPropertyChangeListener(this);
 
+        //add(Box.createVerticalStrut(60));
+        // Create logo
+        String logo =
+                "\n\n\n\n\n\n\n   ____   ____     ____   ____     ___    _____ \n" +
+                        "  / ___| / ___|   / ___| |___ \\   / _ \\  |___  |\n" +
+                        " | |     \\___ \\  | |       __) | | | | |    / / \n" +
+                        " | |___   ___) | | |___   / __/  | |_| |   / /  \n" +
+                        "  \\____| |____/   \\____| |_____|  \\___/   /_/   \n" +
+                        "\n" +
+                        "               L E X I G O   T e a m";
+
+        JTextArea logoArea = new JTextArea(logo);
+        logoArea.setEditable(false);
+        logoArea.setFont(new Font("Monospaced", Font.BOLD, 12));
+        logoArea.setBackground(getBackground());
+        logoArea.setForeground(Color.CYAN);
+        logoArea.setMargin(new Insets(10, 10, 10, 10));
+
+        // Create form panel (original UI)
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+
         final JLabel title = new JLabel(SignupViewModel.TITLE_LABEL);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel usernameInfo = new LabelTextPanel(
@@ -48,12 +71,11 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         final LabelTextPanel securityQuestionInfo = new LabelTextPanel(
                 new JLabel(SignupViewModel.SECURITY_QUESTION_LABEL), securityQuestionInputField
         );
-
         final LabelTextPanel securityAnswerInfo = new LabelTextPanel(
                 new JLabel(SignupViewModel.SECURITY_ANSWER_LABEL), securityAnswerInputField
         );
 
-        final JPanel buttons = new JPanel();
+        final JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         toLogin = new JButton(SignupViewModel.TO_LOGIN_BUTTON_LABEL);
         buttons.add(toLogin);
         signUp = new JButton(SignupViewModel.SIGNUP_BUTTON_LABEL);
@@ -61,38 +83,39 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         cancel = new JButton(SignupViewModel.CANCEL_BUTTON_LABEL);
         buttons.add(cancel);
 
-        signUp.addActionListener(
-                // This creates an anonymous subclass of ActionListener and instantiates it.
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(signUp)) {
-                            final SignupState currentState = signupViewModel.getState();
-                            if (currentState.getSecurityAnswer().isBlank() || currentState.getSecurityQuestion().isBlank()) {
-                                signupController.signup(currentState.getUsername(),
-                                        currentState.getPassword(),
-                                        currentState.getRepeatPassword());
-                            } else {
-                                signupController.signupWithSecurity(
-                                        currentState.getUsername(),
-                                        currentState.getPassword(),
-                                        currentState.getRepeatPassword(),
-                                        currentState.getSecurityQuestion(),
-                                        currentState.getSecurityAnswer()
-                                );
-                            }
-                        }
-                    }
-                }
-        );
+        formPanel.add(Box.createVerticalStrut(20));
+        formPanel.add(title);
+        formPanel.add(Box.createVerticalStrut(20));
+        formPanel.add(usernameInfo);
+        formPanel.add(Box.createVerticalStrut(1));
+        formPanel.add(passwordInfo);
+        formPanel.add(Box.createVerticalStrut(1));
+        formPanel.add(repeatPasswordInfo);
+        formPanel.add(Box.createVerticalStrut(1));
+        formPanel.add(securityQuestionInfo);
+        formPanel.add(Box.createVerticalStrut(1));
+        formPanel.add(securityAnswerInfo);
+        formPanel.add(Box.createVerticalStrut(1));
+        formPanel.add(buttons);
 
-        toLogin.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        signupController.switchToLoginView();
-                    }
-                }
-        );
+        signUp.addActionListener(e -> {
+            final SignupState currentState = signupViewModel.getState();
+            if (currentState.getSecurityAnswer().isBlank() || currentState.getSecurityQuestion().isBlank()) {
+                signupController.signup(currentState.getUsername(),
+                        currentState.getPassword(),
+                        currentState.getRepeatPassword());
+            } else {
+                signupController.signupWithSecurity(
+                        currentState.getUsername(),
+                        currentState.getPassword(),
+                        currentState.getRepeatPassword(),
+                        currentState.getSecurityQuestion(),
+                        currentState.getSecurityAnswer()
+                );
+            }
+        });
 
+        toLogin.addActionListener(e -> signupController.switchToLoginView());
         cancel.addActionListener(this);
 
         addUsernameListener();
@@ -101,144 +124,74 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         addSecurityQuestionListener();
         addSecurityAnswerListener();
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(passwordInfo);
-        this.add(repeatPasswordInfo);
-        this.add(securityQuestionInfo);
-        this.add(securityAnswerInfo);
-        this.add(buttons);
+        // Set layout with logo
+        this.setLayout(new BorderLayout());
+        this.add(logoArea, BorderLayout.WEST);
+        this.add(formPanel, BorderLayout.CENTER);
     }
 
     private void addUsernameListener() {
         usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
+            private void update() {
                 final SignupState currentState = signupViewModel.getState();
                 currentState.setUsername(usernameInputField.getText());
                 signupViewModel.setState(currentState);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
         });
     }
 
     private void addPasswordListener() {
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
+            private void update() {
                 final SignupState currentState = signupViewModel.getState();
                 currentState.setPassword(new String(passwordInputField.getPassword()));
                 signupViewModel.setState(currentState);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
         });
     }
 
     private void addRepeatPasswordListener() {
         repeatPasswordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
+            private void update() {
                 final SignupState currentState = signupViewModel.getState();
                 currentState.setRepeatPassword(new String(repeatPasswordInputField.getPassword()));
                 signupViewModel.setState(currentState);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
         });
     }
 
     private void addSecurityQuestionListener() {
         securityQuestionInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
+            private void update() {
                 final SignupState currentState = signupViewModel.getState();
                 currentState.setSecurityQuestion(securityQuestionInputField.getText());
                 signupViewModel.setState(currentState);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
         });
     }
 
     private void addSecurityAnswerListener() {
         securityAnswerInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
+            private void update() {
                 final SignupState currentState = signupViewModel.getState();
                 currentState.setSecurityAnswer(securityAnswerInputField.getText());
                 signupViewModel.setState(currentState);
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
         });
     }
 

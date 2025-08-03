@@ -39,11 +39,15 @@ public class WordDetailView extends JPanel implements PropertyChangeListener {
 
         /* ---------- 布局 ---------- */
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(Box.createVerticalStrut(30));  // 上边距
+        transLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exampleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(Box.createVerticalStrut(45));  // 上边距
         add(transLabel);
-        add(Box.createVerticalStrut(15));
+        add(Box.createVerticalStrut(25));
         add(exampleLabel);
         add(Box.createVerticalStrut(20));
+
+
 
         // 按钮区域
         JPanel nav = new JPanel();

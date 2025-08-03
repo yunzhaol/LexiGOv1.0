@@ -69,6 +69,7 @@ public class AchievementView extends JPanel
         achievementList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel lbl = (JLabel) new DefaultListCellRenderer()
                     .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN, 17f));
             lbl.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
             return lbl;
         });

@@ -112,7 +112,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
 
         // Wrap navigation panel to enforce fixed width
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setPreferredSize(new Dimension(160, 0));
+        wrapper.setPreferredSize(new Dimension(175, 0));
         wrapper.add(nav, BorderLayout.CENTER);
         add(wrapper, BorderLayout.WEST);
 
@@ -142,7 +142,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         navGroup.add(btn);
         navButtons.put(cardName, btn);
         parent.add(btn);
-        parent.add(Box.createVerticalStrut(8));
+        parent.add(Box.createVerticalStrut(24));
     }
 
     /**
