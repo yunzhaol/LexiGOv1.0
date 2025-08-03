@@ -3,7 +3,7 @@ package use_case.view_history;
 import entity.LearnRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import use_case.viewhistory.DefaultViewHistoryProcessorService;
+import infrastructure.DefaultViewHistoryProcessorService;
 import use_case.viewhistory.ViewHistoryEntryData;
 
 import java.time.LocalDateTime;

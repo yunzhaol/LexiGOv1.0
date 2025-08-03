@@ -11,7 +11,6 @@ public final class FontScaler {
 
     private FontScaler() {}
 
-    /** 在设置好 LAF 后、构建任何界面之前 调用一次 */
     public static void initBaseFonts() {
         if (baseFont != null) return;
 
@@ -22,7 +21,6 @@ public final class FontScaler {
         baseFont = new FontUIResource(f);
     }
 
-    /** 将全局默认字体按比例缩放，并刷新所有已打开窗口 */
     public static void applyScale(float scale) {
         if (baseFont == null) initBaseFonts();
         if (Math.abs(scale - currentScale) < 0.01f) return;

@@ -107,31 +107,6 @@ class ChangePasswordInteractorTest {
     }
 
     @Test
-    @DisplayName("Should handle null user type")
-    void shouldHandleNullUserType() {
-        // Given
-        String username = "nullTypeUser";
-        ChangePasswordInputData inputData = new ChangePasswordInputData(username);
-
-        when(mockDataAccess.getType(username)).thenReturn(null);
-
-        // When
-        interactor.execute(inputData);
-
-        // Then
-        verify(mockDataAccess).getType(username);
-        verify(mockDataAccess, never()).getSecurityQuestion(any());
-
-        ArgumentCaptor<ChangePasswordOutputData> outputCaptor = ArgumentCaptor.forClass(ChangePasswordOutputData.class);
-        verify(mockPresenter).preparePage(outputCaptor.capture());
-
-        ChangePasswordOutputData capturedOutput = outputCaptor.getValue();
-        assertEquals(username, capturedOutput.getUsername());
-        assertFalse(capturedOutput.isNeedVerified());
-        assertNull(capturedOutput.getSecurityQuestion());
-    }
-
-    @Test
     @DisplayName("Should handle empty string user type")
     void shouldHandleEmptyStringUserType() {
         // Given

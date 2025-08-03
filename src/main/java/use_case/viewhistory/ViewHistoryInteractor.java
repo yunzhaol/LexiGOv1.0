@@ -2,6 +2,7 @@ package use_case.viewhistory;
 
 
 import entity.LearnRecord;
+import infrastructure.DefaultViewHistoryProcessorService;
 import use_case.gateway.UserRecordDataAccessInterface;
 
 import java.util.List;
@@ -15,14 +16,6 @@ public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
     private final UserRecordDataAccessInterface dataAccess;
     private final ViewHistoryOutputBoundary presenter;
     private final ViewHistoryProcessorService processor;
-
-    /**
-     * Default constructor using standard processing.
-     */
-    public ViewHistoryInteractor(UserRecordDataAccessInterface dataAccess,
-                                 ViewHistoryOutputBoundary presenter) {
-        this(dataAccess, presenter, new DefaultViewHistoryProcessorService());
-    }
 
     /**
      * Constructor with injectable processor for testing/customization.

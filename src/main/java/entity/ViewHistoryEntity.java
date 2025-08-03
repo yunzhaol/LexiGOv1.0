@@ -35,9 +35,9 @@ public class ViewHistoryEntity implements LearnRecord {
         return learnedWordIds;
     }
 
-    public int getSessionNumber() {
-        return sessionNumber;
-    }
+//    public int getSessionNumber() {
+//        return sessionNumber;
+//    }
 
     public int getWordsCount() {
         return learnedWordIds.size();
@@ -45,9 +45,9 @@ public class ViewHistoryEntity implements LearnRecord {
 
 
 
-    @Override
-    public String toString() {
-        return String.format("ViewHistoryEntry{user='%s', session=%d, words=%d, time='%s'}",
-                username, sessionNumber, getWordsCount(), endTime);
-    }
+//    @Override
+//    public String toString() {
+//        return String.format("ViewHistoryEntry{user='%s', session=%d, words=%d, time='%s'}",
+//                username, sessionNumber, getWordsCount(), endTime);
+//    }
 }

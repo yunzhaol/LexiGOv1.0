@@ -1,6 +1,9 @@
 package use_case.viewhistory;
 
+import entity.CommonLearnRecord;
 import entity.LearnRecord;
+import entity.ViewHistoryEntity;
+import infrastructure.DefaultViewHistoryProcessorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +37,7 @@ class ViewHistoryInteractorTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        interactor = new ViewHistoryInteractor(mockDataAccess, mockPresenter);
+        interactor = new ViewHistoryInteractor(mockDataAccess, mockPresenter, new DefaultViewHistoryProcessorService());
     }
 
     @Test
@@ -405,6 +408,19 @@ class ViewHistoryInteractorTest {
         List<ViewHistoryEntryData> sessions = capturedOutput.getSessions();
 
         assertEquals("2025-12-25 14:30:45", sessions.get(0).getEndTime());
+    }
+
+    @Test
+    void entityTest() {
+        LocalDateTime time = LocalDateTime.of(2025, 1, 1, 10, 0);
+        CommonLearnRecord record = new CommonLearnRecord("TEST", time, new ArrayList<>());
+        assertEquals(time, record.getEndTime());
+        assertEquals(0, record.getLearnedWordIds().size());
+
+        ViewHistoryEntity viewHistoryEntity = new ViewHistoryEntity("TEST", time, new ArrayList<>(), 1);
+        assertEquals(time, viewHistoryEntity.getEndTime());
+        assertEquals(0, viewHistoryEntity.getLearnedWordIds().size());
+        assertEquals(viewHistoryEntity.getUsername(),"TEST");
     }
 
     // Helper method
