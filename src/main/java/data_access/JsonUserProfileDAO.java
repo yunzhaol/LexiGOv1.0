@@ -39,16 +39,18 @@ public class JsonUserProfileDAO implements ProfileSetUserDataAccessInterface,
 
     private static final String FILE_NAME = "profiles.json";
 
-    private final Path filePath;          // …/profiles.json
+    private static final Language DEFAULT_LANGUAGE = Language.FR;
+
+    private final Path filePath;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Type mapType = new TypeToken<Map<String, PersonalProfile>>(){}.getType();
+    private final Type mapType = new TypeToken<Map<String, PersonalProfile>>() { }.getType();
 
     public JsonUserProfileDAO() {
         this(DEFAULT_DIR);
     }
 
     public JsonUserProfileDAO(String dirPath) {
-        Path dir = Paths.get(dirPath);
+        final Path dir = Paths.get(dirPath);
         ensureDirectoryExists(dir);
         this.filePath = dir.resolve(FILE_NAME);
         ensureFileExists();
@@ -64,9 +66,17 @@ public class JsonUserProfileDAO implements ProfileSetUserDataAccessInterface,
 
     @Override
     public synchronized Language getLanguage(String username) {
-        PersonalProfile p = readAll().get(username);
-        return p != null ? p.getLanguage() : null;
+        final Map<String, PersonalProfile> map = readAll();
+        PersonalProfile p = map.get(username);
+
+        if (p == null) {                               // 用户尚无 profile
+            p = new PersonalProfile(username, DEFAULT_LANGUAGE);
+            map.put(username, p);
+            writeAll(map);                             // ✨ 写回 profiles.json
+        }
+        return p.getLanguage();
     }
+
 
     public synchronized void updateLanguage(String username, Language newLanguage) {
         if (username == null || newLanguage == null) throw new IllegalArgumentException("username / language is null");

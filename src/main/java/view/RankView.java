@@ -15,7 +15,7 @@ public class RankView extends JPanel implements PropertyChangeListener {
 
     /* ── 依赖 ───────────────────────────── */
     private final RankViewModel vm;
-    private final RankController controller;                     // 可后置注入
+    private RankController controller;                     // 可后置注入
 
     /* ── Swing 组件 ─────────────────────── */
     private final JLabel title = new JLabel("Leaderboard", SwingConstants.CENTER);
@@ -25,6 +25,9 @@ public class RankView extends JPanel implements PropertyChangeListener {
         public boolean isCellEditable(int r, int c) { return false; }
     };
     private final JTable table = new JTable(tableModel);
+
+    /** 显示当前登录用户的名次 */
+    private final JLabel currentPosLabel = new JLabel("", SwingConstants.CENTER);
 
     /* ── 构造 ───────────────────────────── */
     public RankView(RankViewModel vm, RankController controller) {
@@ -39,13 +42,17 @@ public class RankView extends JPanel implements PropertyChangeListener {
         table.setFillsViewportHeight(true);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
+        /* 当前排名标签样式 */
+        currentPosLabel.setFont(currentPosLabel.getFont().deriveFont(Font.BOLD));
+        add(currentPosLabel, BorderLayout.SOUTH);
+
         JButton refresh = new JButton("Refresh");
         refresh.addActionListener(e -> {
             if (this.controller != null) {
                 this.controller.execute(vm.getState().getCurrentUser());   // ★ 统一用 refresh
             }
         });
-        add(refresh, BorderLayout.SOUTH);
+        add(refresh, BorderLayout.EAST);
     }
 
     /* ── ViewModel → View 同步 ───────────────────────── */
@@ -53,27 +60,36 @@ public class RankView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         // ① 只关心 state 事件
         if ("state".equals(evt.getPropertyName())) {
-
             // ② 拿到最新快照
             RankState s = (RankState) evt.getNewValue();
-
-            // ③ 确保在 Swing EDT 中更新 UI，避免线程问题
             SwingUtilities.invokeLater(() -> {
-
                 /* ===== 刷新排行榜表格 ===== */
                 tableModel.setRowCount(0);        // 清空旧行
                 s.getLeaderboard().forEach(e ->
                         tableModel.addRow(new Object[]{
                                 e.getRank(),
                                 e.getUsername(),
-                                e.getScore()   // ★ 直接使用 DTO 字段
+                                e.getScore()
                         })
                 );
 
-                /* ===== 更新标题栏 ===== */
+                /* ===== 更新标题 & 当前名次标签 ===== */
                 title.setText("Leaderboard — " + s.getCurrentUser());
+                currentPosLabel.setText("Your current position: " + s.getPosition());
+
+                // 高亮当前用户所在行
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    if (tableModel.getValueAt(i, 1).equals(s.getCurrentUser())) {
+                        table.setRowSelectionInterval(i, i);
+                        break;
+                    }
+                }
             });
         }
     }
 
+    /* 允许运行期注入 / 替换 Controller */
+    public void setController(RankController controller) {
+        this.controller = controller;
+    }
 }

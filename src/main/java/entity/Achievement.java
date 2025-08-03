@@ -49,10 +49,6 @@ public class Achievement {
         return iconUnicode;
     }
 
-    public LocalDate getDateUnlocked() {
-        return dateUnlocked;
-    }
-
     public boolean isUnlocked() {
         return dateUnlocked != null;
     }
@@ -66,34 +62,34 @@ public class Achievement {
         }
     }
 
-    /**
-     * Unlocks the achievement with a custom date (used in testing or backfill).
-     *
-     * @param date Date the achievement was unlocked
-     */
-    public void unlock(LocalDate date) {
-        if (this.dateUnlocked == null) {
-            this.dateUnlocked = date;
-        }
-    }
+//    /**
+//     * Unlocks the achievement with a custom date (used in testing or backfill).
+//     *
+//     * @param date Date the achievement was unlocked
+//     */
+//    public void unlock(LocalDate date) {
+//        if (this.dateUnlocked == null) {
+//            this.dateUnlocked = date;
+//        }
+//    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Achievement)) return false;
-        Achievement that = (Achievement) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return (isUnlocked() ? "✅" : "🔒") +
-                " " + name + " (" + id + ") — " +
-                (isUnlocked() ? "Unlocked on " + dateUnlocked : "Locked");
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Achievement)) return false;
+//        Achievement that = (Achievement) o;
+//        return Objects.equals(id, that.id);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id);
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return (isUnlocked() ? "✅" : "🔒") +
+//                " " + name + " (" + id + ") — " +
+//                (isUnlocked() ? "Unlocked on " + dateUnlocked : "Locked");
+//    }
 }

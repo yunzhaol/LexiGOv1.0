@@ -33,8 +33,15 @@ public class DefaultLeaderboardSelector implements LeaderboardSelector {
                 myPosition = rank;
             }
 
-            if (rank > limit && myPosition != -1) break;
+            if (rank > limit && myPosition != -1) {
+                break;
+            }
         }
-        return new LeaderboardStat(myPosition,top);
+
+        if (myPosition == -1) {
+            myPosition = sortedRank.size() + 1;
+        }
+
+        return new LeaderboardStat(myPosition, top);
     }
 }

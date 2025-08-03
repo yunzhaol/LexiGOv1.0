@@ -2,6 +2,7 @@ package use_case.signup;
 
 import data_access.JsonUserDataAccessObject;
 import entity.*;
+import entity.dto.CommonUserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,15 @@ public class SignupInteractorTest {
             manager.getFactory(UserType.TEST);
         });
         assertEquals("Unsupported UserType: TEST", exception.getMessage());
+    }
+
+    @Test
+    public void userDtoTest() {
+        factory = (CommonUserFactory) new UserFactoryManager().getFactory(UserType.COMMON);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            factory.create(new CommonUserDto(null, null));
+        });
+        assertEquals("name and password must be non-null", exception.getMessage());
     }
 
     /**
