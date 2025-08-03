@@ -15,4 +15,5 @@ public interface ViewHistoryUserDataAccessInterface {
      * @return list of learning records for the user
      */
     List<LearnRecord> get(String username);
+
 }

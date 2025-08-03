@@ -15,4 +15,5 @@ public interface ViewHistoryProcessorService {
      * @return processed list of ViewHistoryEntryData with session numbers and formatted dates
      */
     List<ViewHistoryEntryData> processRecords(List<LearnRecord> records);
+
 }

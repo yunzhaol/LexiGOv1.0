@@ -22,4 +22,5 @@ public class ViewHistoryDataAccessAdapter implements ViewHistoryUserDataAccessIn
     public List<LearnRecord> get(String username) {
         return userRecordDAO.get(username);
     }
+
 }

@@ -1,79 +1,73 @@
 package use_case.viewhistory;
 
+
 import entity.LearnRecord;
-import entity.ViewHistoryEntity;
 import use_case.gateway.UserRecordDataAccessInterface;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * ViewHistory Interactor - Clean and focused implementation.
+ * Delegates complex processing to DefaultViewHistoryProcessorService.
+ */
 public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
 
     private final UserRecordDataAccessInterface dataAccess;
     private final ViewHistoryOutputBoundary presenter;
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final ViewHistoryProcessorService processor;
 
+    /**
+     * Default constructor using standard processing.
+     */
     public ViewHistoryInteractor(UserRecordDataAccessInterface dataAccess,
                                  ViewHistoryOutputBoundary presenter) {
+        this(dataAccess, presenter, new DefaultViewHistoryProcessorService());
+    }
+
+    /**
+     * Constructor with injectable processor for testing/customization.
+     */
+    public ViewHistoryInteractor(UserRecordDataAccessInterface dataAccess,
+                                 ViewHistoryOutputBoundary presenter,
+                                 ViewHistoryProcessorService processor) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
+        this.processor = processor;
     }
 
     @Override
     public void execute(ViewHistoryInputData inputData) {
         String username = inputData.getUsername();
 
+        // Get records from data layer
         List<LearnRecord> records = dataAccess.get(username);
 
+        // Early return for empty results
         if (records.isEmpty()) {
             presenter.prepareFailView("No learning records found for user: " + username);
             return;
         }
 
-        List<ViewHistoryEntity> sortedEntries = records.stream()
-                .sorted(Comparator.comparing(LearnRecord::getEndTime))
-                .map(record -> new ViewHistoryEntity(
-                        record.getUsername(),
-                        record.getEndTime(),
-                        record.getLearnedWordIds(),
-                        0
-                ))
-                .collect(Collectors.toList());
+        // Delegate all complex processing to service
+        List<ViewHistoryEntryData> processedSessions = processor.processRecords(records);
 
-        List<ViewHistoryEntity> numberedEntries = new ArrayList<>();
-        for (int i = 0; i < sortedEntries.size(); i++) {
-            ViewHistoryEntity oldEntry = sortedEntries.get(i);
-            ViewHistoryEntity newEntry = new ViewHistoryEntity(
-                    oldEntry.getUsername(),
-                    oldEntry.getEndTime(),
-                    oldEntry.getLearnedWordIds(),
-                    i + 1
-            );
-            numberedEntries.add(newEntry);
-        }
+        // Calculate simple aggregates
+        int totalSessions = processedSessions.size();
+        int totalWords = calculateTotalWords(processedSessions);
 
-        List<ViewHistoryEntryData> sessionData = numberedEntries.stream()
-                .map(entry -> new ViewHistoryEntryData(
-                        entry.getSessionNumber(),
-                        entry.getEndTime().format(FORMATTER),
-                        entry.getWordsCount()
-                ))
-                .collect(Collectors.toList());
+        // Create and present result
+        ViewHistoryOutputData result = new ViewHistoryOutputData(
+                username, processedSessions, totalSessions, totalWords);
 
-        int totalSessions = sessionData.size();
-        int totalWords = sessionData.stream()
+        presenter.prepareSuccessView(result);
+    }
+
+    /**
+     * Simple helper method for calculating total words.
+     */
+    private int calculateTotalWords(List<ViewHistoryEntryData> sessions) {
+        return sessions.stream()
                 .mapToInt(ViewHistoryEntryData::getWordsCount)
                 .sum();
-
-        ViewHistoryOutputData outputData = new ViewHistoryOutputData(
-                username, sessionData, totalSessions, totalWords);
-
-        presenter.prepareSuccessView(outputData);
-
-
     }
 }
