@@ -1,10 +1,11 @@
 package interface_adapter.achievement;
 
-import interface_adapter.ViewManagerModel;
+import entity.Achievement;
 import use_case.achievement.AchievementOutputBoundary;
 import use_case.achievement.AchievementOutputData;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Presenter for the Achievement feature.
@@ -30,12 +31,16 @@ public class AchievementPresenter implements AchievementOutputBoundary {
     public void present(AchievementOutputData achievementOutputData) {
         AchievementState currentState = achievementViewModel.getState();
 
-        currentState.setUnlockedAchievements(achievementOutputData.getUnlockedAchievements());
+        List<String> messages = achievementOutputData.getUnlockedAchievements()
+                .stream()
+                .map(a -> a.getIconUnicode() + " " + a.getDescription())
+                .collect(Collectors.toList());
 
+        currentState.setUnlockedAchievements(messages);
         achievementViewModel.setState(currentState);
         achievementViewModel.firePropertyChanged();
+    }
 
 //        achievementViewManagerModel.setState(achievementViewModel.getViewName());  // "achievement"
 //        achievementViewManagerModel.firePropertyChanged();
-    }
 }
