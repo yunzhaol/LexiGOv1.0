@@ -24,6 +24,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
 
     // Constants for view identification
     public static final String VIEW_NAME = "logged in";
+    private static final String CARD_WELCOME = "Welcome";
     private static final String CARD_PROFILE       = "card_profile";
     private static final String CARD_CHECKIN       = "card_checkin";
     private static final String CARD_ACHIEVE       = "card_achieve";
@@ -47,6 +48,10 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
     private final Map<String, JToggleButton> navButtons = new HashMap<>();
     private final ButtonGroup navGroup = new ButtonGroup();
 
+    /* ---------- Username display ---------- */
+    /** Shows current logged‑in username at the top of the navigation pane. */
+    private final JLabel usernameDisplay = new JLabel();
+
     /**
      * Constructor: sets up UI, binds view model, and initializes default view.
      * @param vm the view model containing login state and observers
@@ -61,6 +66,11 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         // Left-side navigation buttons panel
         JPanel nav = new JPanel();
         nav.setLayout(new BoxLayout(nav, BoxLayout.Y_AXIS));
+        /* Display username */
+        usernameDisplay.setAlignmentX(Component.CENTER_ALIGNMENT);
+        usernameDisplay.setFont(usernameDisplay.getFont().deriveFont(Font.BOLD));
+        usernameDisplay.setBorder(BorderFactory.createEmptyBorder(0,0,12,0));
+        nav.add(usernameDisplay);
 
         addToggle(nav, "Profile", CARD_PROFILE, () -> {
             if (profileController != null) {
@@ -107,12 +117,10 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         add(wrapper, BorderLayout.WEST);
 
         // Default content panel (profile view)
-        contentPanel.add(new ProfilePanel(), CARD_PROFILE);
+        contentPanel.add(new WelcomePanel(), CARD_WELCOME);
         add(contentPanel, BorderLayout.CENTER);
 
-        // Select and show profile view by default
-        navButtons.get(CARD_PROFILE).setSelected(true);
-        cards.show(contentPanel, CARD_PROFILE);
+        cards.show(contentPanel, CARD_WELCOME);
     }
 
     /**
@@ -146,6 +154,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         if ("state".equals(evt.getPropertyName())) {
             LoggedInState s = (LoggedInState) evt.getNewValue();
             // TODO: propagate new state (e.g., username) to subviews as needed
+            usernameDisplay.setText("User: " + s.getUsername());
         }
     }
 
@@ -208,10 +217,13 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
     public String getViewName() { return VIEW_NAME; }
 
 
-    /**
-     * Placeholder profile panel shown by default; can be replaced by real ProfileView.
-     */
-    private static class ProfilePanel extends JPanel {
-        ProfilePanel() { add(new JLabel("Profile Page")); }
+    /** Placeholder profile panel shown by default; can be replaced by real ProfileView. */
+    private static class WelcomePanel extends JPanel {
+        WelcomePanel() {
+            setLayout(new BorderLayout());
+            final JLabel lbl = new JLabel("Welcome!!!", SwingConstants.CENTER);
+            lbl.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 24));
+            add(lbl, BorderLayout.CENTER);
+        }
     }
 }
