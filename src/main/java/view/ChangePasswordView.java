@@ -54,19 +54,21 @@ public class ChangePasswordView extends JPanel
         JLabel title = new JLabel("Change Password", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(Box.createVerticalStrut(43));
         add(title);
 
         /* Current user row */
-        JPanel userRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel userRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         userRow.add(new JLabel("Current User: "));
         userRow.add(currentUserLbl);
+        add(Box.createVerticalStrut(20));
         add(userRow);
 
         /* New password row */
         add(makeRow("New Password", newPwFld, newPwErrLbl));
 
         /* Submit button */
-        JPanel btnRow = new JPanel();
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         btnRow.add(submitBtn);
         add(btnRow);
 
@@ -77,7 +79,7 @@ public class ChangePasswordView extends JPanel
     }
 
     private JPanel makeRow(String label, JComponent field, JLabel errorLabel) {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p.add(new JLabel(label + ":"));
         p.add(field);
         if (errorLabel != null) {
@@ -127,6 +129,17 @@ public class ChangePasswordView extends JPanel
             } else {
                 controller.execute(user, newPwd , null);
             }
+
+            String err = st.getChangeError();
+            if (err != null && !err.isBlank()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        err,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
         }
     }
 
@@ -141,7 +154,7 @@ public class ChangePasswordView extends JPanel
     private void syncFromState(ChangePwState s) {
         currentUserLbl.setText(s.getUsername());
         newPwFld.setText(s.getPassword());
-        newPwErrLbl.setText(s.getChangeError());
+        // newPwErrLbl.setText(s.getChangeError());
         this.needSecurityAnswer = s.isVerification();
     }
 

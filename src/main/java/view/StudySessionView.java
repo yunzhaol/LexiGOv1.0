@@ -7,6 +7,7 @@ import interface_adapter.finish.FinishController;
 import interface_adapter.studysession.word_detail.WordDetailController;
 
 import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -35,7 +36,11 @@ public class StudySessionView extends JPanel implements PropertyChangeListener {
         this.viewModel = vm;
         vm.addPropertyChangeListener(this);
 
+//        this.setAlignmentX(CENTER_ALIGNMENT);
+
         wordLabel.setFont(wordLabel.getFont().deriveFont(24f));
+        wordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        progressLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel nav = new JPanel();
         nav.add(prev);
@@ -43,11 +48,14 @@ public class StudySessionView extends JPanel implements PropertyChangeListener {
         nav.add(flip);
         nav.add(finish);
 
+        nav.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(Box.createVerticalStrut(20));
+        add(Box.createVerticalStrut(70));
         add(wordLabel);
-        add(progressLabel);
         add(Box.createVerticalStrut(10));
+        add(progressLabel);
+        add(Box.createVerticalStrut(39));
         add(nav);
 
         prev.addActionListener(e -> navController.handlePrevRequest(vm.getState().getPagenumber(),
