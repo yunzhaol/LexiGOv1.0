@@ -41,17 +41,17 @@ public class AchievementInteractor implements AchievementInputBoundary {
         }
         if (totalLearnedTimes >= 1) {
             newlyUnlocked.add(new Achievement(
-                    "A1", "1 Time Learned", "You have learned 1 time!", "1⃣️"
+                    "A1", "1 Time Learned", "You have learned 1 time!", "\uD83D\uDCDA"
             ));
         }
         if (totalLearnedTimes >= 2) {
             newlyUnlocked.add(new Achievement(
-                    "A2", "2 Times Learned", "You have learned 2 times!", "2⃣️"
+                    "A2", "2 Times Learned", "You have learned 2 times!", "\uD83E\uDDE0"
             ));
         }
         if (totalLearnedTimes >= 3) {
             newlyUnlocked.add(new Achievement(
-                    "A3", "3 Times Learned", "You have learned 3 times!", "3⃣️"
+                    "A3", "3 Times Learned", "You have learned 3 times!", "\uD83C\uDFC6"
             ));
         }
 

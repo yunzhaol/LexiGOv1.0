@@ -10,6 +10,8 @@ import javax.swing.WindowConstants;
 import data_access.*;
 import data_access.JsonUserProfileDAO;
 import entity.*;
+import entity.dto.CommonUserDto;
+import entity.dto.SecurityUserDto;
 import infrastructure.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.achievement.AchievementController;
@@ -115,7 +117,8 @@ public class AppBuilder {
     private final WordDeckFactory wordDeckFactory = new CommonWordDeckFactory();
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();
-    private final DefaultUserFactory userFactory = new DefaultUserFactory();
+//    private final DefaultUserFactory userFactory = new DefaultUserFactory();
+    private final UserFactoryManager userFactoryManager = new UserFactoryManager();
     private final CommonCardFactory commonCardFactory = new CommonCardFactory();
 
 
@@ -219,7 +222,9 @@ public class AppBuilder {
         final ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         changePasswordView = new ChangePasswordView(changeViewModel);
         final MakePasswordChangeOutputBoundary  presenter = new MakePasswordChangePresenter(changeViewModel);
-        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject, userFactory);
+        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject,
+                (UserFactory<CommonUserDto>) userFactoryManager.getFactory(UserType.COMMON),
+                (UserFactory<SecurityUserDto>) userFactoryManager.getFactory(UserType.SECURITY));
         final MakePasswordChangeController controller = new MakePasswordChangeController(interactor);
         changePasswordView.setController(controller);
 
@@ -319,9 +324,9 @@ public class AppBuilder {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
-                userDataAccessObject, signupOutputBoundary, userFactory);
+                userDataAccessObject, signupOutputBoundary, (UserFactory<CommonUserDto>) userFactoryManager.getFactory(UserType.COMMON));
         final SignupSecurityInputBoundary userSecuritySignupInteractor = new SignupSecurityInteractor(
-                userDataAccessObject, signupOutputBoundary, userFactory);
+                userDataAccessObject, signupOutputBoundary, (UserFactory<SecurityUserDto>) userFactoryManager.getFactory(UserType.SECURITY));
 
         final SignupController controller = new SignupController(userSignupInteractor, userSecuritySignupInteractor);
         signupView.setSignupController(controller);
@@ -375,7 +380,7 @@ public class AppBuilder {
      * @return the application
      */
     public JFrame build() {
-        final JFrame application = new JFrame("Login Example");
+        final JFrame application = new JFrame("LexiGo App");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
