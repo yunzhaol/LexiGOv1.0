@@ -1,6 +1,7 @@
 package use_case.achievement;
 
 import data_access.JsonUserRecordDataAccessObject;
+import entity.Achievement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class AchievementInteractorTest {
             @Override
             public void present(AchievementOutputData responseModel) {
                 assertNotNull(responseModel);
-                assertEquals(responseModel.getUnlockedAchievements().size(), 6);
+                assertEquals(7, responseModel.getUnlockedAchievements().size());
             }
         };
 
@@ -43,9 +44,14 @@ class AchievementInteractorTest {
             @Override
             public void present(AchievementOutputData responseModel) {
                 assertNotNull(responseModel);
-                assertEquals(responseModel.getUnlockedAchievements().size(), 2);
-                assertEquals(responseModel.getUnlockedAchievements().get(0), "You have learned 1 time");
-                assertEquals(responseModel.getUnlockedAchievements().get(1), "First Word I Learned");
+                assertEquals(2, responseModel.getUnlockedAchievements().size());
+                Achievement achievement = responseModel.getUnlockedAchievements().get(0);
+                achievement.unlock();
+                assertEquals(true, achievement.isUnlocked());
+                assertEquals("1 Time Learned", achievement.getName());
+                assertEquals("You have learned 1 time!", achievement.getDescription());
+                assertEquals(false, achievement.getIconUnicode().isBlank());
+                assertEquals("A1", achievement.getId());
             }
         };
 

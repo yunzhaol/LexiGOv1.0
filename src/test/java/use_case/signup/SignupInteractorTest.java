@@ -1,8 +1,8 @@
 package use_case.signup;
 
 import data_access.JsonUserDataAccessObject;
-import entity.DefaultUserFactory;
-import entity.UserFactory;
+import entity.*;
+import entity.dto.CommonUserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for {@link SignupInteractor}.
@@ -28,7 +29,7 @@ public class SignupInteractorTest {
             Paths.get("src/test/resources/data/usersignuptest.json");
 
     private JsonUserDataAccessObject userDataAccessObject;
-    private UserFactory factory;
+    private CommonUserFactory factory;
 
     /**
      * Initialize the JSON DAO and the user factory before each test.
@@ -41,7 +42,7 @@ public class SignupInteractorTest {
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize DAO", e);
         }
-        factory = new DefaultUserFactory();
+        factory = (CommonUserFactory) new UserFactoryManager().getFactory(UserType.COMMON);
     }
 
     /**
@@ -52,6 +53,24 @@ public class SignupInteractorTest {
         if (Files.exists(TEST_DATA_PATH)) {
             Files.write(TEST_DATA_PATH, new byte[0]);
         }
+    }
+
+    @Test
+    public void signupTest_shouldThrowExceptionForUnsupportedUserType() {
+        UserFactoryManager manager = new UserFactoryManager();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.getFactory(UserType.TEST);
+        });
+        assertEquals("Unsupported UserType: TEST", exception.getMessage());
+    }
+
+    @Test
+    public void userDtoTest() {
+        factory = (CommonUserFactory) new UserFactoryManager().getFactory(UserType.COMMON);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            factory.create(new CommonUserDto(null, null));
+        });
+        assertEquals("name and password must be non-null", exception.getMessage());
     }
 
     /**

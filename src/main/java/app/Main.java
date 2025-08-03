@@ -56,7 +56,7 @@ public class Main {
             }
 
             application.pack();
-            application.setSize(469,290);
+            application.setSize(534,330);
             // application.setSize(437, 270);
             application.setLocationRelativeTo(null);
             application.setVisible(true);

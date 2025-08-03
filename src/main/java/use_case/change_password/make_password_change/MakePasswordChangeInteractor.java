@@ -1,20 +1,26 @@
 package use_case.change_password.make_password_change;
 
+import entity.SecurityUserFactory;
 import entity.User;
 import entity.UserFactory;
+import entity.dto.CommonUserDto;
+import entity.dto.SecurityUserDto;
 
 public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoundary {
 
     private final MakePasswordChangeOutputBoundary presenter;
     private final UserPasswordDataAccessInterface userDAO;
-    private final UserFactory userFactory;
+    private final UserFactory<CommonUserDto> commonUserFactory;
+    private final UserFactory<SecurityUserDto> securityUserFactory;
 
     public MakePasswordChangeInteractor(MakePasswordChangeOutputBoundary presenter,
                                         UserPasswordDataAccessInterface userDAO,
-                                        UserFactory userFactory) {
+                                        UserFactory<CommonUserDto> commonUserFactory,
+                                        UserFactory<SecurityUserDto> securityUserFactory) {
         this.presenter = presenter;
         this.userDAO = userDAO;
-        this.userFactory = userFactory;
+        this.commonUserFactory = commonUserFactory;
+        this.securityUserFactory = securityUserFactory;
     }
 
     @Override
@@ -26,7 +32,11 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
                         // new output
                 return;
             }
-            User newuser = userFactory.create(in.getUsername(), in.getNewPassword());
+            CommonUserDto commonDto = CommonUserDto.builder()
+                    .name(in.getUsername())
+                    .password(in.getNewPassword())
+                    .build();
+            User newuser = commonUserFactory.create(commonDto);
             userDAO.update(in.getUsername(), newuser);
             presenter.presentSuccess();
             return;
@@ -40,7 +50,13 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
                 // new output
                 return;
             }
-            User newuser = userFactory.create(in.getUsername(), in.getNewPassword(), userDAO.getQuestion(in.getUsername()), in.getSecurityAnswer());
+            SecurityUserDto securityDto = SecurityUserDto.builder()
+                    .name(in.getUsername())
+                    .password(in.getNewPassword())
+                    .question(userDAO.getQuestion(in.getUsername()))
+                    .answer(answer)
+                    .build();
+            User newuser = securityUserFactory.create(securityDto);
             userDAO.update(in.getUsername(), newuser);
             presenter.presentSuccess();
         }

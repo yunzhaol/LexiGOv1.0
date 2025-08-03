@@ -1,13 +1,12 @@
 package use_case.signup;
 
 import data_access.JsonUserDataAccessObject;
-import entity.DefaultUserFactory;
 import entity.UserFactory;
+import entity.UserFactoryManager;
+import entity.UserType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import use_case.signup.common.SignupInputData;
-import use_case.signup.common.SignupInteractor;
 import use_case.signup.security.SignupSecurityInputData;
 import use_case.signup.security.SignupSecurityInteractor;
 
@@ -43,7 +42,7 @@ public class SignupSecurityInteractorTest {
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize DAO", e);
         }
-        factory = new DefaultUserFactory();
+        factory = new UserFactoryManager().getFactory(UserType.SECURITY);
     }
 
     /**
