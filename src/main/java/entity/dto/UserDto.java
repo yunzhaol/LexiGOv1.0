@@ -20,4 +20,6 @@ public abstract class UserDto {
     public String getPassword() {
         return password;
     }
+
+
 }

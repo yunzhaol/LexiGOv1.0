@@ -10,57 +10,45 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-/**
- * 仅显示翻译和例句的单词详情视图（不再展示原单词本身）。
- */
 public class WordDetailView extends JPanel implements PropertyChangeListener {
 
-    /* --- 常量 --- */
+
     private static final String VIEW_NAME = "word detail";
 
-    /* --- MVC 成员 --- */
     private final WordDetailViewModel viewModel;
     private WordDetailController     controller;
 
-    /* --- UI 组件 --- */
     private final JLabel transLabel   = new JLabel("Translation", SwingConstants.CENTER);
     private final JLabel exampleLabel = new JLabel("Example",     SwingConstants.CENTER);
     private final JButton flipBack    = new JButton("Flip back");
 
-    /* ------------------------------------------------------------ */
 
     public WordDetailView(WordDetailViewModel vm) {
         this.viewModel = vm;
         vm.addPropertyChangeListener(this);
 
-        /* ---------- 字体 ---------- */
         transLabel.setFont(transLabel.getFont().deriveFont(Font.PLAIN, 18f));
         exampleLabel.setFont(exampleLabel.getFont().deriveFont(Font.ITALIC, 16f));
 
-        /* ---------- 布局 ---------- */
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         transLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         exampleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(Box.createVerticalStrut(45));  // 上边距
+        add(Box.createVerticalStrut(45));
         add(transLabel);
         add(Box.createVerticalStrut(25));
         add(exampleLabel);
         add(Box.createVerticalStrut(20));
 
 
-
-        // 按钮区域
         JPanel nav = new JPanel();
         nav.add(flipBack);
         add(nav);
 
-        /* ---------- 事件 ---------- */
         flipBack.addActionListener(e -> {
             if (controller != null) controller.switchToStudySessionView();
         });
     }
 
-    /* ================= PropertyChangeListener ================= */
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -72,7 +60,6 @@ public class WordDetailView extends JPanel implements PropertyChangeListener {
         }
     }
 
-    /* ================= 公共方法 ================= */
 
     public String getViewName() { return VIEW_NAME; }
 

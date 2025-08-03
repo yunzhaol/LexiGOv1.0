@@ -14,10 +14,10 @@ import java.util.List;
 
 public class ViewHistoryView extends JPanel implements PropertyChangeListener {
 
-    /* ── 依赖 ───────────────────────────── */
+
     private final ViewHistoryViewModel vm;
 
-    /* ── Swing 组件 ─────────────────────── */
+
     private final JLabel title = new JLabel(ViewHistoryViewModel.TITLE_LABEL, SwingConstants.CENTER);
 
     private final DefaultTableModel tableModel = new DefaultTableModel(
@@ -31,7 +31,7 @@ public class ViewHistoryView extends JPanel implements PropertyChangeListener {
 
     private final JLabel summaryLabel = new JLabel();
 
-    /* ── 构造 ───────────────────────────── */
+
     public ViewHistoryView(ViewHistoryViewModel vm) {
         this.vm = vm;
         this.vm.addPropertyChangeListener(this);
@@ -49,11 +49,11 @@ public class ViewHistoryView extends JPanel implements PropertyChangeListener {
         south.add(summaryLabel, BorderLayout.WEST);
         add(south, BorderLayout.SOUTH);
 
-        // 初始化 UI
+
         updateFromState(vm.getState());
     }
 
-    /* ── ViewModel → View 同步 ───────────────────────── */
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
@@ -63,10 +63,10 @@ public class ViewHistoryView extends JPanel implements PropertyChangeListener {
     }
 
     private void updateFromState(ViewHistoryState s) {
-        // 刷新标题
+
         title.setText(ViewHistoryViewModel.TITLE_LABEL + " — " + s.getCurrentUser());
 
-        // 刷新表格
+
         tableModel.setRowCount(0);
         List<ViewHistoryEntryData> sessions = s.getSessions();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -75,23 +75,23 @@ public class ViewHistoryView extends JPanel implements PropertyChangeListener {
             String dateStr;
             int words;
             try {
-                //TODO 111
+
                 dateStr = entry.getEndTime();
                 words = entry.getWordsCount();
             } catch (Exception e) {
-                // 若 DTO 定义不同，则回退使用 toString()
+
                 dateStr = entry.toString();
                 words = 0;
             }
             tableModel.addRow(new Object[]{i + 1, dateStr, words});
         }
 
-        // 刷新汇总
+
         summaryLabel.setText(String.format("%s %d    %s %d",
                 ViewHistoryViewModel.SESSIONS_LABEL, s.getTotalSessions(),
                 ViewHistoryViewModel.WORDS_LABEL, s.getTotalWords()));
 
-        // 显示错误
+
         if (s.getErrorMessage() != null) {
             JOptionPane.showMessageDialog(this, s.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

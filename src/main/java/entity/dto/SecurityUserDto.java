@@ -1,5 +1,7 @@
 package entity.dto;
 
+import java.util.Objects;
+
 public class SecurityUserDto extends UserDto {
     private final String securityQuestion;
     private final String securityAnswer;
@@ -13,6 +15,22 @@ public class SecurityUserDto extends UserDto {
         super(name, password);
         this.securityQuestion = securityQuestion;
         this.securityAnswer   = securityAnswer;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SecurityUserDto)) return false;
+        SecurityUserDto that = (SecurityUserDto) o;
+        return getName().equals(that.getName()) &&
+                getPassword().equals(that.getPassword()) &&
+                getSecurityQuestion().equals(that.getSecurityQuestion()) &&
+                getSecurityAnswer().equals(that.getSecurityAnswer());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getPassword(), getSecurityQuestion(), getSecurityAnswer());
     }
 
     public String getSecurityQuestion() {

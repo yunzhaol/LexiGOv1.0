@@ -26,12 +26,17 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
     @Override
     public void make_password_change(MakePasswordChangeInputData in) {
         User user = userDAO.get(in.getUsername());
-        if (in.getSecurityAnswer() == null) {
-            if (in.getNewPassword() == null) {
-                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
-                        // new output
-                return;
-            }
+        if (in.getNewPassword().isBlank()) {
+            presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
+            // new output
+            return;
+        }
+        if (in.getSecurityAnswer() == null ||  in.getSecurityAnswer().isBlank()) {
+//            if (in.getNewPassword() == null) {
+//                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
+//                        // new output
+//                return;
+//            }
             CommonUserDto commonDto = CommonUserDto.builder()
                     .name(in.getUsername())
                     .password(in.getNewPassword())
@@ -45,11 +50,11 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
         String answer = userDAO.getAnswer(in.getUsername());
 
         if (answer.equals(in.getSecurityAnswer())) {
-            if (in.getNewPassword() == null) {
-                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
-                // new output
-                return;
-            }
+//            if (in.getNewPassword().isBlank()) {
+//                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
+//                // new output
+//                return;
+//            }
             SecurityUserDto securityDto = SecurityUserDto.builder()
                     .name(in.getUsername())
                     .password(in.getNewPassword())

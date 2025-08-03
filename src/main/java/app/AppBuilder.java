@@ -236,7 +236,8 @@ public class AppBuilder {
                 new ViewHistoryPresenter(viewHistoryViewModel);
 
         final ViewHistoryInputBoundary viewHistoryInteractor =
-                new ViewHistoryInteractor(userRecordDataAccessObject, viewHistoryPresenter);
+                new ViewHistoryInteractor(userRecordDataAccessObject, viewHistoryPresenter,
+                        new DefaultViewHistoryProcessorService());
 
         final ViewHistoryController viewHistoryController =
                 new ViewHistoryController(viewHistoryInteractor);

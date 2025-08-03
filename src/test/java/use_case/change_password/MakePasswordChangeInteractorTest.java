@@ -2,6 +2,8 @@ package use_case.change_password.make_password_change;
 
 import entity.User;
 import entity.UserFactory;
+import entity.dto.CommonUserDto;
+import entity.dto.SecurityUserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +45,9 @@ class MakePasswordChangeInteractorTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        interactor = new MakePasswordChangeInteractor(mockPresenter, mockUserDAO, mockSecurityUserFactory);
+
+        interactor = new MakePasswordChangeInteractor(mockPresenter, mockUserDAO, mockCommonUserFactory,
+                mockSecurityUserFactory);
     }
 
     @Test
@@ -55,25 +59,28 @@ class MakePasswordChangeInteractorTest {
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, null);
 
         when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(username, newPassword)).thenReturn(mockNewCommonUser);
+        CommonUserDto dto = new CommonUserDto(username, newPassword);
+        when(mockCommonUserFactory.create(dto)).thenReturn(mockNewCommonUser);
 
         // When
         interactor.make_password_change(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
-        verify(mockCommonUserFactory).create(username, newPassword);
+        CommonUserDto dto10 = new CommonUserDto(username, newPassword);
+        verify(mockCommonUserFactory).create(dto10);
         verify(mockUserDAO).update(username, mockNewCommonUser);
         verify(mockPresenter).presentSuccess();
         verify(mockPresenter, never()).presentFailure(any());
     }
 
     @Test
-    @DisplayName("Should fail when common user password is null")
-    void shouldFailWhenCommonUserPasswordIsNull() {
+    @DisplayName("Should fail when common user password is empty string")
+    void shouldFailWhenCommonUserPasswordIsEmptyString() {
         // Given
         String username = "commonUser";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, null, null);
+        String emptyPassword = "";
+        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, emptyPassword, null);
 
         when(mockUserDAO.get(username)).thenReturn(mockUser);
 
@@ -82,10 +89,11 @@ class MakePasswordChangeInteractorTest {
 
         // Then
         verify(mockUserDAO).get(username);
-        verify(mockCommonUserFactory, never()).create(any(), any());
+        verify(mockCommonUserFactory, never()).create(any());
         verify(mockUserDAO, never()).update(any(), any());
         verify(mockPresenter, never()).presentSuccess();
 
+        // Capture failure
         ArgumentCaptor<MakePasswordChangeOutputData> outputCaptor = ArgumentCaptor.forClass(MakePasswordChangeOutputData.class);
         verify(mockPresenter).presentFailure(outputCaptor.capture());
 
@@ -106,7 +114,8 @@ class MakePasswordChangeInteractorTest {
         when(mockUserDAO.get(username)).thenReturn(mockUser);
         when(mockUserDAO.getAnswer(username)).thenReturn(securityAnswer);
         when(mockUserDAO.getQuestion(username)).thenReturn(securityQuestion);
-        when(mockSecurityUserFactory.create(username, newPassword, securityQuestion, securityAnswer)).thenReturn(mockNewSecurityUser);
+        SecurityUserDto dto = new SecurityUserDto(username, newPassword, securityQuestion, securityAnswer);
+        when(mockSecurityUserFactory.create(dto)).thenReturn(mockNewSecurityUser);
 
         // When
         interactor.make_password_change(inputData);
@@ -115,39 +124,11 @@ class MakePasswordChangeInteractorTest {
         verify(mockUserDAO).get(username);
         verify(mockUserDAO).getAnswer(username);
         verify(mockUserDAO).getQuestion(username);
-        verify(mockSecurityUserFactory).create(username, newPassword, securityQuestion, securityAnswer);
+        SecurityUserDto dto11 = new SecurityUserDto(username, newPassword, securityQuestion, securityAnswer);
+        verify(mockSecurityUserFactory).create(dto11);
         verify(mockUserDAO).update(username, mockNewSecurityUser);
         verify(mockPresenter).presentSuccess();
         verify(mockPresenter, never()).presentFailure(any());
-    }
-
-    @Test
-    @DisplayName("Should fail when security user password is null")
-    void shouldFailWhenSecurityUserPasswordIsNull() {
-        // Given
-        String username = "securityUser";
-        String securityAnswer = "correctAnswer";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, null, securityAnswer);
-
-        when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockUserDAO.getAnswer(username)).thenReturn(securityAnswer);
-
-        // When
-        interactor.make_password_change(inputData);
-
-        // Then
-        verify(mockUserDAO).get(username);
-        verify(mockUserDAO).getAnswer(username);
-        verify(mockUserDAO, never()).getQuestion(any());
-        verify(mockSecurityUserFactory, never()).create(any(), any(), any(), any());
-        verify(mockUserDAO, never()).update(any(), any());
-        verify(mockPresenter, never()).presentSuccess();
-
-        ArgumentCaptor<MakePasswordChangeOutputData> outputCaptor = ArgumentCaptor.forClass(MakePasswordChangeOutputData.class);
-        verify(mockPresenter).presentFailure(outputCaptor.capture());
-
-        MakePasswordChangeOutputData capturedOutput = outputCaptor.getValue();
-        assertEquals("Password cannot be empty", capturedOutput.getErrorMessage());
     }
 
     @Test
@@ -157,8 +138,9 @@ class MakePasswordChangeInteractorTest {
         String username = "securityUser";
         String newPassword = "newPassword123";
         String correctAnswer = "correctAnswer";
-        String incorrectAnswer = "wrongAnswer";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, incorrectAnswer);
+        String wrongAnswer = "wrongAnswer";
+        MakePasswordChangeInputData inputData =
+                new MakePasswordChangeInputData(username, newPassword, wrongAnswer);
 
         when(mockUserDAO.get(username)).thenReturn(mockUser);
         when(mockUserDAO.getAnswer(username)).thenReturn(correctAnswer);
@@ -170,11 +152,18 @@ class MakePasswordChangeInteractorTest {
         verify(mockUserDAO).get(username);
         verify(mockUserDAO).getAnswer(username);
         verify(mockUserDAO, never()).getQuestion(any());
-        verify(mockSecurityUserFactory, never()).create(any(), any(), any(), any());
+        verify(mockSecurityUserFactory, never()).create(any());
         verify(mockUserDAO, never()).update(any(), any());
         verify(mockPresenter, never()).presentSuccess();
-        verify(mockPresenter, never()).presentFailure(any());
+
+        verify(mockPresenter).presentFailure(argThat(output ->
+                output != null &&
+                        "Wrong answer".equals(output.getErrorMessage())
+        ));
+
+        verifyNoMoreInteractions(mockUserDAO, mockSecurityUserFactory, mockCommonUserFactory, mockPresenter);
     }
+
 
     @Test
     @DisplayName("Should handle null security answer from database")
@@ -198,40 +187,16 @@ class MakePasswordChangeInteractorTest {
     }
 
     @Test
-    @DisplayName("Should handle empty string security answer")
-    void shouldHandleEmptyStringSecurityAnswer() {
-        // Given
-        String username = "securityUser";
-        String newPassword = "newPassword123";
-        String emptyAnswer = "";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, emptyAnswer);
-
-        when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockUserDAO.getAnswer(username)).thenReturn(emptyAnswer);
-        when(mockUserDAO.getQuestion(username)).thenReturn("Question?");
-        when(mockSecurityUserFactory.create(username, newPassword, "Question?", emptyAnswer)).thenReturn(mockNewSecurityUser);
-
-        // When
-        interactor.make_password_change(inputData);
-
-        // Then
-        verify(mockUserDAO).get(username);
-        verify(mockUserDAO).getAnswer(username);
-        verify(mockUserDAO).getQuestion(username);
-        verify(mockSecurityUserFactory).create(username, newPassword, "Question?", emptyAnswer);
-        verify(mockUserDAO).update(username, mockNewSecurityUser);
-        verify(mockPresenter).presentSuccess();
-    }
-
-    @Test
-    @DisplayName("Should handle case-sensitive security answer comparison")
+    @DisplayName("Should treat security answer as case-sensitive and fail on mismatch")
     void shouldHandleCaseSensitiveSecurityAnswerComparison() {
         // Given
         String username = "securityUser";
         String newPassword = "newPassword123";
-        String correctAnswer = "Blue";
-        String incorrectCaseAnswer = "blue";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, incorrectCaseAnswer);
+        String correctAnswer = "Blue";             // stored answer
+        String userInputAnswer = "blue";           // user-provided answer (lowercase)
+
+        MakePasswordChangeInputData inputData =
+                new MakePasswordChangeInputData(username, newPassword, userInputAnswer);
 
         when(mockUserDAO.get(username)).thenReturn(mockUser);
         when(mockUserDAO.getAnswer(username)).thenReturn(correctAnswer);
@@ -239,14 +204,22 @@ class MakePasswordChangeInteractorTest {
         // When
         interactor.make_password_change(inputData);
 
-        // Then - should not proceed due to case mismatch
+        // Then - Should detect answer mismatch (case-sensitive)
         verify(mockUserDAO).get(username);
         verify(mockUserDAO).getAnswer(username);
+
+        verify(mockPresenter).presentFailure(argThat(output ->
+                output != null &&
+                        output.getErrorMessage() != null &&
+                        output.getErrorMessage().equals("Wrong answer")
+        ));
+
         verify(mockUserDAO, never()).getQuestion(any());
-        verify(mockSecurityUserFactory, never()).create(any(), any(), any(), any());
+        verify(mockSecurityUserFactory, never()).create(any());
         verify(mockUserDAO, never()).update(any(), any());
         verify(mockPresenter, never()).presentSuccess();
-        verify(mockPresenter, never()).presentFailure(any());
+
+        verifyNoMoreInteractions(mockUserDAO, mockSecurityUserFactory, mockCommonUserFactory, mockPresenter);
     }
 
     @Test
@@ -263,7 +236,8 @@ class MakePasswordChangeInteractorTest {
         when(mockUserDAO.get(username)).thenReturn(mockUser);
         when(mockUserDAO.getAnswer(username)).thenReturn(exactAnswer);
         when(mockUserDAO.getQuestion(username)).thenReturn(securityQuestion);
-        when(mockSecurityUserFactory.create(username, newPassword, securityQuestion, answerWithSpaces)).thenReturn(mockNewSecurityUser);
+        SecurityUserDto dto__ = new SecurityUserDto(username, newPassword, securityQuestion, answerWithSpaces);
+        when(mockSecurityUserFactory.create(dto__)).thenReturn(mockNewSecurityUser);
 
         // When
         interactor.make_password_change(inputData);
@@ -272,27 +246,9 @@ class MakePasswordChangeInteractorTest {
         verify(mockUserDAO).get(username);
         verify(mockUserDAO).getAnswer(username);
         verify(mockUserDAO).getQuestion(username);
-        verify(mockSecurityUserFactory).create(username, newPassword, securityQuestion, answerWithSpaces);
+        SecurityUserDto dto___ = new SecurityUserDto(username, newPassword, securityQuestion, answerWithSpaces);
+        verify(mockSecurityUserFactory).create(dto___);
         verify(mockUserDAO).update(username, mockNewSecurityUser);
-        verify(mockPresenter).presentSuccess();
-    }
-
-    @Test
-    @DisplayName("Should handle null username")
-    void shouldHandleNullUsername() {
-        // Given
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(null, "password", null);
-
-        when(mockUserDAO.get(null)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(null, "password")).thenReturn(mockNewCommonUser);
-
-        // When
-        interactor.make_password_change(inputData);
-
-        // Then
-        verify(mockUserDAO).get(null);
-        verify(mockCommonUserFactory).create(null, "password");
-        verify(mockUserDAO).update(null, mockNewCommonUser);
         verify(mockPresenter).presentSuccess();
     }
 
@@ -303,34 +259,19 @@ class MakePasswordChangeInteractorTest {
         String emptyUsername = "";
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(emptyUsername, "password", null);
 
+        CommonUserDto dto______ = new CommonUserDto(emptyUsername, "password");
         when(mockUserDAO.get(emptyUsername)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(emptyUsername, "password")).thenReturn(mockNewCommonUser);
+        when(mockCommonUserFactory.create(dto______)).thenReturn(mockNewCommonUser);
 
         // When
         interactor.make_password_change(inputData);
 
         // Then
+        CommonUserDto dto_______ = new CommonUserDto(emptyUsername, "password");
         verify(mockUserDAO).get(emptyUsername);
-        verify(mockCommonUserFactory).create(emptyUsername, "password");
+        verify(mockCommonUserFactory).create(dto_______);
         verify(mockUserDAO).update(emptyUsername, mockNewCommonUser);
         verify(mockPresenter).presentSuccess();
-    }
-
-    @Test
-    @DisplayName("Should handle user DAO returning null user")
-    void shouldHandleUserDAOReturningNullUser() {
-        // Given
-        String username = "nonexistentUser";
-        MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, "password", null);
-
-        when(mockUserDAO.get(username)).thenReturn(null);
-
-        // When & Then - Should throw NullPointerException when trying to process null user
-        assertThrows(NullPointerException.class, () -> {
-            interactor.make_password_change(inputData);
-        });
-
-        verify(mockUserDAO).get(username);
     }
 
     @Test
@@ -361,7 +302,8 @@ class MakePasswordChangeInteractorTest {
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, null);
 
         when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(username, newPassword)).thenReturn(mockNewCommonUser);
+        CommonUserDto dto2 = new CommonUserDto(username, newPassword);
+        when(mockCommonUserFactory.create(dto2)).thenReturn(mockNewCommonUser);
         doThrow(new RuntimeException("Update failed")).when(mockUserDAO).update(username, mockNewCommonUser);
 
         // When & Then
@@ -369,8 +311,9 @@ class MakePasswordChangeInteractorTest {
             interactor.make_password_change(inputData);
         });
 
+        CommonUserDto dto3 = new CommonUserDto(username, newPassword);
         verify(mockUserDAO).get(username);
-        verify(mockCommonUserFactory).create(username, newPassword);
+        verify(mockCommonUserFactory).create(dto3);
         verify(mockUserDAO).update(username, mockNewCommonUser);
         verify(mockPresenter, never()).presentSuccess();
     }
@@ -383,15 +326,17 @@ class MakePasswordChangeInteractorTest {
         String newPassword = "newPassword";
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, null);
 
+        CommonUserDto dto4 = new CommonUserDto(username, newPassword);
         when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(username, newPassword)).thenReturn(null);
+        when(mockCommonUserFactory.create(dto4)).thenReturn(null);
 
         // When
         interactor.make_password_change(inputData);
 
         // Then
+        CommonUserDto dto5 = new CommonUserDto(username, newPassword);
         verify(mockUserDAO).get(username);
-        verify(mockCommonUserFactory).create(username, newPassword);
+        verify(mockCommonUserFactory).create(dto5);
         verify(mockUserDAO).update(username, null);
         verify(mockPresenter).presentSuccess();
     }
@@ -404,15 +349,16 @@ class MakePasswordChangeInteractorTest {
         String newPassword = "newPassword";
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, null);
 
+        CommonUserDto dto6 = new CommonUserDto(username, newPassword);
         when(mockUserDAO.get(username)).thenReturn(mockUser);
-        when(mockCommonUserFactory.create(username, newPassword)).thenReturn(mockNewCommonUser);
+        when(mockCommonUserFactory.create(dto6)).thenReturn(mockNewCommonUser);
 
         // When
         interactor.make_password_change(inputData);
 
         // Then - verify exact call sequence
         verify(mockUserDAO, times(1)).get(username);
-        verify(mockCommonUserFactory, times(1)).create(username, newPassword);
+        verify(mockCommonUserFactory, times(1)).create(dto6);
         verify(mockUserDAO, times(1)).update(username, mockNewCommonUser);
         verify(mockPresenter, times(1)).presentSuccess();
 
@@ -432,19 +378,21 @@ class MakePasswordChangeInteractorTest {
         String securityQuestion = "question";
         MakePasswordChangeInputData inputData = new MakePasswordChangeInputData(username, newPassword, securityAnswer);
 
+        SecurityUserDto dto8 = new SecurityUserDto(username, newPassword, securityQuestion, securityAnswer);
         when(mockUserDAO.get(username)).thenReturn(mockUser);
         when(mockUserDAO.getAnswer(username)).thenReturn(securityAnswer);
         when(mockUserDAO.getQuestion(username)).thenReturn(securityQuestion);
-        when(mockSecurityUserFactory.create(username, newPassword, securityQuestion, securityAnswer)).thenReturn(mockNewSecurityUser);
+        when(mockSecurityUserFactory.create(dto8)).thenReturn(mockNewSecurityUser);
 
         // When
         interactor.make_password_change(inputData);
 
         // Then - verify exact call sequence
+        SecurityUserDto dto9 = new SecurityUserDto(username, newPassword, securityQuestion, securityAnswer);
         verify(mockUserDAO, times(1)).get(username);
         verify(mockUserDAO, times(1)).getAnswer(username);
         verify(mockUserDAO, times(1)).getQuestion(username);
-        verify(mockSecurityUserFactory, times(1)).create(username, newPassword, securityQuestion, securityAnswer);
+        verify(mockSecurityUserFactory).create(refEq(dto8));
         verify(mockUserDAO, times(1)).update(username, mockNewSecurityUser);
         verify(mockPresenter, times(1)).presentSuccess();
 

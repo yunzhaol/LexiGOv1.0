@@ -42,12 +42,10 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.loginViewModel = loginViewModel;
         this.loginViewModel.addPropertyChangeListener(this);
 
-        // ====== 标题 ======
         final JLabel title = new JLabel("Login LexiGo");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // ====== 表单行：用户名 / 密码 ======
         JLabel usernameLabel = new JLabel("Username");
         usernameLabel.setFont(usernameLabel.getFont().deriveFont(16f));
         final LabelTextPanel usernameInfo = new LabelTextPanel(usernameLabel, usernameInputField);
@@ -56,7 +54,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         passwordLabel.setFont(passwordLabel.getFont().deriveFont(16f));
         final LabelTextPanel passwordInfo = new LabelTextPanel(passwordLabel, passwordInputField);
 
-        // ====== 底部按钮 ======
         final JPanel buttons = new JPanel();
         toSignUp = new JButton("to sign up");
         buttons.add(toSignUp);
@@ -65,7 +62,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         cancel = new JButton("cancel");
         buttons.add(cancel);
 
-        // ====== 事件绑定（保持原有逻辑） ======
         toSignUp.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -112,42 +108,32 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             @Override public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
 
-        // ===============================
-        //         布局：左图 + 中表单
-        // ===============================
         setLayout(new BorderLayout());
 
-        // --- 左侧面板：图像 + 字符画 ---
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         leftPanel.setPreferredSize(new Dimension(286, 0)); // 固定左侧宽度，按需调
 
-        // 1) 加载左侧图像（把路径换成你的图片路径/资源路径）
-        //    例：把你发的那张“头像组图”保存为 resources/assets/login-left.png
-        //    然后用 getResource 加载，若用文件路径也可：new ImageIcon("src/assets/login-left.png")
         ImageIcon leftIcon;
         try {
-            // 从 classpath 读取（推荐把图片放到 src/main/resources/assets/login-left.png）
             leftIcon = new ImageIcon(getClass().getResource("/assets/login-left.png"));
         } catch (Exception ex) {
-            // 退化为文件路径（按需修改）
             leftIcon = new ImageIcon("src/assets/login-left.png");
         }
-        // 可按需缩放（保持比例自行调整目标宽高）
         Image scaled = leftIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
         JLabel leftImageLabel = new JLabel(new ImageIcon(scaled));
         leftImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         String ascii =
-                // 第一个字符的图案（5行）
+
                 "\n\n\n\n\n     _         _   _                \n" +
                         "    / \\  _   _| |_| |__   ___  _ __ \n" +
                         "   / _ \\| | | | __| '_ \\ / _ \\| '__|\n" +
                         "  / ___ | |_| | |_| | | | (_) | |   \n" +
                         " /_/   \\_\\__,_|\\__|_| |_|\\___/|_|   \n" +
-                        "\n" +  // 空一行，分隔上下
-                        // 第二个字符的图案（5行）
+                        "\n" +
+
                         "   _____                               \n" +
                         "  |_   _|   ___    __ _   _ __ ___    _\n" +
                         "    | |    / _ \\  / _` | | '_ ` _ \\  (_)\n" +
@@ -165,12 +151,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         asciiArea.setBorder(BorderFactory.createEmptyBorder(6, 2, 6, 2));
 
         leftPanel.add(asciiArea);
-        leftPanel.add(Box.createVerticalGlue()); // 把内容“顶上去”，下面留白
+        leftPanel.add(Box.createVerticalGlue());
 
         leftPanel.add(leftImageLabel);
         leftPanel.add(Box.createVerticalStrut(12));
 
-        // --- 中间面板：原来的表单 ---
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
@@ -185,7 +170,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         centerPanel.add(buttons);
         centerPanel.add(Box.createVerticalGlue());
 
-        // --- 加到主容器 ---
         add(leftPanel, BorderLayout.WEST);
         add(centerPanel, BorderLayout.CENTER);
     }

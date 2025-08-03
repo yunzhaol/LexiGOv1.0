@@ -1,8 +1,10 @@
-package use_case.viewhistory;
+package infrastructure;
 
 
 import entity.LearnRecord;
 import entity.ViewHistoryEntity;
+import use_case.viewhistory.ViewHistoryEntryData;
+import use_case.viewhistory.ViewHistoryProcessorService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
