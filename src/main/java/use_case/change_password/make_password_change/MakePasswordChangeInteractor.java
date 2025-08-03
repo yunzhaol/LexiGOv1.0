@@ -59,6 +59,8 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
             User newuser = securityUserFactory.create(securityDto);
             userDAO.update(in.getUsername(), newuser);
             presenter.presentSuccess();
+        } else {
+            presenter.presentFailure(new MakePasswordChangeOutputData("Wrong answer"));
         }
 
     }
