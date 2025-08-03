@@ -1,17 +1,10 @@
 package entity;
 
-/**
- * Factory for creating users.
- */
-public interface UserFactory {
+import entity.dto.UserDto;
+
+public interface UserFactory<T extends UserDto> {
     /**
-     * Creates a new User.
-     * @param name the name of the new user
-     * @param password the password of the new user
-     * @return the new user
+     * Create a User from the provided DTO.
      */
-    User create(String name, String password);
-
-    User create(String name, String password, String securityQuestion, String securityAnswer);
-
+    User create(T dto);
 }
