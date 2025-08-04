@@ -1,99 +1,137 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+
 import interface_adapter.view_history.ViewHistoryState;
 import interface_adapter.view_history.ViewHistoryViewModel;
 import use_case.viewhistory.ViewHistoryEntryData;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
+/**
+ * Displays the user's study-history sessions in a table along with a summary.
+ *
+ * <p>
+ * This view observes {@link ViewHistoryViewModel} and updates the table and
+ * summary label when the state changes.
+ * </p>
+ */
 public class ViewHistoryView extends JPanel implements PropertyChangeListener {
 
+    // ---- UI constants (remove magic numbers) ----
+    private static final int BORDER_HGAP = 10;
+    private static final int BORDER_VGAP = 10;
+    private static final int PADDING = 16;
+    private static final float TITLE_FONT_SIZE = 18f;
 
-    private final ViewHistoryViewModel vm;
+    // ---- collaborators ----
+    private final ViewHistoryViewModel viewModel;
 
-
+    // ---- components ----
     private final JLabel title = new JLabel(ViewHistoryViewModel.TITLE_LABEL, SwingConstants.CENTER);
 
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[]{"#", "Date", "Words Learned"}, 0) {
+            new Object[] {"#", "Date", "Words Learned" }, 0) {
+
         @Override
-        public boolean isCellEditable(int r, int c) {
+        public boolean isCellEditable(final int row, final int column) {
             return false;
         }
     };
-    private final JTable table = new JTable(tableModel);
 
+    private final JTable table = new JTable(tableModel);
     private final JLabel summaryLabel = new JLabel();
 
+    /**
+     * Creates the view and wires it to the provided view model.
+     *
+     * @param viewModel the view model to observe
+     */
+    public ViewHistoryView(final ViewHistoryViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.viewModel.addPropertyChangeListener(this);
 
-    public ViewHistoryView(ViewHistoryViewModel vm) {
-        this.vm = vm;
-        this.vm.addPropertyChangeListener(this);
+        setLayout(new BorderLayout(BORDER_HGAP, BORDER_VGAP));
+        setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
 
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        title.setFont(title.getFont().deriveFont(Font.BOLD, TITLE_FONT_SIZE));
         add(title, BorderLayout.NORTH);
 
         table.setFillsViewportHeight(true);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        JPanel south = new JPanel(new BorderLayout());
+        final JPanel south = new JPanel(new BorderLayout());
         south.add(summaryLabel, BorderLayout.WEST);
         add(south, BorderLayout.SOUTH);
 
-
-        updateFromState(vm.getState());
+        updateFromState(this.viewModel.getState());
     }
 
-
+    /**
+     * Receives state changes and refreshes the UI.
+     *
+     * @param evt the property change event (only the {@code "state"} key is handled)
+     */
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(final PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
-            ViewHistoryState s = (ViewHistoryState) evt.getNewValue();
-            SwingUtilities.invokeLater(() -> updateFromState(s));
+            final ViewHistoryState state = (ViewHistoryState) evt.getNewValue();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateFromState(state);
+                }
+            });
         }
     }
 
-    private void updateFromState(ViewHistoryState s) {
+    /**
+     * Applies the given state to the title, table rows, and summary label.
+     *
+     * @param state the state to render
+     */
+    private void updateFromState(final ViewHistoryState state) {
 
-        title.setText(ViewHistoryViewModel.TITLE_LABEL + " — " + s.getCurrentUser());
-
+        // ASCII-only separator to satisfy style rule.
+        title.setText(ViewHistoryViewModel.TITLE_LABEL + " - " + state.getCurrentUser());
 
         tableModel.setRowCount(0);
-        List<ViewHistoryEntryData> sessions = s.getSessions();
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        for (int i = 0; i < sessions.size(); i++) {
-            ViewHistoryEntryData entry = sessions.get(i);
-            String dateStr;
-            int words;
-            try {
+        final List<ViewHistoryEntryData> sessions = state.getSessions();
 
+        for (int i = 0; i < sessions.size(); i++) {
+            final ViewHistoryEntryData entry = sessions.get(i);
+            final String dateStr;
+            final int words;
+            if (entry != null && entry.getEndTime() != null) {
                 dateStr = entry.getEndTime();
                 words = entry.getWordsCount();
-            } catch (Exception e) {
-
+            }
+            else {
                 dateStr = entry.toString();
                 words = 0;
             }
-            tableModel.addRow(new Object[]{i + 1, dateStr, words});
+            tableModel.addRow(new Object[] {i + 1, dateStr, words });
         }
 
-
         summaryLabel.setText(String.format("%s %d    %s %d",
-                ViewHistoryViewModel.SESSIONS_LABEL, s.getTotalSessions(),
-                ViewHistoryViewModel.WORDS_LABEL, s.getTotalWords()));
+                ViewHistoryViewModel.SESSIONS_LABEL, state.getTotalSessions(),
+                ViewHistoryViewModel.WORDS_LABEL, state.getTotalWords()));
 
-
-        if (s.getErrorMessage() != null) {
-            JOptionPane.showMessageDialog(this, s.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        if (state.getErrorMessage() != null) {
+            JOptionPane.showMessageDialog(
+                    this, state.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
