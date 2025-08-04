@@ -9,7 +9,6 @@ public class CommonLearnRecord implements LearnRecord {
     private final LocalDateTime endTime;
     private final List<UUID> learnwords;
 
-
     public CommonLearnRecord(String username, LocalDateTime endTime, List<UUID> learnwords) {
         this.username = username;
         this.endTime = endTime;

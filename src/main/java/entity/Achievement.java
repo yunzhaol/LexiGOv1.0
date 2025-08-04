@@ -1,7 +1,6 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 /**
  * A badge-like achievement that a user can unlock by meeting specific criteria,
@@ -72,7 +71,8 @@ public class Achievement {
 //            this.dateUnlocked = date;
 //        }
 //    }
-
+//
+//
 //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
@@ -92,4 +92,5 @@ public class Achievement {
 //                " " + name + " (" + id + ") — " +
 //                (isUnlocked() ? "Unlocked on " + dateUnlocked : "Locked");
 //    }
+
 }

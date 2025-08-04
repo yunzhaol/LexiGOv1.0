@@ -1,12 +1,12 @@
 package use_case.finish_checkin;
 
-import entity.CommonCard;
-import entity.LearnRecord;
-import entity.LearnRecordFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import entity.CommonCard;
+import entity.LearnRecord;
+import entity.LearnRecordFactory;
 
 public class FinishCheckInInteractor implements FinishCheckInInputBoundary {
 
@@ -30,11 +30,11 @@ public class FinishCheckInInteractor implements FinishCheckInInputBoundary {
 
     @Override
     public void execute(FinishCheckInInputData in) {
-        List<UUID> uuidList = new ArrayList<>();
+        final List<UUID> uuidList = new ArrayList<>();
         for (CommonCard eachCard : textsdataGetter.getWordDeck()) {
             uuidList.add(eachCard.getWordId());
         }
-        LearnRecord learnRecord = learnRecordFactory.create(in.getUsername(), timegenerator.generate(), uuidList);
+        final LearnRecord learnRecord = learnRecordFactory.create(in.getUsername(), timegenerator.generate(), uuidList);
         recordSaver.save(learnRecord);
         presenter.prepareSuccessView();
 

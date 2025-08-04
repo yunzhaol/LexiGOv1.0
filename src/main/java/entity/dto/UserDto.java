@@ -1,4 +1,5 @@
 // 1. Abstract base DTO
+
 package entity.dto;
 
 public abstract class UserDto {
@@ -9,7 +10,7 @@ public abstract class UserDto {
         if (name == null || password == null) {
             throw new IllegalArgumentException("name and password must be non-null");
         }
-        this.name     = name;
+        this.name = name;
         this.password = password;
     }
 
@@ -20,6 +21,5 @@ public abstract class UserDto {
     public String getPassword() {
         return password;
     }
-
 
 }
