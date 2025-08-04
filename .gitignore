@@ -35,3 +35,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+
+/src/test/resources/data/finishTest.json
