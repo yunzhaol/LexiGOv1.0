@@ -1,24 +1,32 @@
 package entity;
 
 import entity.dto.UserDto;
+
 /**
- * A manager that returns the correct factory for each UserType.
+ * Returns the appropriate {@link UserFactory} implementation for each supported {@link UserType}.
  */
 public class UserFactoryManager {
 
     /**
-     * @param type  which kind of UserFactory to return
-     * @return      a UserFactory whose generic parameter extends UserDto
+     * Returns a concrete {@link UserFactory} that can build users of the specified type.
+     *
+     * @param type which kind of factory to retrieve; must not be {@code null}
+     * @return a {@code UserFactory} whose generic parameter extends {@link UserDto}
+     * @throws IllegalArgumentException if the supplied {@code type} is unsupported
      */
     public UserFactory<? extends UserDto> getFactory(UserType type) {
+        UserFactory<? extends UserDto> factory = null;
         switch (type) {
             case COMMON:
-                return new CommonUserFactory();
+                factory = new CommonUserFactory();
+                break;
             case SECURITY:
-                return new SecurityUserFactory();
+                factory = new SecurityUserFactory();
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported UserType: " + type);
         }
+        return factory;
     }
 }
 
