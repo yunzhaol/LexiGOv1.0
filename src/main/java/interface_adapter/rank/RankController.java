@@ -4,7 +4,7 @@ import use_case.rank.RankInputBoundary;
 import use_case.rank.RankInputData;
 
 public class RankController {
-    private RankInputBoundary rankInteractor;
+    private final RankInputBoundary rankInteractor;
 
     public RankController(RankInputBoundary rankInteractor) {
         this.rankInteractor = rankInteractor;

@@ -9,11 +9,9 @@ public class ProfileState {
     private String username = "";
     private String languageError;
     private Language oldlanguage;
+    private Language[] languages;
 
-
-
-    private Language[] languages =  null;
-    public ProfileState(String username, String languageError, Language oldlanguage,  Language[] languages) {
+    public ProfileState(String username, String languageError, Language oldlanguage, Language[] languages) {
         this.username = username;
         this.languageError = languageError;
         this.oldlanguage = oldlanguage;
@@ -54,8 +52,4 @@ public class ProfileState {
     public void setUsername(String username) {
         this.username = username;
     }
-
-
-
-
 }

@@ -21,7 +21,7 @@ public class WordDetailPresenter implements WordDetailOutputBoundary {
 
     @Override
     public void prepareSuccessView(WordDetailOutputData out) {
-        WordDetailState state = wordDetailViewModel.getState();
+        final WordDetailState state = wordDetailViewModel.getState();
         state.setExample(out.getExample());
         state.setTranslation(out.getTranslation());
         wordDetailViewModel.setState(state);

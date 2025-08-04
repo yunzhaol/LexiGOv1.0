@@ -17,7 +17,7 @@ public class AchievementController {
      * @param userId the ID of the currently logged-in user
      */
     public void showAchievements(String userId) {
-        AchievementInputData inputData = new AchievementInputData(userId);
+        final AchievementInputData inputData = new AchievementInputData(userId);
         interactor.evaluate(inputData);
     }
 }

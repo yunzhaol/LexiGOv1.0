@@ -4,7 +4,7 @@ import use_case.viewhistory.ViewHistoryOutputBoundary;
 import use_case.viewhistory.ViewHistoryOutputData;
 
 /**
- * ViewHistory Presenter
+ * ViewHistory Presenter.
  */
 public class ViewHistoryPresenter implements ViewHistoryOutputBoundary {
 
@@ -16,7 +16,7 @@ public class ViewHistoryPresenter implements ViewHistoryOutputBoundary {
 
     @Override
     public void prepareSuccessView(ViewHistoryOutputData outputData) {
-        interface_adapter.view_history.ViewHistoryState state = viewModel.getState();
+        final interface_adapter.view_history.ViewHistoryState state = viewModel.getState();
 
         state.setCurrentUser(outputData.getUsername());
         state.setSessions(outputData.getSessions());
@@ -26,14 +26,11 @@ public class ViewHistoryPresenter implements ViewHistoryOutputBoundary {
 
         viewModel.setState(state);
         viewModel.firePropertyChanged();
-
-//        System.out.println("Successfully loaded " + outputData.getTotalSessions() +
-//                " sessions for user: " + outputData.getUsername());
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-        interface_adapter.view_history.ViewHistoryState state = viewModel.getState();
+        final interface_adapter.view_history.ViewHistoryState state = viewModel.getState();
 
         state.setErrorMessage(errorMessage);
         state.setSessions(null);
@@ -42,7 +39,5 @@ public class ViewHistoryPresenter implements ViewHistoryOutputBoundary {
 
         viewModel.setState(state);
         viewModel.firePropertyChanged();
-
-//        System.err.println("ViewHistory failed: " + errorMessage);
     }
 }

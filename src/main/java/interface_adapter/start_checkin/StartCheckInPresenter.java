@@ -27,14 +27,14 @@ public class StartCheckInPresenter implements StartCheckInOutputBoundary {
 
     @Override
     public void prepareSuccessView(StartCheckInOutputData outputData) {
-        LoggedInState statenow = loggedInViewModel.getState();
-        String username = statenow.getUsername();
-        StartCheckInState state = startCheckInViewModel.getState();
+        final LoggedInState statenow = loggedInViewModel.getState();
+        final String username = statenow.getUsername();
+        final StartCheckInState state = startCheckInViewModel.getState();
         state.setNumberWords("");
         startCheckInViewModel.setState(state);
         startCheckInViewModel.firePropertyChanged();
 
-        StudySessionState studystate = studySessionViewModel.getState();
+        final StudySessionState studystate = studySessionViewModel.getState();
         studystate.setUsername(username);
         studystate.setTotalpage(outputData.getTotalpage());
         studystate.setPagenumber("0");

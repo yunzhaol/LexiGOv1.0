@@ -10,6 +10,11 @@ public class FinishController {
         this.interactor = interactor;
     }
 
+    /**
+     * Triggers the finish-check-in use case for the specified user.
+     *
+     * @param username the user who has just completed their check-in; must not be {@code null}
+     */
     public void execute(String username) {
         interactor.execute(new FinishCheckInInputData(username));
     }
