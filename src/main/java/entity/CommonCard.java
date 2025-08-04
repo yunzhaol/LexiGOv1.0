@@ -11,10 +11,10 @@ public final class CommonCard implements Card {
     private final String example;
 
     public CommonCard(UUID wordId, String text, String translation, String example) {
-        this.wordId      = Objects.requireNonNull(wordId);
-        this.text        = Objects.requireNonNull(text);
+        this.wordId = Objects.requireNonNull(wordId);
+        this.text = Objects.requireNonNull(text);
         this.translation = Objects.requireNonNull(translation);
-        this.example     = Objects.requireNonNull(example);
+        this.example = Objects.requireNonNull(example);
     }
 
     @Override

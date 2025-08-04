@@ -1,17 +1,9 @@
 package use_case.studysession;
 
 import data_access.*;
-import entity.CommonWordDeckFactory;
-import entity.Language;
-import entity.WordDeckFactory;
-import infrastructure.DeepLAPIAdapter;
-import infrastructure.FreeDictionaryApiAdapter;
-import infrastructure.LearnWordsGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import use_case.studysession.*;
 
-import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

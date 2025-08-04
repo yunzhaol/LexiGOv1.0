@@ -3,7 +3,7 @@ package entity;
 import java.util.List;
 import java.util.UUID;
 
-public class CommonWordBook implements WordBook{
+public class CommonWordBook implements WordBook {
 
     private final List<UUID> words;
     private String name;
