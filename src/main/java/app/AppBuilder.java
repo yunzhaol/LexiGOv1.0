@@ -1,6 +1,6 @@
 package app;
 
-import java.awt.CardLayout;
+import java.awt.*;
 import java.io.IOException;
 // CHECKSTYLE:OFF
 
@@ -456,6 +456,26 @@ public class AppBuilder {
         viewManagerModel.setState(signupView.getViewName());
         viewManagerModel.firePropertyChanged();
 
+        final javax.swing.Timer debounce = new javax.swing.Timer(120, null);
+        debounce.setRepeats(false);
+
+        final Dimension base = new Dimension(846, 479);
+
+        application.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override public void componentResized(java.awt.event.ComponentEvent e) {
+                if (debounce.getActionListeners().length == 0) {
+                    debounce.addActionListener(ev -> {
+                        float w = application.getWidth()  / (float) base.width;
+                        float h = application.getHeight() / (float) base.height;
+                        float scale = Math.min(w, h);
+
+                        scale = Math.max(1.0f, Math.min(1.75f, scale));
+                        view.FontScaler.applyScale(scale);
+                    });
+                }
+                debounce.restart();
+            }
+        });
         return application;
 
     }

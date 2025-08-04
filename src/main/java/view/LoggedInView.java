@@ -1,39 +1,61 @@
 package view;
 
-import interface_adapter.achievement.AchievementController;
-import interface_adapter.change_password.ChangePasswordController;
-import interface_adapter.profile.ProfileController;
-import interface_adapter.session.LoggedInState;
-import interface_adapter.session.LoggedInViewModel;
-import interface_adapter.logout.LogoutController;
-import interface_adapter.rank.RankController;
-import interface_adapter.view_history.ViewHistoryController;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+
+import interface_adapter.achievement.AchievementController;
+import interface_adapter.change_password.ChangePasswordController;
+import interface_adapter.logout.LogoutController;
+import interface_adapter.profile.ProfileController;
+import interface_adapter.rank.RankController;
+import interface_adapter.session.LoggedInState;
+import interface_adapter.session.LoggedInViewModel;
+import interface_adapter.view_history.ViewHistoryController;
 
 /**
- * Main panel displayed after user login. Provides navigation and loads corresponding subviews.
+ * Main panel displayed after user login. Provides navigation and loads
+ * corresponding subviews.
  */
 public class LoggedInView extends JPanel implements PropertyChangeListener {
 
-    // Constants for view identification
+    /** Logical name of this view for routing/navigation. */
     public static final String VIEW_NAME = "logged in";
-    private static final String CARD_WELCOME = "Welcome";
-    private static final String CARD_PROFILE       = "card_profile";
-    private static final String CARD_CHECKIN       = "card_checkin";
-    private static final String CARD_ACHIEVE       = "card_achieve";
-    private static final String CARD_RANK          = "card_rank";
-    private static final String CARD_PASSWORD      = "card_password";
-    private static final String CARD_LOGOUT        = "card_logout";
-    private static final String CARD_HISTORY       = "card_study_history";
 
-    // Dependency-injected controllers for handling user actions
+    // ---- UI constants (remove magic numbers) ----
+    private static final int OUTER_PADDING = 10;
+    private static final int USERNAME_BOTTOM_PADDING = 12;
+    private static final int NAV_FIXED_WIDTH = 175;
+    private static final int NAV_GAP = 24;
+    private static final int WELCOME_SIZE = 24;
+
+    // ---- Card names for content panel ----
+    private static final String CARD_WELCOME = "Welcome";
+    private static final String CARD_PROFILE = "card_profile";
+    private static final String CARD_CHECKIN = "card_checkin";
+    private static final String CARD_ACHIEVE = "card_achieve";
+    private static final String CARD_RANK = "card_rank";
+    private static final String CARD_PASSWORD = "card_password";
+    private static final String CARD_LOGOUT = "card_logout";
+    private static final String CARD_HISTORY = "card_study_history";
+
+    // ---- Controllers (injected) ----
     private AchievementController achievementController;
     private LogoutController logoutController;
     private RankController rankController;
@@ -42,81 +64,84 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
     private ChangePasswordController changePasswordController;
     private final LoggedInViewModel vm;
 
-    // Layout managers and components
+    // ---- Layout managers and components ----
     private final CardLayout cards = new CardLayout();
-    private final JPanel contentPanel = new JPanel(cards);   // Container for card layout views
+    /** Container for the CardLayout views. */
+    private final JPanel contentPanel = new JPanel(cards);
     private final Map<String, JToggleButton> navButtons = new HashMap<>();
     private final ButtonGroup navGroup = new ButtonGroup();
 
     /* ---------- Username display ---------- */
-    /** Shows current logged‑in username at the top of the navigation pane. */
+    /** Shows the current username at the top of the navigation pane. */
     private final JLabel usernameDisplay = new JLabel();
 
     /**
-     * Constructor: sets up UI, binds view model, and initializes default view.
-     * @param vm the view model containing login state and observers
+     * Creates the view, binds to the view model, and initializes the default UI.
+     *
+     * @param viewModel the view model containing the login state
      */
-    public LoggedInView(LoggedInViewModel vm) {
-        this.vm = vm;
-        vm.addPropertyChangeListener(this);
+    public LoggedInView(final LoggedInViewModel viewModel) {
+        this.vm = viewModel;
+        viewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING));
 
         // Left-side navigation buttons panel
-        JPanel nav = new JPanel();
+        final JPanel nav = new JPanel();
         nav.setLayout(new BoxLayout(nav, BoxLayout.Y_AXIS));
-        /* Display username */
+
+        // Display username
         usernameDisplay.setAlignmentX(Component.CENTER_ALIGNMENT);
         usernameDisplay.setFont(usernameDisplay.getFont().deriveFont(Font.BOLD));
-        usernameDisplay.setBorder(BorderFactory.createEmptyBorder(0,0,12,0));
+        usernameDisplay.setBorder(BorderFactory.createEmptyBorder(0, 0, USERNAME_BOTTOM_PADDING, 0));
         nav.add(usernameDisplay);
 
         addToggle(nav, "Profile", CARD_PROFILE, () -> {
             if (profileController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 profileController.execute(user);
             }
         });
         addToggle(nav, "Daily Check-in", CARD_CHECKIN, null);
         addToggle(nav, "Change Password", CARD_PASSWORD, () -> {
             if (changePasswordController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 changePasswordController.execute(user);
             }
         });
         addToggle(nav, "Achievement", CARD_ACHIEVE, () -> {
             if (achievementController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 achievementController.showAchievements(user);
             }
         });
         addToggle(nav, "View Study History", CARD_HISTORY, () -> {
             if (viewHistoryController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 viewHistoryController.execute(user);
             }
         });
         addToggle(nav, "Rank", CARD_RANK, () -> {
             if (rankController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 rankController.execute(user);
             }
         });
         addToggle(nav, "Log out", CARD_LOGOUT, () -> {
             if (logoutController != null) {
-                String user = vm.getState().getUsername();
+                final String user = vm.getState().getUsername();
                 logoutController.execute(user);
             }
         });
 
         // Wrap navigation panel to enforce fixed width
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setPreferredSize(new Dimension(175, 0));
+        final JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setPreferredSize(new Dimension(NAV_FIXED_WIDTH, 0));
         wrapper.add(nav, BorderLayout.CENTER);
         add(wrapper, BorderLayout.WEST);
 
-        // Default content panel (profile view)
+        // Default content panel (welcome view)
         contentPanel.add(new WelcomePanel(), CARD_WELCOME);
         add(contentPanel, BorderLayout.CENTER);
 
@@ -124,105 +149,172 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
     }
 
     /**
-     * Helper to create and register a navigation toggle button.
-     * @param parent   the panel to add the button to
-     * @param text     the button label
-     * @param cardName the card identifier in CardLayout
-     * @param onSelect optional callback when this card is selected
-     */
-    private void addToggle(JPanel parent, String text, String cardName, Runnable onSelect) {
-        JToggleButton btn = new JToggleButton(text);
-        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.putClientProperty("JButton.buttonType", "roundRect");
-        btn.addActionListener(e -> {
-            cards.show(contentPanel, cardName);
-            btn.setSelected(true);
-            if (onSelect != null) onSelect.run();
-        });
-        navGroup.add(btn);
-        navButtons.put(cardName, btn);
-        parent.add(btn);
-        parent.add(Box.createVerticalStrut(24));
-    }
-
-    /**
      * Handles property change events from the view model.
+     *
      * @param evt the property change event
      */
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(final PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
-            LoggedInState s = (LoggedInState) evt.getNewValue();
-            // TODO: propagate new state (e.g., username) to subviews as needed
+            final LoggedInState s = (LoggedInState) evt.getNewValue();
             usernameDisplay.setText("User: " + s.getUsername());
         }
     }
 
     // ------------------ Dependency Injection ------------------
 
-    public void setProfileController(ProfileController profileController) {
-        this.profileController = profileController;
+    /**
+     * Sets the profile controller.
+     *
+     * @param controller the controller to invoke for profile actions
+     */
+    public void setProfileController(final ProfileController controller) {
+        this.profileController = controller;
     }
 
-    public void setViewHistoryController(ViewHistoryController viewHistoryController) {
-        this.viewHistoryController = viewHistoryController;
+    /**
+     * Sets the view-history controller.
+     *
+     * @param controller the controller to invoke for history actions
+     */
+    public void setViewHistoryController(final ViewHistoryController controller) {
+        this.viewHistoryController = controller;
     }
 
-    public void setLogoutController(LogoutController logoutController) {
-        this.logoutController = logoutController;
+    /**
+     * Sets the logout controller.
+     *
+     * @param controller the controller to invoke for logout actions
+     */
+    public void setLogoutController(final LogoutController controller) {
+        this.logoutController = controller;
     }
 
-    public void setRankController(RankController rankController) {
-        this.rankController = rankController;
+    /**
+     * Sets the rank controller.
+     *
+     * @param controller the controller to invoke for rank actions
+     */
+    public void setRankController(final RankController controller) {
+        this.rankController = controller;
     }
 
-    public void setAchievementController(AchievementController achievementController) {
-        this.achievementController = achievementController;
+    /**
+     * Sets the achievement controller.
+     *
+     * @param controller the controller to invoke for achievement actions
+     */
+    public void setAchievementController(final AchievementController controller) {
+        this.achievementController = controller;
     }
 
-    public void setChangePasswordController(ChangePasswordController changePasswordController) {
-        this.changePasswordController = changePasswordController;
+    /**
+     * Sets the change-password controller.
+     *
+     * @param controller the controller to invoke for password changes
+     */
+    public void setChangePasswordController(final ChangePasswordController controller) {
+        this.changePasswordController = controller;
     }
 
     // ------------------ Dynamic Subview Injection ------------------
 
-    public void addStartCheckInPage(JComponent checkInView) {
+    /**
+     * Adds the daily check-in page to the content area.
+     *
+     * @param checkInView the check-in view component
+     */
+    public void addStartCheckInPage(final JComponent checkInView) {
         contentPanel.add(checkInView, CARD_CHECKIN);
     }
 
-    public void addAchievementPage(JComponent achievementView) {
+    /**
+     * Adds the achievement page to the content area.
+     *
+     * @param achievementView the achievement view component
+     */
+    public void addAchievementPage(final JComponent achievementView) {
         contentPanel.add(achievementView, CARD_ACHIEVE);
     }
 
-    public void addChangePasswordPage(ChangePasswordView changePasswordView) {
+    /**
+     * Adds the change-password page to the content area.
+     *
+     * @param changePasswordView the change-password view component
+     */
+    public void addChangePasswordPage(final ChangePasswordView changePasswordView) {
         contentPanel.add(changePasswordView, CARD_PASSWORD);
     }
 
-    public void addRankPage(RankView rankView) {
+    /**
+     * Adds the rank page to the content area.
+     *
+     * @param rankView the rank view component
+     */
+    public void addRankPage(final RankView rankView) {
         contentPanel.add(rankView, CARD_RANK);
     }
 
-    public void addViewHistoryPage(ViewHistoryView viewHistory) {
+    /**
+     * Adds the study-history page to the content area.
+     *
+     * @param viewHistory the view-history component
+     */
+    public void addViewHistoryPage(final ViewHistoryView viewHistory) {
         contentPanel.add(viewHistory, CARD_HISTORY);
     }
 
-    public void addProfilePage(ProfileView profileView) {
+    /**
+     * Adds the profile page to the content area.
+     *
+     * @param profileView the profile view component
+     */
+    public void addProfilePage(final ProfileView profileView) {
         contentPanel.add(profileView, CARD_PROFILE);
     }
 
     /**
      * Returns the name of this view for navigation purposes.
-     * @return view name
+     *
+     * @return the constant view name
      */
-    public String getViewName() { return VIEW_NAME; }
+    public String getViewName() {
+        return VIEW_NAME;
+    }
 
+    /**
+     * Helper to create and register a navigation toggle button.
+     *
+     * @param parent   the panel to add the button to
+     * @param text     the button label
+     * @param cardName the card identifier in {@link CardLayout}
+     * @param onSelect optional callback when this card is selected
+     */
+    private void addToggle(final JPanel parent, final String text, final String cardName, final Runnable onSelect) {
+        final JToggleButton btn = new JToggleButton(text);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.putClientProperty("JButton.buttonType", "roundRect");
+        btn.addActionListener(event -> {
+            cards.show(contentPanel, cardName);
+            btn.setSelected(true);
+            if (onSelect != null) {
+                onSelect.run();
+            }
+        });
+        navGroup.add(btn);
+        navButtons.put(cardName, btn);
+        parent.add(btn);
+        parent.add(Box.createVerticalStrut(NAV_GAP));
+    }
 
-    /** Placeholder profile panel shown by default; can be replaced by real ProfileView. */
+    /** Placeholder panel shown by default; can be replaced by a real ProfileView. */
     private static class WelcomePanel extends JPanel {
+
+        /** Builds the simple welcome panel. */
         WelcomePanel() {
             setLayout(new BorderLayout());
             final JLabel lbl = new JLabel("Welcome!!!", SwingConstants.CENTER);
-            lbl.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 24));
+            lbl.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, WELCOME_SIZE));
             add(lbl, BorderLayout.CENTER);
         }
     }
