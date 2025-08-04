@@ -1,11 +1,5 @@
 package data_access;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import entity.CommonWordBook;
-import entity.WordBook;
-import use_case.start_checkin.WordBookAccessInterface;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -16,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import entity.CommonWordBook;
+import entity.WordBook;
+import use_case.start_checkin.WordBookAccessInterface;
 
 /**
  * Read a local JSON file like:
@@ -26,7 +25,7 @@ import java.util.UUID;
  * and convert it to a CommonWordBook.
  */
 public class WordBookDataAccessObject implements WordBookAccessInterface {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final Path filePath;
     private final Map<String, List<UUID>> cache;
@@ -43,7 +42,7 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
 
     private static Path resolveDefaultPath() {
         try {
-            URL resource = WordBookDataAccessObject.class
+            final URL resource = WordBookDataAccessObject.class
                     .getClassLoader()
                     .getResource("data/wordbook.json");
 
@@ -52,16 +51,18 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
             }
 
             return Paths.get(resource.toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Invalid URI for wordbook.json", e);
+        }
+        catch (URISyntaxException exception) {
+            throw new RuntimeException("Invalid URI for wordbook.json", exception);
         }
     }
 
     @Override
     public WordBook get() {
-        if (cache.isEmpty())
+        if (cache.isEmpty()) {
             throw new IllegalStateException("No word book found in JSON file");
-        Map.Entry<String, List<UUID>> entry = cache.entrySet().iterator().next();
+        }
+        final Map.Entry<String, List<UUID>> entry = cache.entrySet().iterator().next();
         return new CommonWordBook(entry.getKey(), entry.getValue());
     }
 
@@ -71,10 +72,13 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
                 Files.createDirectories(filePath.getParent());
                 Files.writeString(filePath, "{}");
             }
-            return mapper.readValue(Files.newInputStream(filePath),
-                    new TypeReference<Map<String, List<UUID>>>() {});
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot read wordbook.json", e);
+            return MAPPER.readValue(Files.newInputStream(filePath),
+                    new TypeReference<Map<String, List<UUID>>>() {
+
+                    });
+        }
+        catch (IOException exception) {
+            throw new IllegalStateException("Cannot read wordbook.json", exception);
         }
     }
 }

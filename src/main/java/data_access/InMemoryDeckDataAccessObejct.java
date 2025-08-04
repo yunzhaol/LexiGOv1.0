@@ -1,14 +1,14 @@
 package data_access;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import entity.CommonCard;
 import entity.WordDeck;
 import use_case.finish_checkin.UserDeckGetTextDataAccessInterface;
 import use_case.start_checkin.UserCheckInDeckAccessInterface;
 import use_case.studysession.UserDeckgetterDataAccessInterface;
 import use_case.studysession.word_detail.WordDetailDataAccessInterface;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessInterface,
         UserCheckInDeckAccessInterface,
@@ -37,20 +37,20 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
     }
 
     @Override
-    public String getTranslation(int i) {
-        return getTranslationHelper(i);
+    public String getTranslation(int index) {
+        return getTranslationHelper(index);
     }
 
-    private String getTranslationHelper(int i) {
-        return cardList.get(i).getTranslation();
+    private String getTranslationHelper(int index) {
+        return cardList.get(index).getTranslation();
     }
 
     @Override
-    public String getExample(int i) {
-        return getExampleHelper(i);
+    public String getExample(int index) {
+        return getExampleHelper(index);
     }
 
-    private String getExampleHelper(int i) {
-        return cardList.get(i).getExample();
+    private String getExampleHelper(int index) {
+        return cardList.get(index).getExample();
     }
 }
