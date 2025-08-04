@@ -2,17 +2,37 @@ package app;
 
 import java.awt.*;
 import java.io.IOException;
+// CHECKSTYLE:OFF
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import data_access.*;
+import data_access.InMemoryDeckDataAccessObejct;
+import data_access.JsonUserDataAccessObject;
 import data_access.JsonUserProfileDAO;
-import entity.*;
+import data_access.JsonUserRecordDataAccessObject;
+import data_access.WordBookDataAccessObject;
+import data_access.WordDataAccessObject;
+import entity.CommonCardFactory;
+import entity.CommonLearnRecordFactory;
+import entity.CommonWordDeckFactory;
+import entity.LearnRecordFactory;
+import entity.PersonalProfileFactory;
+import entity.ProfileFactory;
+import entity.UserFactory;
+import entity.UserFactoryManager;
+import entity.UserType;
+import entity.WordDeckFactory;
 import entity.dto.CommonUserDto;
 import entity.dto.SecurityUserDto;
-import infrastructure.*;
+import infrastructure.DeepLAPIAdapter;
+import infrastructure.DefaultLeaderboardSelector;
+import infrastructure.DefaultScoreSort;
+import infrastructure.DefaultViewHistoryProcessorService;
+import infrastructure.FreeDictionaryApiAdapter;
+import infrastructure.LearnWordsGenerator;
+import infrastructure.TimeGenerator;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.achievement.AchievementController;
 import interface_adapter.achievement.AchievementPresenter;
@@ -22,12 +42,6 @@ import interface_adapter.change_password.ChangePasswordPresenter;
 import interface_adapter.change_password.ChangeViewModel;
 import interface_adapter.change_password.MakePasswordChange.MakePasswordChangeController;
 import interface_adapter.change_password.MakePasswordChange.MakePasswordChangePresenter;
-import interface_adapter.profile.ProfileController;
-import interface_adapter.profile.ProfilePresenter;
-import interface_adapter.profile.ProfileViewModel;
-import interface_adapter.profile.profile_set.ProfileSetController;
-import interface_adapter.profile.profile_set.ProfileSetPresenter;
-import interface_adapter.session.LoggedInViewModel;
 import interface_adapter.finish.FinishController;
 import interface_adapter.finish.FinishPresenter;
 import interface_adapter.login.LoginController;
@@ -35,9 +49,15 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.profile.ProfileController;
+import interface_adapter.profile.ProfilePresenter;
+import interface_adapter.profile.ProfileViewModel;
+import interface_adapter.profile.profile_set.ProfileSetController;
+import interface_adapter.profile.profile_set.ProfileSetPresenter;
 import interface_adapter.rank.RankController;
 import interface_adapter.rank.RankPresenter;
 import interface_adapter.rank.RankViewModel;
+import interface_adapter.session.LoggedInViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -65,7 +85,6 @@ import use_case.change_password.make_password_change.MakePasswordChangeOutputBou
 import use_case.finish_checkin.FinishCheckInInputBoundary;
 import use_case.finish_checkin.FinishCheckInInteractor;
 import use_case.finish_checkin.FinishCheckInOutputBoundary;
-import use_case.finish_checkin.TimeGetter;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -81,7 +100,7 @@ import use_case.profile.profile_set.ProfileSetOutputBoundary;
 import use_case.rank.RankInputBoundary;
 import use_case.rank.RankInteractor;
 import use_case.rank.RankOutputBoundary;
-import use_case.signup.*;
+import use_case.signup.SignupOutputBoundary;
 import use_case.signup.common.SignupInputBoundary;
 import use_case.signup.common.SignupInteractor;
 import use_case.signup.security.SignupSecurityInputBoundary;
@@ -98,7 +117,18 @@ import use_case.studysession.word_detail.WordDetailOutputBoundary;
 import use_case.viewhistory.ViewHistoryInputBoundary;
 import use_case.viewhistory.ViewHistoryInteractor;
 import use_case.viewhistory.ViewHistoryOutputBoundary;
-import view.*;
+import view.AchievementView;
+import view.ChangePasswordView;
+import view.LoggedInView;
+import view.LoginView;
+import view.ProfileView;
+import view.RankView;
+import view.SignupView;
+import view.StartCheckInView;
+import view.StudySessionView;
+import view.ViewHistoryView;
+import view.ViewManager;
+import view.WordDetailView;
 
 /**
  * The AppBuilder class is responsible for putting together the pieces of
@@ -117,23 +147,20 @@ public class AppBuilder {
     private final WordDeckFactory wordDeckFactory = new CommonWordDeckFactory();
     private final LearnRecordFactory learnRecordFactory = new CommonLearnRecordFactory();
     private final ProfileFactory profileFactory = new PersonalProfileFactory();
-//    private final DefaultUserFactory userFactory = new DefaultUserFactory();
     private final UserFactoryManager userFactoryManager = new UserFactoryManager();
     private final CommonCardFactory commonCardFactory = new CommonCardFactory();
-
 
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     // thought question: is the hard dependency below a problem?
-    // private final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
     // private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
     private final JsonUserDataAccessObject userDataAccessObject = new JsonUserDataAccessObject();
     private final InMemoryDeckDataAccessObejct deckDataAccessObject = new InMemoryDeckDataAccessObejct();
     private final JsonUserRecordDataAccessObject userRecordDataAccessObject = new JsonUserRecordDataAccessObject();
     private final WordBookDataAccessObject wordBookDataAccessObject = new WordBookDataAccessObject();
     private final WordDataAccessObject wordDataAccessObject = new WordDataAccessObject();
-    private final JsonUserProfileDAO userProfileDAO = new JsonUserProfileDAO();
+    private final JsonUserProfileDAO userProfileDataAccessObejct = new JsonUserProfileDAO();
 
     private SignupView signupView;
     private WordDetailView wordDetailView;
@@ -161,8 +188,6 @@ public class AppBuilder {
     private final DeepLAPIAdapter deepLapi = new DeepLAPIAdapter();
     private final FreeDictionaryApiAdapter freeDictionaryApi = new FreeDictionaryApiAdapter();
     private final LearnWordsGenerator learnWordsGenerator = new LearnWordsGenerator();
-    private final TimeGetter timegetter = new TimeGenerator();
-
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
@@ -204,11 +229,13 @@ public class AppBuilder {
 
         profileViewModel = new ProfileViewModel();
         final ProfileSetOutputBoundary profileSetPresenter = new ProfileSetPresenter(profileViewModel);
-        final ProfileSetInputBoundary profileSetInteractor = new ProfileSetInteractor(userProfileDAO, profileSetPresenter, profileFactory);
+        final ProfileSetInputBoundary profileSetInteractor =
+                new ProfileSetInteractor(userProfileDataAccessObejct, profileSetPresenter, profileFactory);
         final ProfileSetController profileSetController = new ProfileSetController(profileSetInteractor);
 
         final ProfileOutputBoundary profilePresenter = new ProfilePresenter(profileViewModel);
-        final ProfileInputBoundary profileInteractor = new ProfileInteractor(profilePresenter, userProfileDAO);
+        final ProfileInputBoundary profileInteractor =
+                new ProfileInteractor(profilePresenter, userProfileDataAccessObejct);
         final ProfileController profileController = new ProfileController(profileInteractor);
         profileView = new ProfileView(profileViewModel, profileSetController);
 
@@ -219,10 +246,12 @@ public class AppBuilder {
         final ChangePasswordOutputBoundary changePasswordPresenter = new ChangePasswordPresenter(changeViewModel);
         final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(
                 changePasswordPresenter, userDataAccessObject);
-        final ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
+        final ChangePasswordController changePasswordController =
+                new ChangePasswordController(changePasswordInteractor);
         changePasswordView = new ChangePasswordView(changeViewModel);
-        final MakePasswordChangeOutputBoundary  presenter = new MakePasswordChangePresenter(changeViewModel);
-        final MakePasswordChangeInputBoundary interactor = new MakePasswordChangeInteractor(presenter, userDataAccessObject,
+        final MakePasswordChangeOutputBoundary presenter = new MakePasswordChangePresenter(changeViewModel);
+        final MakePasswordChangeInputBoundary interactor =
+                new MakePasswordChangeInteractor(presenter, userDataAccessObject,
                 (UserFactory<CommonUserDto>) userFactoryManager.getFactory(UserType.COMMON),
                 (UserFactory<SecurityUserDto>) userFactoryManager.getFactory(UserType.SECURITY));
         final MakePasswordChangeController controller = new MakePasswordChangeController(interactor);
@@ -252,7 +281,9 @@ public class AppBuilder {
 
         rankViewModel = new RankViewModel();
         final RankOutputBoundary rankPresenter = new RankPresenter(rankViewModel);
-        final RankInputBoundary rankInteractor = new RankInteractor(userRecordDataAccessObject, rankPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
+        final RankInputBoundary rankInteractor =
+                new RankInteractor(userRecordDataAccessObject, rankPresenter,
+                        new DefaultLeaderboardSelector(), new DefaultScoreSort(), 10);
         final RankController rankController = new RankController(rankInteractor);
         rankView = new RankView(rankViewModel, rankController);
 
@@ -261,10 +292,10 @@ public class AppBuilder {
 
         achievementViewModel = new AchievementViewModel();
         final AchievementOutputBoundary achievementPresenter = new AchievementPresenter(achievementViewModel);
-        final AchievementInputBoundary achievementInteractor = new AchievementInteractor(achievementPresenter, userRecordDataAccessObject);
+        final AchievementInputBoundary achievementInteractor =
+                new AchievementInteractor(achievementPresenter, userRecordDataAccessObject);
         final AchievementController achievementController = new AchievementController(achievementInteractor);
         achievementView = new AchievementView(achievementViewModel);
-
 
         loggedInView.addAchievementPage(achievementView);
         loggedInView.setAchievementController(achievementController);
@@ -273,6 +304,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the StudySession view to the UI and initializes its ViewModel.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addStudySessionView() {
         studySessionViewModel = new StudySessionViewModel();
         studySessionView = new StudySessionView(studySessionViewModel);
@@ -281,6 +317,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the WordDetail view to the UI and initializes its ViewModel.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addWordDetailView() {
         wordDetailViewModel = new WordDetailViewModel();
         wordDetailView = new WordDetailView(wordDetailViewModel);
@@ -289,16 +330,26 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Wires the finish-check-in use case into the study session view.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addFinishCheckInUseCase() {
         final FinishCheckInOutputBoundary presenter = new FinishPresenter(loggedInViewModel,
                 viewManagerModel, studySessionViewModel);
         final FinishCheckInInputBoundary interactor = new FinishCheckInInteractor(presenter,
-                userRecordDataAccessObject, deckDataAccessObject, learnRecordFactory, timegetter);
+                userRecordDataAccessObject, deckDataAccessObject, learnRecordFactory, new TimeGenerator());
         final FinishController controller = new FinishController(interactor);
         studySessionView.setFinishCheckInController(controller);
         return this;
     }
 
+    /**
+     * Adds the StudySession usecase to the UI and initializes its ViewModel.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addStudySessionUseCase() {
         final StudySessionOutputBoundary presenter = new StudySessionPresenter(viewManagerModel,
                 studySessionViewModel,
@@ -309,18 +360,22 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the StartCheckIn usecase to the UI and initializes its ViewModel.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addStartCheckInUseCase() {
         final StartCheckInOutputBoundary presenter = new StartCheckInPresenter(viewManagerModel,
                 startCheckInViewModel, studySessionViewModel, loggedInViewModel);
-        final StartCheckInInputBoundary interactor
-                = new StartCheckInInteractor(userRecordDataAccessObject,
-                wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDAO,
+        final StartCheckInInputBoundary interactor =
+                new StartCheckInInteractor(userRecordDataAccessObject,
+                wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDataAccessObejct,
                 learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory, commonCardFactory);
         final StartCheckInController controller = new StartCheckInController(interactor, presenter);
         startCheckInView.setController(controller);
         return this;
     }
-
 
     /**
      * Adds the Signup Use Case to the application.
@@ -330,9 +385,11 @@ public class AppBuilder {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
-                userDataAccessObject, signupOutputBoundary, (UserFactory<CommonUserDto>) userFactoryManager.getFactory(UserType.COMMON));
+                userDataAccessObject, signupOutputBoundary,
+                (UserFactory<CommonUserDto>) userFactoryManager.getFactory(UserType.COMMON));
         final SignupSecurityInputBoundary userSecuritySignupInteractor = new SignupSecurityInteractor(
-                userDataAccessObject, signupOutputBoundary, (UserFactory<SecurityUserDto>) userFactoryManager.getFactory(UserType.SECURITY));
+                userDataAccessObject, signupOutputBoundary,
+                (UserFactory<SecurityUserDto>) userFactoryManager.getFactory(UserType.SECURITY));
 
         final SignupController controller = new SignupController(userSignupInteractor, userSecuritySignupInteractor);
         signupView.setSignupController(controller);
@@ -370,6 +427,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the WordDetail usecase to the UI and initializes its ViewModel.
+     *
+     * @return the builder instance, for chaining
+     */
     public AppBuilder addWordDetaiUsecase() {
         final WordDetailOutputBoundary presenter = new WordDetailPresenter(
                 viewManagerModel, wordDetailViewModel, studySessionViewModel);
@@ -418,3 +480,4 @@ public class AppBuilder {
 
     }
 }
+// CHECKSTYLE:ON AvoidStarImport

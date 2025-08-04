@@ -1,14 +1,5 @@
 package data_access;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import entity.CommonLearnRecord;          // ← 具体实现类
-import entity.LearnRecord;
-import use_case.finish_checkin.UserSaveRecordDataAccessInterface;
-import use_case.rank.RankUserDataAccessInterface;
-import use_case.gateway.UserRecordDataAccessInterface;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +8,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import entity.CommonLearnRecord;
+import entity.LearnRecord;
+import use_case.finish_checkin.UserSaveRecordDataAccessInterface;
+import use_case.gateway.UserRecordDataAccessInterface;
+import use_case.rank.RankUserDataAccessInterface;
 
 public class JsonUserRecordDataAccessObject
         implements UserRecordDataAccessInterface, UserSaveRecordDataAccessInterface, RankUserDataAccessInterface {
@@ -31,7 +35,9 @@ public class JsonUserRecordDataAccessObject
 
     private final Gson gson;
 
-    private final Type mapType = new TypeToken<Map<String, List<CommonLearnRecord>>>() {}.getType();
+    private final Type mapType = new TypeToken<Map<String, List<CommonLearnRecord>>>() {
+
+    }.getType();
 
     private final Map<String, List<CommonLearnRecord>> cache;
 
@@ -46,13 +52,19 @@ public class JsonUserRecordDataAccessObject
     }
 
     JsonUserRecordDataAccessObject(Path filePath) {
-        this.store = filePath == null ? DEFAULT_PATH : filePath;
-
+        if (filePath == null) {
+            this.store = DEFAULT_PATH;
+        }
+        else {
+            this.store = filePath;
+        }
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class,
-                        (com.google.gson.JsonSerializer<LocalDateTime>) (src, t, ctx) -> ctx.serialize(src.format(ISO)))
+                        (com.google.gson.JsonSerializer<LocalDateTime>)
+                                (src, type, ctx) -> ctx.serialize(src.format(ISO)))
                 .registerTypeAdapter(LocalDateTime.class,
-                        (com.google.gson.JsonDeserializer<LocalDateTime>) (json, t, ctx) -> LocalDateTime.parse(json.getAsString(), ISO))
+                        (com.google.gson.JsonDeserializer<LocalDateTime>)
+                                (json, type, ctx) -> LocalDateTime.parse(json.getAsString(), ISO))
                 .setPrettyPrinting()
                 .create();
 
@@ -66,7 +78,7 @@ public class JsonUserRecordDataAccessObject
 
     @Override
     public synchronized Map<String, List<LearnRecord>> getAllUsers() {
-        Map<String, List<LearnRecord>> result = new HashMap<>();
+        final Map<String, List<LearnRecord>> result = new HashMap<>();
         cache.forEach((user, list) -> result.put(user, new ArrayList<>(list)));
         return Collections.unmodifiableMap(result);
     }
@@ -74,8 +86,8 @@ public class JsonUserRecordDataAccessObject
     @Override
     public synchronized void save(LearnRecord rec) {
         Objects.requireNonNull(rec.getUsername(), "username must not be null");
-        CommonLearnRecord record = (CommonLearnRecord) rec;
-        cache.computeIfAbsent(record.getUsername(), k -> new ArrayList<>()).add(record);
+        final CommonLearnRecord record = (CommonLearnRecord) rec;
+        cache.computeIfAbsent(record.getUsername(), string -> new ArrayList<>()).add(record);
         flush();
     }
 
@@ -85,19 +97,24 @@ public class JsonUserRecordDataAccessObject
                 Files.createDirectories(store.getParent());
                 Files.writeString(store, "{}", StandardCharsets.UTF_8);
             }
-            String json = Files.readString(store);
+            final String json = Files.readString(store);
             Map<String, List<CommonLearnRecord>> map = gson.fromJson(json, mapType);
-            return map != null ? map : new HashMap<>();
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot read " + store, e);
+            if (map.isEmpty()) {
+                map = new HashMap<>();
+            }
+            return map;
+        }
+        catch (IOException exception) {
+            throw new IllegalStateException("Cannot read " + store, exception);
         }
     }
 
     private void flush() {
         try {
             Files.writeString(store, gson.toJson(cache, mapType));
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot write " + store, e);
+        }
+        catch (IOException exception) {
+            throw new IllegalStateException("Cannot write " + store, exception);
         }
     }
 }

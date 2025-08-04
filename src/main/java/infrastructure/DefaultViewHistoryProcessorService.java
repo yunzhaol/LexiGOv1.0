@@ -1,16 +1,15 @@
 package infrastructure;
 
-
-import entity.LearnRecord;
-import entity.ViewHistoryEntity;
-import use_case.viewhistory.ViewHistoryEntryData;
-import use_case.viewhistory.ViewHistoryProcessorService;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import entity.LearnRecord;
+import entity.ViewHistoryEntity;
+import use_case.viewhistory.ViewHistoryEntryData;
+import use_case.viewhistory.ViewHistoryProcessorService;
 
 /**
  * Default implementation of ViewHistoryProcessorService.
@@ -23,33 +22,36 @@ public class DefaultViewHistoryProcessorService implements ViewHistoryProcessorS
 
     @Override
     public List<ViewHistoryEntryData> processRecords(List<LearnRecord> records) {
+        final List<ViewHistoryEntryData> results;
         if (records == null || records.isEmpty()) {
-            return new ArrayList<>();
+            results = new ArrayList<>();
         }
+        else {
+            // Sort records by end time and create initial entities with session number 0
+            final List<ViewHistoryEntity> sortedEntries = records.stream()
+                    .sorted(Comparator.comparing(LearnRecord::getEndTime))
+                    .map(record -> {
+                        return new ViewHistoryEntity(
+                                record.getUsername(),
+                                record.getEndTime(),
+                                record.getLearnedWordIds(),
+                                0
+                        );
+                    })
+                    .collect(Collectors.toList());
 
-        // Sort records by end time and create initial entities with session number 0
-        List<ViewHistoryEntity> sortedEntries = records.stream()
-                .sorted(Comparator.comparing(LearnRecord::getEndTime))
-                .map(record -> new ViewHistoryEntity(
-                        record.getUsername(),
-                        record.getEndTime(),
-                        record.getLearnedWordIds(),
-                        0
-                ))
-                .collect(Collectors.toList());
-
-        // Assign sequential session numbers starting from 1 and convert to ViewHistoryEntryData
-        List<ViewHistoryEntryData> sessionData = new ArrayList<>();
-        for (int i = 0; i < sortedEntries.size(); i++) {
-            ViewHistoryEntity entry = sortedEntries.get(i);
-            ViewHistoryEntryData entryData = new ViewHistoryEntryData(
-                    i + 1, // session number starts from 1
-                    entry.getEndTime().format(FORMATTER),
-                    entry.getWordsCount()
-            );
-            sessionData.add(entryData);
+            // Assign sequential session numbers starting from 1 and convert to ViewHistoryEntryData
+            results = new ArrayList<>();
+            for (int i = 0; i < sortedEntries.size(); i++) {
+                final ViewHistoryEntity entry = sortedEntries.get(i);
+                final ViewHistoryEntryData entryData = new ViewHistoryEntryData(
+                        i + 1,
+                        entry.getEndTime().format(FORMATTER),
+                        entry.getWordsCount()
+                );
+                results.add(entryData);
+            }
         }
-
-        return sessionData;
+        return results;
     }
 }
