@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
  * The View for the Signup Use Case.
  */
 public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
+    public static final String TITLE_LABEL = "Create Your Account";
     private final String viewName = "sign up";
 
     private final SignupViewModel signupViewModel;
@@ -38,7 +39,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         //add(Box.createVerticalStrut(60));
         // Create logo
         String logo =
-                "\n\n\n\n\n\n\n   ____   ____     ____   ____     ___    _____ \n" +
+                "\n\n\n\n\n\n\n\n   ____   ____     ____   ____     ___    _____ \n" +
                         "  / ___| / ___|   / ___| |___ \\   / _ \\  |___  |\n" +
                         " | |     \\___ \\  | |       __) | | | | |    / / \n" +
                         " | |___   ___) | | |___   / __/  | |_| |   / /  \n" +
@@ -50,14 +51,14 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         logoArea.setEditable(false);
         logoArea.setFont(new Font("Monospaced", Font.BOLD, 12));
         logoArea.setBackground(getBackground());
-        logoArea.setForeground(Color.CYAN);
+        logoArea.setForeground(Color.blue);
         logoArea.setMargin(new Insets(10, 10, 10, 10));
 
         // Create form panel (original UI)
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
 
-        final JLabel title = new JLabel(SignupViewModel.TITLE_LABEL);
+        final JLabel title = new JLabel(TITLE_LABEL);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 

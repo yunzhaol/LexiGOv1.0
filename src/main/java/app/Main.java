@@ -6,6 +6,9 @@ import com.formdev.flatlaf.FlatDarkLaf;
 
 import java.awt.*;
 import java.io.IOException;
+
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import view.FontScaler;
 
 /**
@@ -55,17 +58,32 @@ public class Main {
 
             JMenuBar menuBar = new JMenuBar();
             JToggleButton a11y = new JToggleButton("A+");
+            JToggleButton a12y = new JToggleButton("Day/Night");
             a11y.setToolTipText("Large text mode");
+            a12y.setToolTipText("Day Mode / Night Mode");
             a11y.getAccessibleContext().setAccessibleName("Toggle large text mode");
+            a12y.getAccessibleContext().setAccessibleName("Toggle D/N mode");
             a11y.addActionListener(e ->
                     FontScaler.applyScale(a11y.isSelected() ? 1.2f : 1.0f)
             );
+            a12y.addActionListener(e -> {
+                boolean isCurrentlyDark = FlatLaf.isLafDark();
+
+                if (isCurrentlyDark) {
+                    FlatLightLaf.setup();
+                } else {
+                    FlatDarkLaf.setup();
+                }
+
+                SwingUtilities.updateComponentTreeUI(application);
+            });
             menuBar.add(a11y);
+            menuBar.add(a12y);
             application.setJMenuBar(menuBar);
 
             application.pack();
 //            application.setSize(534, 330);
-            application.setSize(841, 476);
+            application.setSize(846, 479);
             application.setLocationRelativeTo(null);
             application.setVisible(true);
         });

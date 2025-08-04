@@ -113,7 +113,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        leftPanel.setPreferredSize(new Dimension(286, 0)); // 固定左侧宽度，按需调
+        leftPanel.setPreferredSize(new Dimension(286, 0));
 
         ImageIcon leftIcon;
         try {
@@ -127,7 +127,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
         String ascii =
 
-                "\n\n\n\n\n     _         _   _                \n" +
+                "\n\n\n\n     _         _   _                \n" +
                         "    / \\  _   _| |_| |__   ___  _ __ \n" +
                         "   / _ \\| | | | __| '_ \\ / _ \\| '__|\n" +
                         "  / ___ | |_| | |_| | | | (_) | |   \n" +
@@ -142,7 +142,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         JTextArea asciiArea = new JTextArea(ascii);
         asciiArea.setEditable(false);
 
-        asciiArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        asciiArea.setFont(new Font("Monospaced", Font.BOLD, 12));
         asciiArea.setBackground(getBackground());
         asciiArea.setForeground(new Color(100, 149, 237)); //
         asciiArea.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -154,7 +154,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         leftPanel.add(Box.createVerticalGlue());
 
         leftPanel.add(leftImageLabel);
-        leftPanel.add(Box.createVerticalStrut(12));
+        leftPanel.add(Box.createVerticalStrut(27));
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
