@@ -32,11 +32,6 @@ public class WordDetailPresenter implements WordDetailOutputBoundary {
     }
 
     @Override
-    public void switchTologgedView() {
-
-    }
-
-    @Override
     public void switchToStudySessionView() {
         viewManagerModel.setState(studySessionViewModel.getViewName());
         viewManagerModel.firePropertyChanged();

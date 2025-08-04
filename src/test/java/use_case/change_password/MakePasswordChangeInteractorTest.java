@@ -253,6 +253,37 @@ class MakePasswordChangeInteractorTest {
     }
 
     @Test
+    @DisplayName("Should fail when new password equals the old password")
+    void shouldRejectSamePassword() {
+        // Given
+        String username = "duplicateUser";
+        String oldPassword = "password123";
+        String newPassword = "password123";          // 与旧密码完全相同
+        MakePasswordChangeInputData inputData =
+                new MakePasswordChangeInputData(username, newPassword, null);  // 无密保问题
+
+        // 模拟 DAO 行为
+        when(mockUserDAO.get(username)).thenReturn(mockUser);
+        when(mockUser.getPassword()).thenReturn(oldPassword);
+
+        // When
+        interactor.make_password_change(inputData);
+
+        // Then
+        // 1⃣ 捕获 presenter 传出的错误信息
+        ArgumentCaptor<MakePasswordChangeOutputData> captor =
+                ArgumentCaptor.forClass(MakePasswordChangeOutputData.class);
+        verify(mockPresenter).presentFailure(captor.capture());
+        assertEquals(
+                "Password cannot be same as the old password",
+                captor.getValue().getErrorMessage());
+
+        // 2⃣ 确认没有执行更新与成功回调
+        verify(mockUserDAO, never()).update(any(), any());
+        verify(mockPresenter, never()).presentSuccess();
+    }
+
+    @Test
     @DisplayName("Should handle empty username")
     void shouldHandleEmptyUsername() {
         // Given

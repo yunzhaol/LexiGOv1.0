@@ -1,23 +1,26 @@
 package use_case.signup.security;
 
-import entity.SecurityUserFactory;
+import java.util.regex.Pattern;
+
 import entity.User;
 import entity.UserFactory;
 import entity.dto.SecurityUserDto;
-import use_case.signup.*;
-
-import java.util.regex.Pattern;
+import use_case.signup.ProcessorOutput;
+import use_case.signup.SignUpProcessor;
+import use_case.signup.SignupOutputBoundary;
+import use_case.signup.SignupOutputData;
+import use_case.signup.SignupUserDataAccessInterface;
 
 /**
  * The Signup Interactor.
  */
 public class SignupSecurityInteractor implements SignupSecurityInputBoundary {
+    private static final Pattern PASSWORD_RULE =
+            Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
     private final SignupUserDataAccessInterface userDataAccessObject;
     private final SignupOutputBoundary userPresenter;
     private final UserFactory<SecurityUserDto> userFactory;
     private final SignUpProcessor processor;
-    private static final Pattern PASSWORD_RULE =
-            Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
 
     public SignupSecurityInteractor(SignupUserDataAccessInterface signupDataAccessInterface,
                                     SignupOutputBoundary signupOutputBoundary,
@@ -31,16 +34,17 @@ public class SignupSecurityInteractor implements SignupSecurityInputBoundary {
     @Override
     public void execute(SignupSecurityInputData signupInputData) {
 
-        String username = signupInputData.getUsername();
-        String password = signupInputData.getPassword();
-        String repeatPassword = signupInputData.getRepeatPassword();
+        final String username = signupInputData.getUsername();
+        final String password = signupInputData.getPassword();
+        final String repeatPassword = signupInputData.getRepeatPassword();
 
-        ProcessorOutput output = processor.signUpProcessor(username, password, repeatPassword);
+        final ProcessorOutput output = processor.signUpProcessor(username, password, repeatPassword);
 
         if (!output.isSuccess()) {
             userPresenter.prepareFailView(output.getErrorMessage());
-        } else {
-            SecurityUserDto dto = SecurityUserDto.builder()
+        }
+        else {
+            final SecurityUserDto dto = SecurityUserDto.builder()
                     .name(username)
                     .password(password)
                     .question(signupInputData.getSecurityQuestion())

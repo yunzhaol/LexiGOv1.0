@@ -12,19 +12,19 @@ public class StudySessionInteractor implements StudySessionInputBoundary {
     }
 
     @Override
-    public void handleNextRequest(StudySessionInputData in) {
+    public void handleNextRequest(StudySessionInputData inputData) {
 
-        int currentPage = Integer.parseInt(in.getPagenumber());
-        int totalPages  = Integer.parseInt(in.getTotalpage());
+        final int currentPage = Integer.parseInt(inputData.getPagenumber());
+        final int totalPages = Integer.parseInt(inputData.getTotalpage());
 
-        int nextIndex = currentPage;
+        final int nextIndex = currentPage;
 
-        String text = deckgetter.getText(nextIndex);
+        final String text = deckgetter.getText(nextIndex);
 
-        boolean reachLast  = (nextIndex == totalPages - 1);
-        boolean reachFirst = (nextIndex <= 0);
+        final boolean reachLast = nextIndex == totalPages - 1;
+        final boolean reachFirst = nextIndex <= 0;
 
-        StudySessionOutputData out = new StudySessionOutputData(
+        final StudySessionOutputData out = new StudySessionOutputData(
                 String.valueOf(currentPage + 1),
                 text,
                 reachLast,
@@ -35,19 +35,19 @@ public class StudySessionInteractor implements StudySessionInputBoundary {
     }
 
     @Override
-    public void handlePrevRequest(StudySessionInputData in) {
+    public void handlePrevRequest(StudySessionInputData inputData) {
 
-        int currentPage = Integer.parseInt(in.getPagenumber()); // 1‑based
-        int totalPages  = Integer.parseInt(in.getTotalpage());
+        final int currentPage = Integer.parseInt(inputData.getPagenumber());
+        final int totalPages = Integer.parseInt(inputData.getTotalpage());
 
-        int prevIndex = currentPage - 2;
+        final int prevIndex = currentPage - 2;
 
-        String text = deckgetter.getText(prevIndex);
+        final String text = deckgetter.getText(prevIndex);
 
-        boolean reachFirst = (prevIndex == 0);
-        boolean reachLast  = false;
+        final boolean reachFirst = prevIndex == 0;
+        final boolean reachLast = false;
 
-        StudySessionOutputData out = new StudySessionOutputData(
+        final StudySessionOutputData out = new StudySessionOutputData(
                 String.valueOf(currentPage - 1),
                 text,
                 reachLast,

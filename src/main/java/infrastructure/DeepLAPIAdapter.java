@@ -1,8 +1,5 @@
 package infrastructure;
 
-import entity.Language;
-import use_case.start_checkin.WordTranslationAPI;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -10,6 +7,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+
+import entity.Language;
+import use_case.start_checkin.WordTranslationAPI;
 
 /**
  * Adapter around the <a href="https://www.deepl.com/docs-api">DeepL v2 REST API</a>.
@@ -25,12 +25,12 @@ import java.nio.charset.StandardCharsets;
  */
 public class DeepLAPIAdapter implements WordTranslationAPI {
 
-
     /** Free‑tier base URL (see javadoc above for the Pro URL). */
     private static final String ENDPOINT = "https://api-free.deepl.com/v2/translate";
 
     /**
      * API key – <b>never</b> commit real keys to source control.
+     *
      * <p>Here we fall back to an environment variable so you can
      * keep secrets outside the repo:</p>
      *
@@ -42,6 +42,7 @@ public class DeepLAPIAdapter implements WordTranslationAPI {
 
     /** Thread‑safe, shareable HTTP client. */
     private static final HttpClient HTTP = HttpClient.newHttpClient();
+    private static final int INT = 200;
 
     /**
      * Translate plain text using DeepL.
@@ -53,71 +54,97 @@ public class DeepLAPIAdapter implements WordTranslationAPI {
      */
     @Override
     public String getTranslation(String text, Language targetLang) {
+        String translation = " ";
         /* 1  Guard‑clauses for null/empty arguments */
         if (text == null || text.isBlank() || targetLang == null) {
-            return "";
+            translation = "";
         }
+        else {
+            /* 2️  Build the x‑www‑form‑urlencoded body
+             *     - Multiple text parameters are allowed; we send one for simplicity.
+             *     - target_lang MUST be uppercase per the official spec.
+             */
+            final String form = "text=" + urlEncode(text)
+                    + "&target_lang=" + targetLang.code().toUpperCase();
 
-        /* 2️  Build the x‑www‑form‑urlencoded body
-         *     - Multiple text parameters are allowed; we send one for simplicity.
-         *     - target_lang MUST be uppercase per the official spec.
-         */
-        String form = "text=" + urlEncode(text) +
-                "&target_lang=" + targetLang.code().toUpperCase();
+            /* 3️  Assemble the POST request */
+            final HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(ENDPOINT))
+                    .header("Authorization", "DeepL-Auth-Key " + AUTH_KEY)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(HttpRequest.BodyPublishers.ofString(form))
+                    .build();
 
-        /* 3️  Assemble the POST request */
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ENDPOINT))
-                .header("Authorization", "DeepL-Auth-Key " + AUTH_KEY)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(form))
-                .build();
+            /* 4️  Fire the request and handle the response */
+            try {
+                final HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
 
-        /* 4️  Fire the request and handle the response */
-        try {
-            HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+                /* DeepL returns JSON even for errors; only 200 is “all good”. */
+                if (response.statusCode() != INT) {
+                    // Common errors: 456 (quota exceeded), 429 (too many requests)
+                    throw new RuntimeException(
+                            "DeepL returned HTTP "
+                                    + response.statusCode()
+                                    + " - "
+                                    + response.body()
+                    );
+                }
+                translation = parseTranslatedText(response.body());
 
-            /* DeepL returns JSON even for errors; only 200 is “all good”. */
-            if (response.statusCode() != 200) {
-                // Common errors: 456 (quota exceeded), 429 (too many requests)
-                throw new RuntimeException("DeepL returned HTTP "
-                        + response.statusCode() + " – " + response.body());
             }
-            return parseTranslatedText(response.body());
-
-        } catch (IOException | InterruptedException e) {
-            /* Preserve the interrupt status if we were interrupted */
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
+            catch (IOException | InterruptedException exception) {
+                /* Preserve the interrupt status if we were interrupted */
+                if (exception instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                throw new RuntimeException("DeepL request failed", exception);
             }
-            throw new RuntimeException("DeepL request failed", e);
         }
+        return translation;
     }
 
-
-    /** URL‑encodes a string for form submission (UTF‑8). */
+    /**
+     * URL-encodes a string for form submission using UTF-8.
+     *
+     * @param raw the raw string to encode
+     * @return the URL-encoded representation of the input
+     */
     private static String urlEncode(String raw) {
         return URLEncoder.encode(raw, StandardCharsets.UTF_8);
     }
 
     /**
-     * Ultra‑lightweight JSON parser that yanks the first <code>"text":"…"</code> value.
+     * Parses the translated text from the DeepL JSON response.
+     *
      * <p>
      * Expected shape (simplified):
      * <pre>{
      *   "translations":[
-     *     {"detected_source_language":"EN","text":"你好，世界！"}
+     *     {"detected_source_language":"EN","text":"…"}
      *   ]
      * }</pre>
-     * <p>
-     * Robust production code should delegate to a proper JSON library.
+     * </p>
+     *
+     * @param json the full JSON response from DeepL
+     * @return the first translated text value, or empty string if not found
      */
     private static String parseTranslatedText(String json) {
-        final String MARKER = "\"text\":\"";
-        int start = json.indexOf(MARKER);
-        if (start < 0) return "";
-        start += MARKER.length();
-        int end = json.indexOf('"', start);
-        return end > start ? json.substring(start, end) : "";
+        final String marker = "\"text\":\"";
+        int start = json.indexOf(marker);
+        String result = " ";
+        if (start < 0) {
+            result = "";
+        }
+        else {
+            start += marker.length();
+            final int end = json.indexOf('"', start);
+            if (end > start) {
+                result = json.substring(start, end);
+            }
+            else {
+                result = "";
+            }
+        }
+        return result;
     }
 }

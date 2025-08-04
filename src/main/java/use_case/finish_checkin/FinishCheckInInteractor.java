@@ -29,12 +29,13 @@ public class FinishCheckInInteractor implements FinishCheckInInputBoundary {
     }
 
     @Override
-    public void execute(FinishCheckInInputData in) {
+    public void execute(FinishCheckInInputData inputData) {
         final List<UUID> uuidList = new ArrayList<>();
         for (CommonCard eachCard : textsdataGetter.getWordDeck()) {
             uuidList.add(eachCard.getWordId());
         }
-        final LearnRecord learnRecord = learnRecordFactory.create(in.getUsername(), timegenerator.generate(), uuidList);
+        final LearnRecord learnRecord = learnRecordFactory.create(inputData.getUsername(),
+                timegenerator.generate(), uuidList);
         recordSaver.save(learnRecord);
         presenter.prepareSuccessView();
 

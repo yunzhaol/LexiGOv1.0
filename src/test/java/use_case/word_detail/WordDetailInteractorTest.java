@@ -38,11 +38,6 @@ public class WordDetailInteractorTest {
             }
 
             @Override
-            public void switchTologgedView() {
-
-            }
-
-            @Override
             public void switchToStudySessionView() {
 
             }
@@ -66,11 +61,6 @@ public class WordDetailInteractorTest {
         WordDetailOutputBoundary successPresenter = new WordDetailOutputBoundary() {
             @Override
             public void prepareSuccessView(WordDetailOutputData out) {
-            }
-
-            @Override
-            public void switchTologgedView() {
-
             }
 
             @Override

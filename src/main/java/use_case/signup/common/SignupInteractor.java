@@ -1,26 +1,27 @@
 package use_case.signup.common;
 
-import entity.CommonUserFactory;
+import java.util.regex.Pattern;
+
 import entity.User;
 import entity.UserFactory;
 import entity.dto.CommonUserDto;
-import use_case.signup.*;
-import use_case.signup.security.SignupSecurityInputBoundary;
-import use_case.signup.security.SignupSecurityInputData;
-
-import java.util.regex.Pattern;
+import use_case.signup.ProcessorOutput;
+import use_case.signup.SignUpProcessor;
+import use_case.signup.SignupOutputBoundary;
+import use_case.signup.SignupOutputData;
+import use_case.signup.SignupUserDataAccessInterface;
 
 /**
  * The Signup Interactor.
  */
 public class SignupInteractor implements SignupInputBoundary {
 
+    private static final Pattern PASSWORD_RULE =
+            Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
     private final SignupUserDataAccessInterface userDataAccessObject;
     private final SignupOutputBoundary userPresenter;
     private final UserFactory<CommonUserDto> userFactory;
     private final SignUpProcessor processor;
-    private static final Pattern PASSWORD_RULE =
-            Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
 
     public SignupInteractor(SignupUserDataAccessInterface signupDataAccessInterface,
                             SignupOutputBoundary signupOutputBoundary,
@@ -34,20 +35,21 @@ public class SignupInteractor implements SignupInputBoundary {
     @Override
     public void execute(SignupInputData signupInputData) {
 
-        String username = signupInputData.getUsername();
-        String pwd1     = signupInputData.getPassword();
-        String pwd2     = signupInputData.getRepeatPassword();
+        final String username = signupInputData.getUsername();
+        final String pwd1 = signupInputData.getPassword();
+        final String pwd2 = signupInputData.getRepeatPassword();
 
-        ProcessorOutput out = processor.signUpProcessor(username, pwd1, pwd2);
+        final ProcessorOutput out = processor.signUpProcessor(username, pwd1, pwd2);
 
         if (!out.isSuccess()) {
             userPresenter.prepareFailView(out.getErrorMessage());
-        } else {
-            CommonUserDto dto = CommonUserDto.builder()
+        }
+        else {
+            final CommonUserDto dto = CommonUserDto.builder()
                     .name(username)
                     .password(pwd1)
                     .build();
-            User user = userFactory.create(dto);
+            final User user = userFactory.create(dto);
             userDataAccessObject.save(user);
             userPresenter.prepareSuccessView(new SignupOutputData(username, false));
         }

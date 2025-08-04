@@ -112,11 +112,6 @@ class StartCheckInInteractorTest {
             public void prepareFailView(String errorMessage) {
                 // Not expected in success scenario
             }
-
-            @Override
-            public void switchToDeckView() {
-                // No-op for this test
-            }
         };
 
         StartCheckInInteractor interactor = new StartCheckInInteractor(
@@ -152,11 +147,6 @@ class StartCheckInInteractorTest {
             @Override
             public void prepareFailView(String errorMessage) {
                 assertEquals("No more words to learn", errorMessage);
-            }
-
-            @Override
-            public void switchToDeckView() {
-                // Not relevant
             }
         };
 

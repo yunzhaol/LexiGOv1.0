@@ -17,23 +17,22 @@ public class ChangePasswordInteractor implements ChangePasswordInputBoundary {
     @Override
     public void execute(ChangePasswordInputData inputData) {
 
-        boolean verification;
-        String type = userdatagetter.getType(inputData.getUsername());
+        boolean verification = false;
+        final String type = userdatagetter.getType(inputData.getUsername());
 
         switch (type) {
+
+            case "SECURITY":
+                verification = true;
+                final String securityQuestion = userdatagetter.getSecurityQuestion(inputData.getUsername());
+                userPresenter.preparePage(new ChangePasswordOutputData(inputData.getUsername(), verification,
+                        securityQuestion));
+                break;
             default:
                 verification = false;
                 userPresenter.preparePage(new ChangePasswordOutputData(inputData.getUsername(), verification,
                         null));
                 break;
-            case "SECURITY":
-                verification = true;
-                String securityQuestion = userdatagetter.getSecurityQuestion(inputData.getUsername());
-                userPresenter.preparePage(new ChangePasswordOutputData(inputData.getUsername(), verification,
-                        securityQuestion));
         }
-
-
     }
-
 }

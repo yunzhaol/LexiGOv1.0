@@ -1,8 +1,8 @@
 package use_case.viewhistory;
 
-import entity.LearnRecord;
-
 import java.util.List;
+
+import entity.LearnRecord;
 
 /**
  * Data access interface for ViewHistory use case.

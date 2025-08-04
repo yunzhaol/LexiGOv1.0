@@ -12,13 +12,13 @@ public class WordDetailInteractor implements WordDetailInputBoundary {
     }
 
     @Override
-    public void execute(WordDetailInputData in) {
-        String translation = wordDetailDataAccess.getTranslation(
-                Integer.parseInt(in.getCurrpage()) - 1);
-        String example = wordDetailDataAccess.getExample(
-                Integer.parseInt(in.getCurrpage()) - 1);
+    public void execute(WordDetailInputData inputData) {
+        final String translation = wordDetailDataAccess.getTranslation(
+                Integer.parseInt(inputData.getCurrpage()) - 1);
+        final String example = wordDetailDataAccess.getExample(
+                Integer.parseInt(inputData.getCurrpage()) - 1);
 
-        WordDetailOutputData wordDetailOutputData = new WordDetailOutputData(translation, example);
+        final WordDetailOutputData wordDetailOutputData = new WordDetailOutputData(translation, example);
         presenter.prepareSuccessView(wordDetailOutputData);
     }
 

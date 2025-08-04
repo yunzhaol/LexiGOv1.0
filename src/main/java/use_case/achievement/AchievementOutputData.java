@@ -1,8 +1,8 @@
 package use_case.achievement;
 
-import entity.Achievement;
-
 import java.util.List;
+
+import entity.Achievement;
 
 public class AchievementOutputData {
     private final List<Achievement> unlockedAchievements;

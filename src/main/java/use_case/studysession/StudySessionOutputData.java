@@ -1,11 +1,11 @@
 package use_case.studysession;
 
 public class StudySessionOutputData {
-    String pagenumber;
-    String wordtext;
-    boolean reachlast;
-    boolean reachfirst;
-    String totalpage;
+    private String pagenumber;
+    private String wordtext;
+    private boolean reachlast;
+    private boolean reachfirst;
+    private String totalpage;
 
     public StudySessionOutputData(String pagenumber,
                                   String wordtext,
