@@ -1,42 +1,70 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+
 import interface_adapter.rank.RankController;
 import interface_adapter.rank.RankState;
 import interface_adapter.rank.RankViewModel;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-
+/**
+ * Displays a leaderboard table and the current user's position.
+ *
+ * <p>
+ * This view listens to {@link RankViewModel} state changes and refreshes the UI
+ * accordingly. A {@link RankController} can be injected to trigger refreshes.
+ * </p>
+ */
 public class RankView extends JPanel implements PropertyChangeListener {
 
+    // ---- UI constants (remove magic numbers) ----
+    private static final int BORDER_HGAP = 10;
+    private static final int BORDER_VGAP = 10;
+    private static final float TITLE_FONT_SIZE = 18f;
 
-    private final RankViewModel vm;
+    // ---- collaborators ----
+    private final RankViewModel viewModel;
     private RankController controller;
 
-
+    // ---- components ----
     private final JLabel title = new JLabel("Leaderboard", SwingConstants.CENTER);
 
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[]{"Rank", "Username", "Scores"}, 0) {
-        public boolean isCellEditable(int r, int c) { return false; }
+            new Object[] {"Rank", "Username", "Scores" }, 0) {
+
+        @Override
+        public boolean isCellEditable(final int row, final int column) {
+            return false;
+        }
     };
     private final JTable table = new JTable(tableModel);
-
-
     private final JLabel currentPosLabel = new JLabel("", SwingConstants.CENTER);
 
-
-    public RankView(RankViewModel vm, RankController controller) {
-        this.vm = vm;
+    /**
+     * Creates the view and wires it to the given view model and controller.
+     *
+     * @param viewModel  the view model to observe
+     * @param controller the controller used to fetch/refresh rankings
+     */
+    public RankView(final RankViewModel viewModel, final RankController controller) {
+        this.viewModel = viewModel;
         this.controller = controller;
-        this.vm.addPropertyChangeListener(this);
-        setLayout(new BorderLayout(10, 10));
+        this.viewModel.addPropertyChangeListener(this);
 
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        setLayout(new BorderLayout(BORDER_HGAP, BORDER_VGAP));
+
+        title.setFont(title.getFont().deriveFont(Font.BOLD, TITLE_FONT_SIZE));
         add(title, BorderLayout.NORTH);
 
         table.setFillsViewportHeight(true);
@@ -45,46 +73,66 @@ public class RankView extends JPanel implements PropertyChangeListener {
         currentPosLabel.setFont(currentPosLabel.getFont().deriveFont(Font.BOLD));
         add(currentPosLabel, BorderLayout.SOUTH);
 
-        JButton refresh = new JButton("Refresh");
-        refresh.addActionListener(e -> {
+        final JButton refresh = new JButton("Refresh");
+        refresh.addActionListener(event -> {
             if (this.controller != null) {
-                this.controller.execute(vm.getState().getCurrentUser());
+                this.controller.execute(viewModel.getState().getCurrentUser());
             }
         });
         add(refresh, BorderLayout.EAST);
     }
 
+    /**
+     * Receives updates from the view model and applies them to the UI.
+     *
+     * @param evt the property change event; only the {@code "state"} key is handled
+     */
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
+    public void propertyChange(final PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
-
-            RankState s = (RankState) evt.getNewValue();
-            SwingUtilities.invokeLater(() -> {
-
-                tableModel.setRowCount(0);
-                s.getLeaderboard().forEach(e ->
-                        tableModel.addRow(new Object[]{
-                                e.getRank(),
-                                e.getUsername(),
-                                e.getScore()
-                        })
-                );
-
-                title.setText("Leaderboard — " + s.getCurrentUser());
-                currentPosLabel.setText("Your current position: " + s.getPosition());
-
-                for (int i = 0; i < tableModel.getRowCount(); i++) {
-                    if (tableModel.getValueAt(i, 1).equals(s.getCurrentUser())) {
-                        table.setRowSelectionInterval(i, i);
-                        break;
-                    }
+            final RankState state = (RankState) evt.getNewValue();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    applyState(state);
                 }
             });
         }
     }
 
-    public void setController(RankController controller) {
+    /**
+     * Applies the given state to the table, title, and selection.
+     *
+     * @param state the new state from the view model
+     */
+    private void applyState(final RankState state) {
+        tableModel.setRowCount(0);
+        state.getLeaderboard().forEach(entry -> {
+            tableModel.addRow(new Object[] {
+                    entry.getRank(),
+                    entry.getUsername(),
+                    entry.getScore(),
+            });
+        });
+
+        // ASCII-only text to satisfy style rule that forbids non-ASCII characters.
+        title.setText("Leaderboard - " + state.getCurrentUser());
+        currentPosLabel.setText("Your current position: " + state.getPosition());
+
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if (tableModel.getValueAt(i, 1).equals(state.getCurrentUser())) {
+                table.setRowSelectionInterval(i, i);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Injects the controller used to refresh rankings.
+     *
+     * @param controller the controller instance
+     */
+    public void setController(final RankController controller) {
         this.controller = controller;
     }
 }

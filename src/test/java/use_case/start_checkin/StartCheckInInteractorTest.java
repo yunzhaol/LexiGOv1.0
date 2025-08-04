@@ -32,10 +32,10 @@ class StartCheckInInteractorTest {
     private JsonUserDataAccessObject       userdata;
     private WordBookDataAccessObject       bookgetter;
     private WordDataAccessObject           wordgetter;
-    private JsonUserProfileDAO             userprofiledao;
+    private JsonUserProfileDAO userprofiledao;
     private InMemoryDeckDataAccessObejct   cardDeck;
     private LearnWordsGenerator            learnWordsGenerator;
-    private DeepLAPIAdapter                mockTranslator;
+    private DeepLAPIAdapter mockTranslator;
     private FreeDictionaryApiAdapter       mockFreeDictionary;
     private WordDeckFactory                factory;
     private CommonCardFactory              commonCardFactory;

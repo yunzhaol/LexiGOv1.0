@@ -2,7 +2,6 @@ package entity;
 
 import java.util.List;
 
-
 public class CommonWordDeck implements WordDeck {
     // {UUid: {yuanwen:mao, yiwen:cat, detail:animal}}
     private final List<CommonCard> deck;

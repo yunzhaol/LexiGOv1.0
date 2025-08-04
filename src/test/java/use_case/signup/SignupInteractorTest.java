@@ -3,6 +3,7 @@ package use_case.signup;
 import data_access.JsonUserDataAccessObject;
 import entity.*;
 import entity.dto.CommonUserDto;
+import entity.dto.SecurityUserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -271,5 +272,15 @@ public class SignupInteractorTest {
         SignupInteractor interactor =
                 new SignupInteractor(userDataAccessObject, presenter, factory);
         interactor.switchToLoginView();
+    }
+
+    @Test
+    public void dtoTest() {
+        CommonUserDto commonUserDto = new CommonUserDto("tester", "Aaa111");
+        SecurityUserDto securityUserDto = new SecurityUserDto("test22", "123", "asd", "asd");
+        assertEquals(commonUserDto, commonUserDto);
+        assertEquals(securityUserDto, securityUserDto);
+        assertEquals(securityUserDto.hashCode(), securityUserDto.hashCode());
+        assertEquals(commonUserDto.hashCode(), commonUserDto.hashCode());
     }
 }
