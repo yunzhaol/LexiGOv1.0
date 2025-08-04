@@ -29,10 +29,12 @@ public class ProfileSetInteractorTest {
                 fail("Should not call fail view");
             }
         };
-//        ProfileFactory profileFactory = new ProfileFactory();
-//
-//        ProfileSetInteractor interactor = new ProfileSetInteractor(mockDAO, mockPresenter, profileFactory);
-//        interactor.execute(inputData);
+
+        ProfileFactory profileFactory = new PersonalProfileFactory();
+        ProfileSetInteractor interactor = new ProfileSetInteractor(mockDAO, mockPresenter, profileFactory);
+        interactor.execute(inputData);
+
+        verify(mockDAO, times(1)).save(any(PersonalProfile.class));
     }
 
     @Test
@@ -78,5 +80,32 @@ public class ProfileSetInteractorTest {
 
         ProfileSetInteractor interactor = new ProfileSetInteractor(mockDAO, mockPresenter, profileFactory);
         interactor.execute(inputData);
+    }
+
+    @Test
+    void testExecute_DAOSaveThrowsException_Fail() {
+        ProfileSetInputData inputData = new ProfileSetInputData("testUser", null, Language.EN);
+
+        ProfileSetUserDataAccessInterface mockDAO = mock(ProfileSetUserDataAccessInterface.class);
+        doThrow(new RuntimeException("Database error"))
+                .when(mockDAO)
+                .save(any(PersonalProfile.class));
+
+        ProfileSetOutputBoundary mockPresenter = new ProfileSetOutputBoundary() {
+            @Override
+            public void prepareSuccessView(ProfileSetOutputData outputData) {
+                fail("Should not call success view if DAO fails");
+            }
+
+            @Override
+            public void prepareFailView(String error) {
+                assertTrue(error.contains("Database error"));
+            }
+        };
+
+        ProfileFactory profileFactory = new PersonalProfileFactory();
+        ProfileSetInteractor interactor = new ProfileSetInteractor(mockDAO, mockPresenter, profileFactory);
+
+        assertThrows(RuntimeException.class, () -> interactor.execute(inputData));
     }
 }
