@@ -15,7 +15,7 @@ public class MakePasswordChangePresenter implements MakePasswordChangeOutputBoun
 
     @Override
     public void presentFailure(MakePasswordChangeOutputData out) {
-        ChangePwState state = changeViewModel.getState();
+        final ChangePwState state = changeViewModel.getState();
         state.setPassword("");
         state.setChangeError(out.getErrorMessage());
         changeViewModel.setState(state);
@@ -24,7 +24,7 @@ public class MakePasswordChangePresenter implements MakePasswordChangeOutputBoun
 
     @Override
     public void presentSuccess() {
-        ChangePwState state = changeViewModel.getState();
+        final ChangePwState state = changeViewModel.getState();
         state.setPassword("");
         state.setChangeError("");
         changeViewModel.setState(state);

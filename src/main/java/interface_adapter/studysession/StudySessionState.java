@@ -1,12 +1,11 @@
 package interface_adapter.studysession;
 
-
 public class StudySessionState {
     private String word = "Welcome";
     private String pagenumber = "0";
     private String totalpage;
     private String username = "";
-    private boolean reachlast = false;
+    private boolean reachlast;
     private boolean reachfirst = true;
 
     public StudySessionState(String word, String pagenumber,

@@ -21,7 +21,7 @@ public class StudySessionPresenter implements StudySessionOutputBoundary {
 
     @Override
     public void prepareSuccessView(StudySessionOutputData out) {
-        StudySessionState state = studySessionViewModel.getState();
+        final StudySessionState state = studySessionViewModel.getState();
         state.setPagenumber(out.getPagenumber());
         state.setWord(out.getWordtext());
         state.setReachfirst(out.isReachfirst());

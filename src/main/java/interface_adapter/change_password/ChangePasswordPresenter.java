@@ -16,7 +16,7 @@ public class ChangePasswordPresenter implements ChangePasswordOutputBoundary {
 
     @Override
     public void preparePage(ChangePasswordOutputData outputData) {
-        ChangePwState state = changeViewModel.getState();
+        final ChangePwState state = changeViewModel.getState();
         state.setUsername(outputData.getUsername());
         state.setVerification(outputData.isNeedVerified());
         state.setSecurityQuestion(outputData.getSecurityQuestion());

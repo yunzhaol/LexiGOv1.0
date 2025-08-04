@@ -3,16 +3,15 @@ package interface_adapter.start_checkin;
 public class StartCheckInState {
 
     private String numberWords = "";
-    private String InputNumberError;
+    private String inputNumberError;
     private String username;
-
 
     @Override
     public String toString() {
         return "StartCheckInState{"
                 + "Username='" + username + '\''
-                + "numberWords='"        + numberWords        + '\''
-                + ", negativeNumberError='" + InputNumberError + '\''
+                + "numberWords='" + numberWords + '\''
+                + ", negativeNumberError='" + inputNumberError + '\''
                 + '}';
     }
 
@@ -21,7 +20,7 @@ public class StartCheckInState {
     }
 
     public String getInputNumberError() {
-        return InputNumberError;
+        return inputNumberError;
     }
 
     public void setNumberWords(String numberWords) {
@@ -29,7 +28,7 @@ public class StartCheckInState {
     }
 
     public void setInputNumberError(String inputNumberError) {
-        this.InputNumberError = inputNumberError;
+        this.inputNumberError = inputNumberError;
     }
 
     public String getUsername() {

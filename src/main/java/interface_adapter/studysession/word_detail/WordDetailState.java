@@ -14,7 +14,9 @@ public class WordDetailState {
         this.example = example;
     }
 
-    public WordDetailState() {}
+    public WordDetailState() {
+
+    }
 
     public String getTranslation() {
         return translation;

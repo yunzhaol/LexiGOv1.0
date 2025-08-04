@@ -1,11 +1,10 @@
 package interface_adapter.achievement;
 
-import entity.Achievement;
-import use_case.achievement.AchievementOutputBoundary;
-import use_case.achievement.AchievementOutputData;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import use_case.achievement.AchievementOutputBoundary;
+import use_case.achievement.AchievementOutputData;
 
 /**
  * Presenter for the Achievement feature.
@@ -14,11 +13,9 @@ import java.util.stream.Collectors;
 public class AchievementPresenter implements AchievementOutputBoundary {
 
     private final AchievementViewModel achievementViewModel;
-    //private final ViewManagerModel achievementViewManagerModel;
 
     public AchievementPresenter(AchievementViewModel achievementViewModel) {
         this.achievementViewModel = achievementViewModel;
-        //this.achievementViewManagerModel = achievementViewManagerModel;
     }
 
     /**
@@ -29,18 +26,15 @@ public class AchievementPresenter implements AchievementOutputBoundary {
      */
     @Override
     public void present(AchievementOutputData achievementOutputData) {
-        AchievementState currentState = achievementViewModel.getState();
+        final AchievementState currentState = achievementViewModel.getState();
 
-        List<String> messages = achievementOutputData.getUnlockedAchievements()
+        final List<String> messages = achievementOutputData.getUnlockedAchievements()
                 .stream()
-                .map(a -> a.getIconUnicode() + " " + a.getDescription())
+                .map(achievement -> achievement.getIconUnicode() + " " + achievement.getDescription())
                 .collect(Collectors.toList());
 
         currentState.setUnlockedAchievements(messages);
         achievementViewModel.setState(currentState);
         achievementViewModel.firePropertyChanged();
     }
-
-//        achievementViewManagerModel.setState(achievementViewModel.getViewName());  // "achievement"
-//        achievementViewManagerModel.firePropertyChanged();
 }

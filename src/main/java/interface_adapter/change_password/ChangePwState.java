@@ -6,7 +6,7 @@ public class ChangePwState {
     private String changeError = "";
     private String password = "";
     private boolean verification;
-    private String securityQuestion = null;
+    private String securityQuestion = "";
 
     public String getUsername() {
         return username;

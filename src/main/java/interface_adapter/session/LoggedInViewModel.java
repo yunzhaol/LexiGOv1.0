@@ -1,4 +1,5 @@
 package interface_adapter.session;
+
 import interface_adapter.ViewModel;
 
 /**

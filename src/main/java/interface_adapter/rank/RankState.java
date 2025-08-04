@@ -1,23 +1,29 @@
 package interface_adapter.rank;
 
-import use_case.rank.UserScore;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import use_case.rank.UserScore;
 
 public class RankState {
 
     private List<UserScore> leaderboard = Collections.synchronizedList(new ArrayList<>());
     private String currentUser = "";
-    private int position = 0;
+    private int position;
 
     /* ---------- Getter ---------- */
-    public List<UserScore> getLeaderboard() { return leaderboard; }
+    public List<UserScore> getLeaderboard() {
+        return leaderboard;
+    }
 
-    public String getCurrentUser() { return currentUser; }
+    public String getCurrentUser() {
+        return currentUser;
+    }
 
-    public int getPosition() { return position; }
+    public int getPosition() {
+        return position;
+    }
 
     public void setLeaderboard(List<UserScore> leaderboard) {
         this.leaderboard = leaderboard;

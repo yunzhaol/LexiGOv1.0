@@ -21,7 +21,7 @@ public class FinishPresenter implements FinishCheckInOutputBoundary {
 
     @Override
     public void prepareSuccessView() {
-        StudySessionState state = studySessionViewModel.getState();
+        final StudySessionState state = studySessionViewModel.getState();
         state.setWord("Welcome");
         state.setReachfirst(true);
         state.setReachlast(false);

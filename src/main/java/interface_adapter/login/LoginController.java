@@ -14,8 +14,6 @@ public class LoginController {
         this.loginUseCaseInteractor = loginUseCaseInteractor;
     }
 
-
-
     /**
      * Executes the Login Use Case.
      * @param username the username of the user logging in
@@ -28,6 +26,12 @@ public class LoginController {
         loginUseCaseInteractor.execute(loginInputData);
     }
 
+    /**
+     * Switches the view from the login screen to the sign-up screen.
+     *
+     * <p>
+     * Delegates the request to {@code loginUseCaseInteractor}.
+     */
     public void switchToSignUpView() {
         loginUseCaseInteractor.switchToSignUpView();
     }
