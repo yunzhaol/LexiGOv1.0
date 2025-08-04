@@ -53,8 +53,4 @@ public class StartCheckInPresenter implements StartCheckInOutputBoundary {
         startCheckInViewModel.firePropertyChanged();
     }
 
-    @Override
-    public void switchToDeckView() {
-
-    }
 }

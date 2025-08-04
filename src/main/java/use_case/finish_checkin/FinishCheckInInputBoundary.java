@@ -1,5 +1,10 @@
 package use_case.finish_checkin;
 
 public interface FinishCheckInInputBoundary {
-    void execute(FinishCheckInInputData in);
+    /**
+     * Executes the finish-check-in process.
+     *
+     * @param inputData encapsulates all data required to finish the check-in; never {@code null}
+     */
+    void execute(FinishCheckInInputData inputData);
 }

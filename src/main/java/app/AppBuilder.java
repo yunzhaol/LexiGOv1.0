@@ -462,14 +462,17 @@ public class AppBuilder {
         final Dimension base = new Dimension(846, 479);
 
         application.addComponentListener(new java.awt.event.ComponentAdapter() {
+
+            public static final float A = 1.75f;
+
             @Override public void componentResized(java.awt.event.ComponentEvent e) {
                 if (debounce.getActionListeners().length == 0) {
                     debounce.addActionListener(ev -> {
-                        float w = application.getWidth()  / (float) base.width;
-                        float h = application.getHeight() / (float) base.height;
+                        final float w = application.getWidth()  / (float) base.width;
+                        final float h = application.getHeight() / (float) base.height;
                         float scale = Math.min(w, h);
 
-                        scale = Math.max(1.0f, Math.min(1.75f, scale));
+                        scale = Math.max(1.0f, Math.min(A, scale));
                         view.FontScaler.applyScale(scale);
                     });
                 }

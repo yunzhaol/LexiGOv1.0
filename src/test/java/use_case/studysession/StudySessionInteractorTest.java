@@ -46,11 +46,6 @@ class StudySessionInteractorTest {
             public void prepareFailureView(StudySessionOutputData out) {
 
             }
-
-            @Override
-            public void switchTologgedView() {
-
-            }
         };
 
         StudySessionInteractor interactor = new StudySessionInteractor(presenter, deckgetter);
@@ -72,11 +67,6 @@ class StudySessionInteractorTest {
 
             @Override
             public void prepareFailureView(StudySessionOutputData out) {
-
-            }
-
-            @Override
-            public void switchTologgedView() {
 
             }
         };
@@ -101,11 +91,6 @@ class StudySessionInteractorTest {
 
             @Override
             public void prepareFailureView(StudySessionOutputData out) {
-
-            }
-
-            @Override
-            public void switchTologgedView() {
 
             }
         };

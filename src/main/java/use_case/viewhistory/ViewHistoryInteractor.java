@@ -1,15 +1,12 @@
 package use_case.viewhistory;
 
-
-import entity.LearnRecord;
-import infrastructure.DefaultViewHistoryProcessorService;
-import use_case.gateway.UserRecordDataAccessInterface;
-
 import java.util.List;
 
+import entity.LearnRecord;
+import use_case.gateway.UserRecordDataAccessInterface;
+
 /**
- * ViewHistory Interactor - Clean and focused implementation.
- * Delegates complex processing to DefaultViewHistoryProcessorService.
+ * Interactor for handling the View History use case.
  */
 public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
 
@@ -18,7 +15,11 @@ public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
     private final ViewHistoryProcessorService processor;
 
     /**
-     * Constructor with injectable processor for testing/customization.
+     * Constructor with injectable dependencies for testing/customization.
+     *
+     * @param dataAccess the data access interface for retrieving user records
+     * @param presenter  the output boundary for presenting results
+     * @param processor  the service for processing raw history records
      */
     public ViewHistoryInteractor(UserRecordDataAccessInterface dataAccess,
                                  ViewHistoryOutputBoundary presenter,
@@ -28,35 +29,46 @@ public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
         this.processor = processor;
     }
 
+    /**
+     * Executes the view history workflow.
+     *
+     * @param inputData the input data containing the username whose history is requested
+     */
     @Override
     public void execute(ViewHistoryInputData inputData) {
-        String username = inputData.getUsername();
+        final String username = inputData.getUsername();
 
-        // Get records from data layer
-        List<LearnRecord> records = dataAccess.get(username);
+        // Retrieve records from data layer
+        final List<LearnRecord> records = dataAccess.get(username);
 
-        // Early return for empty results
+        // Early return if no records are found
         if (records.isEmpty()) {
             presenter.prepareFailView("No learning records found for user: " + username);
-            return;
         }
+        else {
+            // Delegate processing of raw records
+            final List<ViewHistoryEntryData> processedSessions = processor.processRecords(records);
 
-        // Delegate all complex processing to service
-        List<ViewHistoryEntryData> processedSessions = processor.processRecords(records);
+            // Compute aggregates
+            final int totalSessions = processedSessions.size();
+            final int totalWords = calculateTotalWords(processedSessions);
 
-        // Calculate simple aggregates
-        int totalSessions = processedSessions.size();
-        int totalWords = calculateTotalWords(processedSessions);
-
-        // Create and present result
-        ViewHistoryOutputData result = new ViewHistoryOutputData(
-                username, processedSessions, totalSessions, totalWords);
-
-        presenter.prepareSuccessView(result);
+            // Build and present the output data
+            final ViewHistoryOutputData result = new ViewHistoryOutputData(
+                    username,
+                    processedSessions,
+                    totalSessions,
+                    totalWords
+            );
+            presenter.prepareSuccessView(result);
+        }
     }
 
     /**
-     * Simple helper method for calculating total words.
+     * Calculates the total number of words across all processed sessions.
+     *
+     * @param sessions the list of processed history entries
+     * @return the sum of wordsCount from each session
      */
     private int calculateTotalWords(List<ViewHistoryEntryData> sessions) {
         return sessions.stream()
@@ -64,3 +76,4 @@ public class ViewHistoryInteractor implements ViewHistoryInputBoundary {
                 .sum();
     }
 }
+

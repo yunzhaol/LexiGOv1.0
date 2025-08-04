@@ -16,5 +16,12 @@ public interface LoginOutputBoundary {
      */
     void prepareFailView(String errorMessage);
 
+    /**
+     * Transitions from the login view to the sign-up view.
+     *
+     * <p>
+     * Should be called when the user chooses to register instead of logging in.
+     * </p>
+     */
     void switchToSignUpView();
 }

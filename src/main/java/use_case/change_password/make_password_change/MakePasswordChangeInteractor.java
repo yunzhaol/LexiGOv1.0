@@ -1,6 +1,5 @@
 package use_case.change_password.make_password_change;
 
-import entity.SecurityUserFactory;
 import entity.User;
 import entity.UserFactory;
 import entity.dto.CommonUserDto;
@@ -24,49 +23,43 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
     }
 
     @Override
-    public void make_password_change(MakePasswordChangeInputData in) {
-        User user = userDAO.get(in.getUsername());
-        if (in.getNewPassword().isBlank()) {
+    public void make_password_change(MakePasswordChangeInputData inputData) {
+        final User user = userDAO.get(inputData.getUsername());
+        if (inputData.getNewPassword().isBlank()) {
             presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
-            // new output
-            return;
-        }
-        if (in.getSecurityAnswer() == null ||  in.getSecurityAnswer().isBlank()) {
-//            if (in.getNewPassword() == null) {
-//                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
-//                        // new output
-//                return;
-//            }
-            CommonUserDto commonDto = CommonUserDto.builder()
-                    .name(in.getUsername())
-                    .password(in.getNewPassword())
-                    .build();
-            User newuser = commonUserFactory.create(commonDto);
-            userDAO.update(in.getUsername(), newuser);
-            presenter.presentSuccess();
-            return;
-        }
 
-        String answer = userDAO.getAnswer(in.getUsername());
-
-        if (answer.equals(in.getSecurityAnswer())) {
-//            if (in.getNewPassword().isBlank()) {
-//                presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
-//                // new output
-//                return;
-//            }
-            SecurityUserDto securityDto = SecurityUserDto.builder()
-                    .name(in.getUsername())
-                    .password(in.getNewPassword())
-                    .question(userDAO.getQuestion(in.getUsername()))
-                    .answer(answer)
-                    .build();
-            User newuser = securityUserFactory.create(securityDto);
-            userDAO.update(in.getUsername(), newuser);
-            presenter.presentSuccess();
-        } else {
-            presenter.presentFailure(new MakePasswordChangeOutputData("Wrong answer"));
         }
+        else if (inputData.getNewPassword().equals(user.getPassword())) {
+            presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be same as the old password"));
+        }
+        else {
+            if (inputData.getSecurityAnswer() == null || inputData.getSecurityAnswer().isBlank()) {
+                final CommonUserDto commonDto = CommonUserDto.builder()
+                        .name(inputData.getUsername())
+                        .password(inputData.getNewPassword())
+                        .build();
+                final User newuser = commonUserFactory.create(commonDto);
+                userDAO.update(inputData.getUsername(), newuser);
+                presenter.presentSuccess();
+            }
+            else {
+                final String answer = userDAO.getAnswer(inputData.getUsername());
 
+                if (answer.equals(inputData.getSecurityAnswer())) {
+                    final SecurityUserDto securityDto = SecurityUserDto.builder()
+                            .name(inputData.getUsername())
+                            .password(inputData.getNewPassword())
+                            .question(userDAO.getQuestion(inputData.getUsername()))
+                            .answer(answer)
+                            .build();
+                    final User newuser = securityUserFactory.create(securityDto);
+                    userDAO.update(inputData.getUsername(), newuser);
+                    presenter.presentSuccess();
+                }
+                else {
+                    presenter.presentFailure(new MakePasswordChangeOutputData("Wrong answer"));
+                }
+            }
+        }
     }
 }

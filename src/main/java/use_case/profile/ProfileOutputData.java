@@ -7,7 +7,7 @@ public class ProfileOutputData {
     private Language language;
     private Language[] languages;
 
-    public ProfileOutputData(String username, Language language,  Language[] languages) {
+    public ProfileOutputData(String username, Language language, Language[] languages) {
         this.username = username;
         this.language = language;
         this.languages = languages;

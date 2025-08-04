@@ -3,12 +3,13 @@ package use_case.profile.profile_set;
 import entity.PersonalProfile;
 import entity.ProfileFactory;
 
-public class ProfileSetInteractor implements ProfileSetInputBoundary{
+public class ProfileSetInteractor implements ProfileSetInputBoundary {
     private final ProfileSetUserDataAccessInterface profileSetUserDataAccessInterface;
     private final ProfileSetOutputBoundary presenter;
     private final ProfileFactory profileFactory;
 
-    public ProfileSetInteractor(ProfileSetUserDataAccessInterface profileSetUserDataAccessInterface, ProfileSetOutputBoundary presenter, ProfileFactory profileFactory) {
+    public ProfileSetInteractor(ProfileSetUserDataAccessInterface profileSetUserDataAccessInterface,
+                                ProfileSetOutputBoundary presenter, ProfileFactory profileFactory) {
         this.profileSetUserDataAccessInterface = profileSetUserDataAccessInterface;
         this.presenter = presenter;
         this.profileFactory = profileFactory;
@@ -17,16 +18,18 @@ public class ProfileSetInteractor implements ProfileSetInputBoundary{
     @Override
     public void execute(ProfileSetInputData profileSetInputData) {
         if (profileSetInputData.getOldlanguage() == null) {
-            PersonalProfile personalProfile = profileFactory.createPersonalProfile(profileSetInputData.getUsername(), profileSetInputData.getNewlanguage());
+            final PersonalProfile personalProfile = profileFactory.createPersonalProfile(profileSetInputData
+                    .getUsername(), profileSetInputData.getNewlanguage());
             profileSetUserDataAccessInterface.save(personalProfile);
             presenter.prepareSuccessView(new ProfileSetOutputData(profileSetInputData.getUsername(),
                     profileSetInputData.getNewlanguage()));
         }
-        else if (profileSetInputData.getOldlanguage().code().equals(profileSetInputData.getNewlanguage().code())){
+        else if (profileSetInputData.getOldlanguage().code().equals(profileSetInputData.getNewlanguage().code())) {
             presenter.prepareFailView("New language must be different from the old language.");
         }
-        else{
-            PersonalProfile personalProfile = profileFactory.createPersonalProfile(profileSetInputData.getUsername(), profileSetInputData.getNewlanguage());
+        else {
+            final PersonalProfile personalProfile = profileFactory
+                    .createPersonalProfile(profileSetInputData.getUsername(), profileSetInputData.getNewlanguage());
             profileSetUserDataAccessInterface.save(personalProfile);
             presenter.prepareSuccessView(new ProfileSetOutputData(profileSetInputData.getUsername(),
                     profileSetInputData.getNewlanguage()));

@@ -36,8 +36,4 @@ public class StudySessionPresenter implements StudySessionOutputBoundary {
     public void prepareFailureView(StudySessionOutputData out) {
     }
 
-    @Override
-    public void switchTologgedView() {
-
-    }
 }
