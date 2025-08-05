@@ -17,8 +17,4 @@ public class CommonWordBook implements WordBook {
     public List<UUID> getWordIds() {
         return words;
     }
-
-//    public String getName() {
-//        return name;
-//    }
 }
