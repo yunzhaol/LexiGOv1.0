@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +36,7 @@ class FreeDictionaryApiAdapterTest {
         f.setAccessible(true);
         f.set(adapter, mockClient);
 
-        when(mockClient.newCall(any(Request.class))).thenReturn(mockCall);
+        lenient().when(mockClient.newCall(any(Request.class))).thenReturn(mockCall);
     }
 
     @Test
@@ -61,7 +62,17 @@ class FreeDictionaryApiAdapterTest {
     }
 
     @Test
-    void getWordExample_throws_whenHttpError() throws Exception {
+    void getWordExample_returnsMessage_whenInternetError() throws Exception {
+        when(mockClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(mockCall.execute()).thenThrow(new UnknownHostException("Unable to resolve host"));
+
+        String result = adapter.getWordExample("test");
+
+        assertEquals("Failed connecting to the endpoint", result);
+    }
+
+    @Test
+    void getWordExample_throws_whenInternetError() throws Exception {
         when(mockResp.isSuccessful()).thenReturn(false);
         when(mockResp.code()).thenReturn(404);
         when(mockCall.execute()).thenReturn(mockResp);
