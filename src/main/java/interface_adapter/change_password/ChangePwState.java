@@ -1,6 +1,6 @@
 package interface_adapter.change_password;
 
-public class ChangePwState {
+public final class ChangePwState {
 
     private String username = "";
     private String changeError = "";
