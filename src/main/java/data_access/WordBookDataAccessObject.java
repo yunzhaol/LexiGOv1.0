@@ -41,20 +41,17 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
     }
 
     private static Path resolveDefaultPath() {
+
+        final URL resource = WordBookDataAccessObject.class
+                .getClassLoader()
+                .getResource("data/wordbook.json");
+
         try {
-            final URL resource = WordBookDataAccessObject.class
-                    .getClassLoader()
-                    .getResource("data/wordbook.json");
-
-            if (resource == null) {
-                throw new IllegalStateException("wordbook.json not found in resources");
-            }
-
             return Paths.get(resource.toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
-        catch (URISyntaxException exception) {
-            throw new RuntimeException("Invalid URI for wordbook.json", exception);
-        }
+
     }
 
     @Override
