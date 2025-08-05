@@ -3,7 +3,7 @@ package use_case.logout;
 /**
  * The Input Data for the Logout Use Case.
  */
-public class LogoutInputData {
+public final class LogoutInputData {
     private final String username;
 
     public LogoutInputData(String username) {

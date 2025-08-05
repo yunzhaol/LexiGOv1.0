@@ -23,7 +23,7 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
     }
 
     @Override
-    public void make_password_change(MakePasswordChangeInputData inputData) {
+    public void makePasswordChange(MakePasswordChangeInputData inputData) {
         final User user = userDAO.get(inputData.getUsername());
         if (inputData.getNewPassword().isBlank()) {
             presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
