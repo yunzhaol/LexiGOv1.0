@@ -1,6 +1,6 @@
 package use_case.achievement;
 
-public class AchievementInputData {
+public final class AchievementInputData {
     private final String username;
 
     public AchievementInputData(String username) {
