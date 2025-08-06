@@ -2,7 +2,7 @@ package use_case.viewhistory;
 
 import java.util.List;
 
-public class ViewHistoryOutputData {
+public final class ViewHistoryOutputData {
 
     private final String username;
     private final List<ViewHistoryEntryData> sessions;

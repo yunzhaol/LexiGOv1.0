@@ -1,6 +1,6 @@
 package use_case.start_checkin;
 
-public class StartCheckInOutputData {
+public final class StartCheckInOutputData {
     private final boolean useCaseFailed;
     private final String totalpage;
     private final String username;

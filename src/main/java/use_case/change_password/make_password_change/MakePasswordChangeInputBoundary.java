@@ -6,5 +6,5 @@ public interface MakePasswordChangeInputBoundary {
      *
      * @param inputData the input data containing username, new password, and security answer
      */
-    void make_password_change(MakePasswordChangeInputData inputData);
+    void makePasswordChange(MakePasswordChangeInputData inputData);
 }

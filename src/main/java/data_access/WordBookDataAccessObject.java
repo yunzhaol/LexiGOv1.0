@@ -48,8 +48,9 @@ public class WordBookDataAccessObject implements WordBookAccessInterface {
 
         try {
             return Paths.get(resource.toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        }
+        catch (URISyntaxException exC) {
+            throw new RuntimeException(exC);
         }
 
     }

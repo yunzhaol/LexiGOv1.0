@@ -1,6 +1,6 @@
 package interface_adapter.studysession.word_detail;
 
-public class WordDetailState {
+public final class WordDetailState {
 
     private String translation = "";
     private String username = "";

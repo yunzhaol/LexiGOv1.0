@@ -1,6 +1,6 @@
 package use_case.signup;
 
-public class ProcessorOutput {
+public final class ProcessorOutput {
 
     private final String errorMessage;
     private final boolean success;

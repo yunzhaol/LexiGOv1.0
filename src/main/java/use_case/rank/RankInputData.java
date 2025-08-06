@@ -1,6 +1,6 @@
 package use_case.rank;
 
-public class RankInputData {
+public final class RankInputData {
     private final String username;
 
     public RankInputData(String username) {

@@ -33,7 +33,7 @@ public class MakePasswordChangeController {
     public void execute(String username,
                         String newPassword,
                         String securityAnswer) {
-        makePasswordChangeInteractor.make_password_change(new MakePasswordChangeInputData(username,
+        makePasswordChangeInteractor.makePasswordChange(new MakePasswordChangeInputData(username,
                 newPassword,
                 securityAnswer));
     }

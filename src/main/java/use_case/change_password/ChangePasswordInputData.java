@@ -3,7 +3,7 @@ package use_case.change_password;
 /**
  * The input data for the Change Password Use Case.
  */
-public class ChangePasswordInputData {
+public final class ChangePasswordInputData {
 
     private final String username;
 

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class CommonLearnRecord implements LearnRecord {
+public final class CommonLearnRecord implements LearnRecord {
     private final String username;
     private final LocalDateTime endTime;
     private final List<UUID> learnwords;

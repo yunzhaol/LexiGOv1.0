@@ -4,7 +4,7 @@ import java.util.List;
 
 import entity.Achievement;
 
-public class AchievementOutputData {
+public final class AchievementOutputData {
     private final List<Achievement> unlockedAchievements;
 
     public AchievementOutputData(List<Achievement> unlockedAchievements) {

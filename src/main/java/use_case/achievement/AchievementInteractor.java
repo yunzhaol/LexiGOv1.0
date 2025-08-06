@@ -63,20 +63,13 @@ public class AchievementInteractor implements AchievementInputBoundary {
         }
 
         // session-count achievements
-        if (totalLearnedTimes >= 1) {
-            newlyUnlocked.add(new Achievement("A1", "1 Time Learned",
-                    "You have learned 1 time!", "\uD83D\uDCDA"));
-        }
-        if (totalLearnedTimes >= 2) {
-            newlyUnlocked.add(new Achievement("A2", "2 Times Learned",
-                    "You have learned 2 times!", "\uD83E\uDDE0"));
-        }
-        if (totalLearnedTimes >= INT) {
-            newlyUnlocked.add(new Achievement("A3", "3 Times Learned",
-                    "You have learned 3 times!", "\uD83C\uDFC6"));
-        }
+        checkTimeLearned(newlyUnlocked, totalLearnedTimes);
 
         // word-count achievements
+        checkWordLearned(newlyUnlocked, wordsLearnedCount);
+    }
+
+    private static void checkWordLearned(List<Achievement> newlyUnlocked, int wordsLearnedCount) {
         if (wordsLearnedCount >= 1) {
             newlyUnlocked.add(new Achievement("W1", "First Word",
                     "First Word I Learned!", "\uD83D\uDC4B"));
@@ -92,6 +85,21 @@ public class AchievementInteractor implements AchievementInputBoundary {
         if (wordsLearnedCount >= INT2) {
             newlyUnlocked.add(new Achievement("W20", "20 Words Learned",
                     "20 Words Learned!", "\uD83D\uDC53"));
+        }
+    }
+
+    private static void checkTimeLearned(List<Achievement> newlyUnlocked, int totalLearnedTimes) {
+        if (totalLearnedTimes >= 1) {
+            newlyUnlocked.add(new Achievement("A1", "1 Time Learned",
+                    "You have learned 1 time!", "\uD83D\uDCDA"));
+        }
+        if (totalLearnedTimes >= 2) {
+            newlyUnlocked.add(new Achievement("A2", "2 Times Learned",
+                    "You have learned 2 times!", "\uD83E\uDDE0"));
+        }
+        if (totalLearnedTimes >= INT) {
+            newlyUnlocked.add(new Achievement("A3", "3 Times Learned",
+                    "You have learned 3 times!", "\uD83C\uDFC6"));
         }
     }
 }

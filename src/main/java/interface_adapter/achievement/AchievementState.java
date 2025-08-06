@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * The State information representing the logged-in user.
  */
-public class AchievementState {
+public final class AchievementState {
     private List<String> unlockedAchievements = new ArrayList<>();
 
     /*

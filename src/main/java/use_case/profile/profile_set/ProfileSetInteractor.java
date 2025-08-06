@@ -35,7 +35,4 @@ public class ProfileSetInteractor implements ProfileSetInputBoundary {
                     profileSetInputData.getNewlanguage()));
         }
     }
-
 }
-
-

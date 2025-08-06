@@ -1,6 +1,6 @@
 package use_case.change_password.make_password_change;
 
-public class MakePasswordChangeOutputData {
+public final class MakePasswordChangeOutputData {
 
     private final String errorMessage;
 

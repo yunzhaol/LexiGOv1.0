@@ -6,7 +6,7 @@ import java.util.List;
 
 import use_case.rank.UserScore;
 
-public class RankState {
+public final class RankState {
 
     private List<UserScore> leaderboard = Collections.synchronizedList(new ArrayList<>());
     private String currentUser = "";

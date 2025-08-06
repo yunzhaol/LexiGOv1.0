@@ -1,6 +1,6 @@
 package use_case.finish_checkin;
 
-public class FinishCheckInInputData {
+public final class FinishCheckInInputData {
 
     private String username;
 

@@ -2,7 +2,7 @@ package use_case.rank;
 
 import java.util.List;
 
-public class LeaderboardStat {
+public final class LeaderboardStat {
     private final int position;
     private final List<UserScore> ranks;
 

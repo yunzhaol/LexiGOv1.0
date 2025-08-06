@@ -3,7 +3,7 @@ package entity;
 /**
  * A simple implementation of the User interface.
  */
-public class SecurityUser implements User {
+public final class SecurityUser implements User {
 
     private final String name;
     private final String password;

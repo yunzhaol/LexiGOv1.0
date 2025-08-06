@@ -1,6 +1,6 @@
 package interface_adapter.studysession;
 
-public class StudySessionState {
+public final class StudySessionState {
     private String word = "Welcome";
     private String pagenumber = "0";
     private String totalpage;

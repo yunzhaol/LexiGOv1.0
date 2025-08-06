@@ -2,7 +2,7 @@ package use_case.signup.security;
 
 import use_case.signup.common.SignupInputData;
 
-public class SignupSecurityInputData extends SignupInputData {
+public final class SignupSecurityInputData extends SignupInputData {
 
     private final String securityQuestion;
     private final String securityAnswer;

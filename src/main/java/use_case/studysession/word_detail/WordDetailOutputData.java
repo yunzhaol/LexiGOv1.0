@@ -1,6 +1,6 @@
 package use_case.studysession.word_detail;
 
-public class WordDetailOutputData {
+public final class WordDetailOutputData {
 
     private String translation;
     private String example;

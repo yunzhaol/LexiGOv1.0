@@ -1,6 +1,6 @@
 package interface_adapter.start_checkin;
 
-public class StartCheckInState {
+public final class StartCheckInState {
 
     private String numberWords = "";
     private String inputNumberError;

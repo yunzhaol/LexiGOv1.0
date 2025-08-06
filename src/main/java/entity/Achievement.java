@@ -6,7 +6,7 @@ import java.time.LocalDate;
  * A badge-like achievement that a user can unlock by meeting specific criteria,
  * such as a 5-day streak or learning 100 vocabulary words.
  */
-public class Achievement {
+public final class Achievement {
 
     private final String id;
     private final String name;
@@ -60,37 +60,5 @@ public class Achievement {
             this.dateUnlocked = LocalDate.now();
         }
     }
-
-//    /**
-//     * Unlocks the achievement with a custom date (used in testing or backfill).
-//     *
-//     * @param date Date the achievement was unlocked
-//     */
-//    public void unlock(LocalDate date) {
-//        if (this.dateUnlocked == null) {
-//            this.dateUnlocked = date;
-//        }
-//    }
-//
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Achievement)) return false;
-//        Achievement that = (Achievement) o;
-//        return Objects.equals(id, that.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return (isUnlocked() ? "✅" : "🔒") +
-//                " " + name + " (" + id + ") — " +
-//                (isUnlocked() ? "Unlocked on " + dateUnlocked : "Locked");
-//    }
 
 }
