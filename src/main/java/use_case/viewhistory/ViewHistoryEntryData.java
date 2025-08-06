@@ -1,6 +1,6 @@
 package use_case.viewhistory;
 
-public class ViewHistoryEntryData {
+public final class ViewHistoryEntryData {
 
     private final int sessionNumber;
     private final String endTime;

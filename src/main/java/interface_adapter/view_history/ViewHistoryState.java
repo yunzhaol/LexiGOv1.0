@@ -6,7 +6,7 @@ import java.util.List;
 
 import use_case.viewhistory.ViewHistoryEntryData;
 
-public class ViewHistoryState {
+public final class ViewHistoryState {
 
     private String currentUser = "";
     private List<ViewHistoryEntryData> sessions = Collections.synchronizedList(new ArrayList<>());
