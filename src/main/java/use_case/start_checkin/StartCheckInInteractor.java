@@ -64,7 +64,6 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
         // Format detector, as it might change, put it out of interactor
         if (formatter.execute(input.getLength())) {
             /* 1. Load domain data */
-
             // get wordbook dao from dto
             final WordBookAccessInterface wordbookdao;
             final UserRecordDataAccessInterface userrecorddao;
