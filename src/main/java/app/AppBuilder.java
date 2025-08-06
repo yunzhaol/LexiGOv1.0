@@ -1,6 +1,7 @@
 package app;
 
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.io.IOException;
 // CHECKSTYLE:OFF
 
@@ -30,8 +31,8 @@ import infrastructure.DeepLAPIAdapter;
 import infrastructure.DefaultLeaderboardSelector;
 import infrastructure.DefaultScoreSort;
 import infrastructure.DefaultViewHistoryProcessorService;
-import infrastructure.FreeDictionaryApiAdapter;
 import infrastructure.FormatDetector;
+import infrastructure.FreeDictionaryApiAdapter;
 import infrastructure.LearnWordsGenerator;
 import infrastructure.TimeGenerator;
 import interface_adapter.ViewManagerModel;
@@ -106,6 +107,8 @@ import use_case.signup.common.SignupInputBoundary;
 import use_case.signup.common.SignupInteractor;
 import use_case.signup.security.SignupSecurityInputBoundary;
 import use_case.signup.security.SignupSecurityInteractor;
+import use_case.start_checkin.DaiDto;
+import use_case.start_checkin.FactoryDto;
 import use_case.start_checkin.StartCheckInInputBoundary;
 import use_case.start_checkin.StartCheckInInteractor;
 import use_case.start_checkin.StartCheckInOutputBoundary;
@@ -118,8 +121,6 @@ import use_case.studysession.word_detail.WordDetailOutputBoundary;
 import use_case.viewhistory.ViewHistoryInputBoundary;
 import use_case.viewhistory.ViewHistoryInteractor;
 import use_case.viewhistory.ViewHistoryOutputBoundary;
-import use_case.start_checkin.DaiDto;
-import use_case.start_checkin.FactoryDto;
 import view.AchievementView;
 import view.ChangePasswordView;
 import view.LoggedInView;
