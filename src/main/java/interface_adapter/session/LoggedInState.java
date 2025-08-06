@@ -3,9 +3,10 @@ package interface_adapter.session;
 /**
  * The State information representing the logged-in user.
  */
-public final class LoggedInState {
+public class LoggedInState {
     private String username = "";
     private String password = "";
+
     private String passwordError;
 
     public LoggedInState(LoggedInState copy) {
@@ -37,4 +38,9 @@ public final class LoggedInState {
     public String getPassword() {
         return password;
     }
+
+    public String getPasswordError() {
+        return passwordError;
+    }
+
 }

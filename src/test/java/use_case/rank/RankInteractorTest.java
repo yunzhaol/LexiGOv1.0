@@ -30,4 +30,22 @@ public class RankInteractorTest {
         RankInteractor interactor = new RankInteractor(dao, successPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
         interactor.execute(inputData);
     }
+
+    @Test
+    void success2Test() {
+        RankInputData inputData = new RankInputData("test1");
+        JsonUserRecordDataAccessObject dao = new JsonUserRecordDataAccessObject("src/test/resources/data/rankTest.json");
+
+        // This creates a successPresenter that tests whether the test case is as we expect.
+        RankOutputBoundary successPresenter = new RankOutputBoundary() {
+            @Override
+            public void prepareSuccessView(RankOutputData rankOutputData) {
+                assertEquals("test1", rankOutputData.currentUser());
+                assertEquals(3, rankOutputData.myPosition());
+            }
+        };
+
+        RankInteractor interactor = new RankInteractor(dao, successPresenter, new DefaultLeaderboardSelector(), new DefaultScoreSort(),10);
+        interactor.execute(inputData);
+    }
 }

@@ -2,10 +2,7 @@ package use_case.finish_checkin;
 
 import data_access.InMemoryDeckDataAccessObejct;
 import data_access.JsonUserRecordDataAccessObject;
-import entity.CommonCard;
-import entity.CommonLearnRecordFactory;
-import entity.CommonWordDeck;
-import entity.WordDeck;
+import entity.*;
 import infrastructure.TimeGenerator;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -19,8 +16,8 @@ public class FinishInInteractorTest {
     public void SuccessTest() {
         InMemoryDeckDataAccessObejct deckDAO = new InMemoryDeckDataAccessObejct();
 
-        CommonCard card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
-        List<CommonCard> cards = new ArrayList<>();
+        Card card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
+        List<Card> cards = new ArrayList<>();
         cards.add(card);
         WordDeck wordDeck = new CommonWordDeck(cards);
         deckDAO.save(wordDeck);
