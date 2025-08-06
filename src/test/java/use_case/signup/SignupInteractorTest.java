@@ -9,11 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import use_case.signup.common.SignupInputData;
 import use_case.signup.common.SignupInteractor;
+import use_case.signup.validation.PasswordStrengthProcessor;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -282,5 +284,14 @@ public class SignupInteractorTest {
         assertEquals(securityUserDto, securityUserDto);
         assertEquals(securityUserDto.hashCode(), securityUserDto.hashCode());
         assertEquals(commonUserDto.hashCode(), commonUserDto.hashCode());
+    }
+
+    @Test
+    public void processorTest() {
+        final Pattern PASSWORD_RULE =
+                Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
+        PasswordStrengthProcessor p1 = new PasswordStrengthProcessor(PASSWORD_RULE);
+        PasswordStrengthProcessor p2 = new PasswordStrengthProcessor(PASSWORD_RULE);
+        p1.setNext(p2);
     }
 }

@@ -201,7 +201,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
 
         buttons.add(toLogin);
         buttons.add(signUp);
-        buttons.add(cancel);
+        //buttons.add(cancel);
 
         return buttons;
     }
