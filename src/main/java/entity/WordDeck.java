@@ -8,5 +8,5 @@ public interface WordDeck {
      *
      * @return an unmodifiable {@link java.util.List} of {@link CommonCard} instances
      */
-    List<CommonCard> getWordDeck();
+    List<Card> getWordDeck();
 }

@@ -4,14 +4,14 @@ import java.util.List;
 
 public class CommonWordDeck implements WordDeck {
     // {UUid: {yuanwen:mao, yiwen:cat, detail:animal}}
-    private final List<CommonCard> deck;
+    private final List<Card> deck;
 
-    public CommonWordDeck(List<CommonCard> deck) {
+    public CommonWordDeck(List<Card> deck) {
         this.deck = deck;
     }
 
     @Override
-    public List<CommonCard> getWordDeck() {
+    public List<Card> getWordDeck() {
         return deck;
     }
 }

@@ -11,5 +11,5 @@ public interface WordDeckFactory {
      *              the collection will be copied and must not be {@code null}
      * @return a {@code WordDeck} wrapping the supplied cards
      */
-    WordDeck create(List<CommonCard> cards);
+    WordDeck create(List<Card> cards);
 }
