@@ -3,7 +3,7 @@ package use_case.login;
 /**
  * Output Data for the Login Use Case.
  */
-public final class LoginOutputData {
+public class LoginOutputData {
 
     private final String username;
     private final boolean useCaseFailed;
@@ -17,4 +17,7 @@ public final class LoginOutputData {
         return username;
     }
 
+    public boolean isUseCaseFailed() {
+        return useCaseFailed;
+    }
 }

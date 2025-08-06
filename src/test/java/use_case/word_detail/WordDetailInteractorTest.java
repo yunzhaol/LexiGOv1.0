@@ -1,6 +1,7 @@
 package use_case.word_detail;
 
 import data_access.InMemoryDeckDataAccessObejct;
+import entity.Card;
 import entity.CommonCard;
 import entity.CommonWordDeck;
 import entity.WordDeck;
@@ -23,8 +24,8 @@ public class WordDetailInteractorTest {
         WordDetailInputData inputData = new WordDetailInputData("1");
         InMemoryDeckDataAccessObejct deckDAO = new InMemoryDeckDataAccessObejct();
 
-        CommonCard card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
-        List<CommonCard> cards = new ArrayList<>();
+        Card card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
+        List<Card> cards = new ArrayList<>();
         cards.add(card);
         WordDeck wordDeck = new CommonWordDeck(cards);
         deckDAO.save(wordDeck);
@@ -52,8 +53,8 @@ public class WordDetailInteractorTest {
         WordDetailInputData inputData = new WordDetailInputData("1");
         InMemoryDeckDataAccessObejct deckDAO = new InMemoryDeckDataAccessObejct();
 
-        CommonCard card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
-        List<CommonCard> cards = new ArrayList<>();
+        Card card = new CommonCard(UUID.fromString("7fc55970-6bf1-462c-b644-a8c75abf73c2"),"test", "测试", "test help");
+        List<Card> cards = new ArrayList<>();
         cards.add(card);
         WordDeck wordDeck = new CommonWordDeck(cards);
         deckDAO.save(wordDeck);

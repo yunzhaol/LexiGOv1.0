@@ -63,7 +63,7 @@ class MakePasswordChangeInteractorTest {
         when(mockCommonUserFactory.create(dto)).thenReturn(mockNewCommonUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
@@ -85,7 +85,7 @@ class MakePasswordChangeInteractorTest {
         when(mockUserDAO.get(username)).thenReturn(mockUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
@@ -118,7 +118,7 @@ class MakePasswordChangeInteractorTest {
         when(mockSecurityUserFactory.create(dto)).thenReturn(mockNewSecurityUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
@@ -146,7 +146,7 @@ class MakePasswordChangeInteractorTest {
         when(mockUserDAO.getAnswer(username)).thenReturn(correctAnswer);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
@@ -179,7 +179,7 @@ class MakePasswordChangeInteractorTest {
 
         // When & Then - Should throw NullPointerException
         assertThrows(NullPointerException.class, () -> {
-            interactor.make_password_change(inputData);
+            interactor.makePasswordChange(inputData);
         });
 
         verify(mockUserDAO).get(username);
@@ -202,7 +202,7 @@ class MakePasswordChangeInteractorTest {
         when(mockUserDAO.getAnswer(username)).thenReturn(correctAnswer);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then - Should detect answer mismatch (case-sensitive)
         verify(mockUserDAO).get(username);
@@ -240,7 +240,7 @@ class MakePasswordChangeInteractorTest {
         when(mockSecurityUserFactory.create(dto__)).thenReturn(mockNewSecurityUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         verify(mockUserDAO).get(username);
@@ -267,7 +267,7 @@ class MakePasswordChangeInteractorTest {
         when(mockUser.getPassword()).thenReturn(oldPassword);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         // 1⃣ 捕获 presenter 传出的错误信息
@@ -295,7 +295,7 @@ class MakePasswordChangeInteractorTest {
         when(mockCommonUserFactory.create(dto______)).thenReturn(mockNewCommonUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         CommonUserDto dto_______ = new CommonUserDto(emptyUsername, "password");
@@ -316,7 +316,7 @@ class MakePasswordChangeInteractorTest {
 
         // When & Then
         assertThrows(RuntimeException.class, () -> {
-            interactor.make_password_change(inputData);
+            interactor.makePasswordChange(inputData);
         });
 
         verify(mockUserDAO).get(username);
@@ -339,7 +339,7 @@ class MakePasswordChangeInteractorTest {
 
         // When & Then
         assertThrows(RuntimeException.class, () -> {
-            interactor.make_password_change(inputData);
+            interactor.makePasswordChange(inputData);
         });
 
         CommonUserDto dto3 = new CommonUserDto(username, newPassword);
@@ -362,7 +362,7 @@ class MakePasswordChangeInteractorTest {
         when(mockCommonUserFactory.create(dto4)).thenReturn(null);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then
         CommonUserDto dto5 = new CommonUserDto(username, newPassword);
@@ -385,7 +385,7 @@ class MakePasswordChangeInteractorTest {
         when(mockCommonUserFactory.create(dto6)).thenReturn(mockNewCommonUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then - verify exact call sequence
         verify(mockUserDAO, times(1)).get(username);
@@ -416,7 +416,7 @@ class MakePasswordChangeInteractorTest {
         when(mockSecurityUserFactory.create(dto8)).thenReturn(mockNewSecurityUser);
 
         // When
-        interactor.make_password_change(inputData);
+        interactor.makePasswordChange(inputData);
 
         // Then - verify exact call sequence
         SecurityUserDto dto9 = new SecurityUserDto(username, newPassword, securityQuestion, securityAnswer);
