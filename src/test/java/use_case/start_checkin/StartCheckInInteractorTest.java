@@ -11,6 +11,7 @@ import entity.CommonWordDeckFactory;
 import entity.Language;
 import entity.WordDeckFactory;
 import infrastructure.DeepLAPIAdapter;
+import infrastructure.FormatDetector;
 import infrastructure.FreeDictionaryApiAdapter;
 import infrastructure.LearnWordsGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,18 +115,23 @@ class StartCheckInInteractorTest {
             }
         };
 
-        StartCheckInInteractor interactor = new StartCheckInInteractor(
-                userRecordDataAccessObject,
+        DaiDto dto = new DaiDto(userRecordDataAccessObject,
                 bookgetter,
                 cardDeck,
                 wordgetter,
-                userprofiledao,
+                userprofiledao);
+
+        FactoryDto dtoFactory = new FactoryDto(factory,
+                commonCardFactory);
+
+        StartCheckInInteractor interactor = new StartCheckInInteractor(
+                dto,
+                dtoFactory,
                 learnWordsGenerator,
                 presenter,
                 mockTranslator,
                 mockFreeDictionary,
-                factory,
-                commonCardFactory
+                new FormatDetector()
         );
         interactor.execute(in3);
     }
@@ -146,24 +152,71 @@ class StartCheckInInteractorTest {
 
             @Override
             public void prepareFailView(String errorMessage) {
-                assertEquals("No more words to learn", errorMessage);
+                assertEquals("You should input valid positive interger", errorMessage);
             }
         };
 
-        StartCheckInInteractor interactor = new StartCheckInInteractor(
-                userRecordDataAccessObject,
+        DaiDto dto = new DaiDto(userRecordDataAccessObject,
                 bookgetter,
                 cardDeck,
                 wordgetter,
-                userprofiledao,
+                userprofiledao);
+
+        FactoryDto dtoFactory = new FactoryDto(factory,
+                commonCardFactory);
+
+        StartCheckInInteractor interactor = new StartCheckInInteractor(
+                dto,
+                dtoFactory,
                 learnWordsGenerator,
                 presenter,
                 mockTranslator,
                 mockFreeDictionary,
-                factory,
-                commonCardFactory
+                new FormatDetector()
         );
+
         interactor.execute(in0);
+//        interactor.execute(in51);
+    }
+
+    /**
+     * Scenario: page number out of range triggers failure callback.
+     */
+    @Test
+    void failure2Test() {
+        StartCheckInInputData in0  = new StartCheckInInputData("tester", "0");
+        StartCheckInInputData in51 = new StartCheckInInputData("tester", "3");
+
+        StartCheckInOutputBoundary presenter = new StartCheckInOutputBoundary() {
+            @Override
+            public void prepareSuccessView(StartCheckInOutputData outputData) {
+                // Not used in failure scenario
+            }
+
+            @Override
+            public void prepareFailView(String errorMessage) {
+                assertEquals("No more words to learn", errorMessage);
+            }
+        };
+
+        DaiDto dto = new DaiDto(userRecordDataAccessObject,
+                bookgetter,
+                cardDeck,
+                wordgetter,
+                userprofiledao);
+
+        FactoryDto dtoFactory = new FactoryDto(factory,
+                commonCardFactory);
+
+        StartCheckInInteractor interactor = new StartCheckInInteractor(
+                dto,
+                dtoFactory,
+                learnWordsGenerator,
+                presenter,
+                mockTranslator,
+                mockFreeDictionary,
+                new FormatDetector()
+        );
         interactor.execute(in51);
     }
 }
