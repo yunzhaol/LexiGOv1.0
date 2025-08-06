@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class ViewHistoryEntity implements LearnRecord {
+public final class ViewHistoryEntity implements LearnRecord {
 
     private final String username;
     private final LocalDateTime endTime;
@@ -37,13 +37,5 @@ public class ViewHistoryEntity implements LearnRecord {
     public int getWordsCount() {
         return learnedWordIds.size();
     }
-
-//    public int getSessionNumber() {
-//        return sessionNumber;
-//    }
-//    @Override
-//    public String toString() {
-//        return String.format("ViewHistoryEntry{user='%s', session=%d, words=%d, time='%s'}",
-//                username, sessionNumber, getWordsCount(), endTime);
-//    }
 }
+

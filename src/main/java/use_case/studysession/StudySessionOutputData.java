@@ -1,6 +1,6 @@
 package use_case.studysession;
 
-public class StudySessionOutputData {
+public final class StudySessionOutputData {
     private String pagenumber;
     private String wordtext;
     private boolean reachlast;

@@ -1,6 +1,6 @@
 package use_case.studysession;
 
-public class StudySessionInputData {
+public final class StudySessionInputData {
     private String pagenumber;
     private String totalpage;
 

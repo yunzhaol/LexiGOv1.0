@@ -1,6 +1,6 @@
 package use_case.rank;
 
-public class UserScore {
+public final class UserScore {
     private final int rank;
     private final int score;
     private final String username;
