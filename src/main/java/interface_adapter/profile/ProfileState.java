@@ -5,7 +5,7 @@ import entity.Language;
 /**
  * The state for the Login View Model.
  */
-public class ProfileState {
+public final class ProfileState {
     private String username = "";
     private String languageError;
     private Language oldlanguage;
