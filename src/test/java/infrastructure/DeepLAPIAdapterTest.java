@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -122,6 +123,24 @@ class DeepLAPIAdapterTest {
                 "interrupted");
 
         Thread.interrupted();
+    }
+
+    @Test
+    public void parseTranslatedText_coversMissingMarker_andEmptyText() throws Exception {
+        // Access private static method parseTranslatedText(String)
+        Method m = DeepLAPIAdapter.class.getDeclaredMethod("parseTranslatedText", String.class);
+        m.setAccessible(true);
+
+        // 1) Branch: start < 0  -> returns ""
+        String withoutMarker = "{}";
+        String r1 = (String) m.invoke(null, withoutMarker);
+        assertEquals("", r1);
+
+        // 2) Branch: marker found but value is empty -> end == start -> returns ""
+        //    JSON includes the marker \"text\":\"\" so start >= 0 and next quote is immediately at 'start'.
+        String emptyValue = "{\"translations\":[{\"text\":\"\"}]}";
+        String r2 = (String) m.invoke(null, emptyValue);
+        assertEquals("", r2);
     }
 
 }
