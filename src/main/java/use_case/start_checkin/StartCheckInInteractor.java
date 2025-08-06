@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import entity.CommonCard;
-import entity.CommonCardFactory;
+import entity.Card;
+import entity.CardFactory;
 import entity.Language;
 import entity.LearnRecord;
 import entity.WordBook;
@@ -23,14 +23,11 @@ import use_case.gateway.UserRecordDataAccessInterface;
 public class StartCheckInInteractor implements StartCheckInInputBoundary {
 
     /* ====== GATEWAYS / SERVICES (names kept as you defined) ====== */
-    private final UserRecordDataAccessInterface userDataAccessObject;
-    private final WordBookAccessInterface wordBookAccessObject;
-    private final UserCheckInDeckAccessInterface userDeckAccessObject;
-    private final WordDataAccessInterface wordDataAccessObject;
-    private final UserProfileDataAccessInterface userProfileDataAccessObject;
+    private final DaiDto daoDto;
 
     // outer algorithms
     private final LearnDeckGenerator generator;
+    private final FormatDetector formatter;
 
     // presenter
     private final StartCheckInOutputBoundary presenter;
@@ -40,94 +37,116 @@ public class StartCheckInInteractor implements StartCheckInInputBoundary {
     private final WordDetailAPI detailGenerator;
 
     // factories
-    private final WordDeckFactory wordDeckFactory;
-    private final CommonCardFactory commonCardFactory;
+    private final FactoryDto factoryDto;
 
     /* ====== CONSTRUCTOR ====== */
     public StartCheckInInteractor(
-            UserRecordDataAccessInterface userDataAccessObject,
-            WordBookAccessInterface wordBookAccessObject,
-            UserCheckInDeckAccessInterface userDeckAccessObject,
-            WordDataAccessInterface wordDataAccessObject,
-            UserProfileDataAccessInterface userProfileDataAccessObject,
+            DaiDto daoDto,
+            FactoryDto factoryDto,
             LearnDeckGenerator generator,
             StartCheckInOutputBoundary presenter,
             WordTranslationAPI translator,
             WordDetailAPI detailGenerator,
-            WordDeckFactory wordDeckFactory,
-            CommonCardFactory commonCardFactory) {
+            FormatDetector formatProcessor) {
 
-        this.userDataAccessObject = userDataAccessObject;
-        this.wordBookAccessObject = wordBookAccessObject;
-        this.userDeckAccessObject = userDeckAccessObject;
-        this.wordDataAccessObject = wordDataAccessObject;
-        this.userProfileDataAccessObject = userProfileDataAccessObject;
+        this.daoDto = daoDto;
         this.generator = generator;
         this.presenter = presenter;
         this.translator = translator;
         this.detailGenerator = detailGenerator;
-        this.wordDeckFactory = wordDeckFactory;
-        this.commonCardFactory = commonCardFactory;
+        this.factoryDto = factoryDto;
+        this.formatter = formatProcessor;
     }
 
     /* ====== MAIN BUSINESS METHOD ====== */
     @Override
     public void execute(StartCheckInInputData input) {
+        // Format detector, as it might change, put it out of interactor
+        if (formatter.execute(input.getLength())) {
+            /* 1. Load domain data */
 
-        /* 1. Load domain data */
-        final WordBook wordBook = wordBookAccessObject.get();
-        final List<LearnRecord> history = userDataAccessObject.get(input.getUsername());
+            // get wordbook dao from dto
+            final WordBookAccessInterface wordbookdao;
+            final UserRecordDataAccessInterface userrecorddao;
 
-        /* 2. Check remaining words in the book */
-        int learnedCount = 0;
-        for (LearnRecord record : history) {
-            learnedCount += record.getLearnedWordIds().size();
-        }
+            wordbookdao = daoDto.getWordBookAccessObject();
+            userrecorddao = daoDto.getUserDataAccessObject();
 
-        final int remaining = wordBook.getWordIds().size() - learnedCount;
-        if (remaining < Integer.parseInt(input.getLength())) {
-            presenter.prepareFailView("No more words to learn");
-        }
-        else {
-            /* 3. Use strategy to pick word IDs */
-            final List<UUID> wordIds = generator.generate(
-                    wordBook,
-                    history,
-                    input.getLength()
-            );
+            // get data from DAI(injected DAO)
+            final WordBook wordBook = wordbookdao.get();
+            final List<LearnRecord> history = userrecorddao.get(input.getUsername());
 
-            /* 4. Build Card objects one by one (no stream API) */
-            final List<CommonCard> cards = new ArrayList<>();
-            for (UUID wordId : wordIds) {
-                cards.add(buildCard(wordId, input.getUsername()));
+            /* 2. Check remaining words in the book */
+            // Note: as logic might not be extended, there's no strategic relocation
+            int learnedCount = 0;
+            for (LearnRecord eachRecord : history) {
+                learnedCount += eachRecord.getLearnedWordIds().size();
             }
 
-            /* 5. Create deck via factory and persist */
-            final WordDeck deck = wordDeckFactory.create(cards);
-            userDeckAccessObject.save(deck);
+            final int remaining = wordBook.getWordIds().size() - learnedCount;
+            if (remaining < Integer.parseInt(input.getLength())) {
+                // business logic: u cannot learn words u learnt before :)
+                presenter.prepareFailView("No more words to learn");
+            }
+            else {
+                /* 3. Use strategy to pick word IDs */
+                // strategy might change, so put it outside
+                final List<UUID> wordIds = generator.generate(
+                        wordBook,
+                        history,
+                        input.getLength()
+                );
 
-            /* 6. Inform presenter of success */
-            presenter.prepareSuccessView(
-                    new StartCheckInOutputData(input.getLength(), false, input.getUsername())
-            );
+                /* 4. Build Card objects one by one (no stream API) */
+                final List<Card> cards = new ArrayList<>();
+                for (UUID wordId : wordIds) {
+                    cards.add(buildCard(wordId, input.getUsername()));
+                }
+
+                /* 5. Create deck via factory and persist */
+                // get factory from dto
+                final WordDeckFactory wordDeckFactory = factoryDto.getWordDeckFactory();
+
+                // get dao(dai)
+                final UserCheckInDeckAccessInterface deckAccess;
+                deckAccess = daoDto.getUserDeckAccessObject();
+
+                // factory logic && DAO logic
+                final WordDeck deck = wordDeckFactory.create(cards);
+                deckAccess.save(deck);
+
+                /* 6. Inform presenter of success */
+                presenter.prepareSuccessView(
+                        new StartCheckInOutputData(input.getLength(), false, input.getUsername())
+                );
+            }
         }
-
+        else {
+            presenter.prepareFailView("You should input valid positive interger");
+        }
     }
 
     /* Helper: build a Card from a Word ID and user context */
-    private CommonCard buildCard(UUID wordId, String username) {
+    private Card buildCard(UUID wordId, String username) {
 
-        final String text = wordDataAccessObject.get(wordId);
+        // get DAOs/Factories
+        final WordDataAccessInterface wordDataAccess = daoDto.getWordDataAccessObject();
+        final UserProfileDataAccessInterface userProfileDataAccess = daoDto.getUserProfileDataAccessObject();
+
+        final CardFactory cardFactory = factoryDto.getCommonCardFactory();
+
+        // DAO & Factory logic
+        final String text = wordDataAccess.get(wordId);
 
         final Language targetLang =
-                userProfileDataAccessObject.getLanguage(username);
+                userProfileDataAccess.getLanguage(username);
 
         final String translation = translator.getTranslation(text, targetLang);
 
         final String example = detailGenerator.getWordExample(text);
 
-        final CommonCard card = commonCardFactory.create(wordId, text, translation, example);
-        return card;
+        // get card entity and return
+        return cardFactory.create(wordId, text, translation, example);
     }
 }
 

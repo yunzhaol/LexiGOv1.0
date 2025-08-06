@@ -178,10 +178,10 @@ public final class JsonUserDataAccessObject implements
                 final JsonObject obj = (JsonObject) GSON.toJsonTree(e.getValue());
                 String type = null;
                 if (e.getValue() instanceof SecurityUser) {
-                    type = "security";
+                    type = "SECURITY";
                 }
                 else {
-                    type = "common";
+                    type = "COMMON";
                 }
                 obj.addProperty("type", type);
                 toWrite.put(e.getKey(), obj);

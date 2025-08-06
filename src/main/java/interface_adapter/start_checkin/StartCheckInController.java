@@ -15,16 +15,8 @@ public class StartCheckInController {
      */
     private final StartCheckInInputBoundary interactor;
 
-    /**
-     * Presenter port, used here only for validation‑error feedback.
-     * (The same presenter instance is also inside the interactor.)
-     */
-    private final StartCheckInOutputBoundary presenter;
-
-    public StartCheckInController(StartCheckInInputBoundary interactor,
-                                  StartCheckInOutputBoundary presenter) {
+    public StartCheckInController(StartCheckInInputBoundary interactor) {
         this.interactor = interactor;
-        this.presenter = presenter;
     }
 
     /**
@@ -34,26 +26,11 @@ public class StartCheckInController {
      * @param length   string entered in UI, should be a positive integer
      */
     public void execute(String username, String length) {
-        int requestedLength = 0;
 
-        // range validation (Controller's job)
-        try {
-            // This is format issue not business logic so put here instead of interactor
-            requestedLength = Integer.parseInt(length);
-
-        }
-        catch (NumberFormatException ex) {
-            presenter.prepareFailView("Length must be a positive integer.");
-        }
-
-        if (requestedLength <= 0) {
-            presenter.prepareFailView("Length must be a positive integer.");
-        }
-        else {
-            final StartCheckInInputData inputData =
+        final StartCheckInInputData inputData =
                     new StartCheckInInputData(username, length);
 
-            interactor.execute(inputData);
-        }
+        interactor.execute(inputData);
     }
 }
+

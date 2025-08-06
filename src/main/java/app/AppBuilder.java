@@ -31,6 +31,7 @@ import infrastructure.DefaultLeaderboardSelector;
 import infrastructure.DefaultScoreSort;
 import infrastructure.DefaultViewHistoryProcessorService;
 import infrastructure.FreeDictionaryApiAdapter;
+import infrastructure.FormatDetector;
 import infrastructure.LearnWordsGenerator;
 import infrastructure.TimeGenerator;
 import interface_adapter.ViewManagerModel;
@@ -117,6 +118,8 @@ import use_case.studysession.word_detail.WordDetailOutputBoundary;
 import use_case.viewhistory.ViewHistoryInputBoundary;
 import use_case.viewhistory.ViewHistoryInteractor;
 import use_case.viewhistory.ViewHistoryOutputBoundary;
+import use_case.start_checkin.DaiDto;
+import use_case.start_checkin.FactoryDto;
 import view.AchievementView;
 import view.ChangePasswordView;
 import view.LoggedInView;
@@ -188,6 +191,7 @@ public class AppBuilder {
     private final DeepLAPIAdapter deepLapi = new DeepLAPIAdapter();
     private final FreeDictionaryApiAdapter freeDictionaryApi = new FreeDictionaryApiAdapter();
     private final LearnWordsGenerator learnWordsGenerator = new LearnWordsGenerator();
+    private final FormatDetector formatDetector = new FormatDetector();
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
@@ -351,9 +355,8 @@ public class AppBuilder {
      * @return the builder instance, for chaining
      */
     public AppBuilder addStudySessionUseCase() {
-        final StudySessionOutputBoundary presenter = new StudySessionPresenter(viewManagerModel,
-                studySessionViewModel,
-                wordDetailViewModel);
+        final StudySessionOutputBoundary presenter = new StudySessionPresenter(
+                studySessionViewModel);
         final StudySessionInputBoundary interactor = new StudySessionInteractor(presenter, deckDataAccessObject);
         final StudySessionController controller = new StudySessionController(interactor);
         studySessionView.setStudySessionController(controller);
@@ -368,11 +371,13 @@ public class AppBuilder {
     public AppBuilder addStartCheckInUseCase() {
         final StartCheckInOutputBoundary presenter = new StartCheckInPresenter(viewManagerModel,
                 startCheckInViewModel, studySessionViewModel, loggedInViewModel);
+        final DaiDto dto = new DaiDto(userRecordDataAccessObject,
+                wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDataAccessObejct);
+        final FactoryDto dtoFactory = new FactoryDto(wordDeckFactory, commonCardFactory);
         final StartCheckInInputBoundary interactor =
-                new StartCheckInInteractor(userRecordDataAccessObject,
-                wordBookDataAccessObject, deckDataAccessObject, wordDataAccessObject, userProfileDataAccessObejct,
-                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, wordDeckFactory, commonCardFactory);
-        final StartCheckInController controller = new StartCheckInController(interactor, presenter);
+                new StartCheckInInteractor(dto, dtoFactory,
+                learnWordsGenerator, presenter, deepLapi, freeDictionaryApi, formatDetector);
+        final StartCheckInController controller = new StartCheckInController(interactor);
         startCheckInView.setController(controller);
         return this;
     }

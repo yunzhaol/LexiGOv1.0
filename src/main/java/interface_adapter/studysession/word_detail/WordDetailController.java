@@ -20,15 +20,6 @@ public class WordDetailController {
     }
 
     /**
-     * Switches the UI back to the logged-in (dashboard) view.
-     *
-     * <p>Currently a placeholder; the actual navigation logic will be added later.</p>
-     */
-    public void switchTologgedView() {
-        // no-op for now
-    }
-
-    /**
      * Switches from the word-detail view to the study-session view.
      */
     public void switchToStudySessionView() {

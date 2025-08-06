@@ -7,16 +7,14 @@ import use_case.studysession.StudySessionOutputData;
 
 public class StudySessionPresenter implements StudySessionOutputBoundary {
 
-    private final ViewManagerModel viewManagerModel;
     private final StudySessionViewModel studySessionViewModel;
-    private final WordDetailViewModel wordDetailViewModel;
 
-    public StudySessionPresenter(ViewManagerModel viewManagerModel,
-                                 StudySessionViewModel studySessionViewModel,
-                                 WordDetailViewModel wordDetailViewModel) {
-        this.viewManagerModel = viewManagerModel;
+    public StudySessionPresenter(
+                                 StudySessionViewModel studySessionViewModel
+                                 ) {
+
         this.studySessionViewModel = studySessionViewModel;
-        this.wordDetailViewModel = wordDetailViewModel;
+
     }
 
     @Override

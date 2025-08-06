@@ -3,7 +3,7 @@ package data_access;
 import java.util.ArrayList;
 import java.util.List;
 
-import entity.CommonCard;
+import entity.Card;
 import entity.WordDeck;
 import use_case.finish_checkin.UserDeckGetTextDataAccessInterface;
 import use_case.start_checkin.UserCheckInDeckAccessInterface;
@@ -15,10 +15,10 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
         UserDeckgetterDataAccessInterface,
         WordDetailDataAccessInterface {
 
-    private List<CommonCard> cardList = new ArrayList<>();
+    private List<Card> cardList = new ArrayList<>();
 
     @Override
-    public List<CommonCard> getWordDeck() {
+    public List<Card> getWordDeck() {
         return cardList;
     }
 
