@@ -3,7 +3,7 @@ package use_case.signup;
 /**
  * Output Data for the Signup Use Case.
  */
-public class SignupOutputData {
+public final class SignupOutputData {
 
     private final String username;
 

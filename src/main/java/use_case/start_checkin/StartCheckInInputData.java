@@ -1,6 +1,6 @@
 package use_case.start_checkin;
 
-public class StartCheckInInputData {
+public final class StartCheckInInputData {
     private String username;
     private String length;
 
