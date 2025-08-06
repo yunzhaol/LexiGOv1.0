@@ -1,6 +1,6 @@
 package entity;
 
-public class PersonalProfile {
+public final class PersonalProfile {
 
     private String username;
     private Language language;

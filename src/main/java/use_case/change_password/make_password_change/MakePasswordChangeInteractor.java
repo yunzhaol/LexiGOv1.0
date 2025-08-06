@@ -8,23 +8,23 @@ import entity.dto.SecurityUserDto;
 public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoundary {
 
     private final MakePasswordChangeOutputBoundary presenter;
-    private final UserPasswordDataAccessInterface userDAO;
+    private final UserPasswordDataAccessInterface userDao;
     private final UserFactory<CommonUserDto> commonUserFactory;
     private final UserFactory<SecurityUserDto> securityUserFactory;
 
     public MakePasswordChangeInteractor(MakePasswordChangeOutputBoundary presenter,
-                                        UserPasswordDataAccessInterface userDAO,
+                                        UserPasswordDataAccessInterface userDao,
                                         UserFactory<CommonUserDto> commonUserFactory,
                                         UserFactory<SecurityUserDto> securityUserFactory) {
         this.presenter = presenter;
-        this.userDAO = userDAO;
+        this.userDao = userDao;
         this.commonUserFactory = commonUserFactory;
         this.securityUserFactory = securityUserFactory;
     }
 
     @Override
     public void makePasswordChange(MakePasswordChangeInputData inputData) {
-        final User user = userDAO.get(inputData.getUsername());
+        final User user = userDao.get(inputData.getUsername());
         if (inputData.getNewPassword().isBlank()) {
             presenter.presentFailure(new MakePasswordChangeOutputData("Password cannot be empty"));
 
@@ -39,21 +39,21 @@ public class MakePasswordChangeInteractor implements MakePasswordChangeInputBoun
                         .password(inputData.getNewPassword())
                         .build();
                 final User newuser = commonUserFactory.create(commonDto);
-                userDAO.update(inputData.getUsername(), newuser);
+                userDao.update(inputData.getUsername(), newuser);
                 presenter.presentSuccess();
             }
             else {
-                final String answer = userDAO.getAnswer(inputData.getUsername());
+                final String answer = userDao.getAnswer(inputData.getUsername());
 
                 if (answer.equals(inputData.getSecurityAnswer())) {
                     final SecurityUserDto securityDto = SecurityUserDto.builder()
                             .name(inputData.getUsername())
                             .password(inputData.getNewPassword())
-                            .question(userDAO.getQuestion(inputData.getUsername()))
+                            .question(userDao.getQuestion(inputData.getUsername()))
                             .answer(answer)
                             .build();
                     final User newuser = securityUserFactory.create(securityDto);
-                    userDAO.update(inputData.getUsername(), newuser);
+                    userDao.update(inputData.getUsername(), newuser);
                     presenter.presentSuccess();
                 }
                 else {

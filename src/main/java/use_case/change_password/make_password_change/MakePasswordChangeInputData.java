@@ -1,6 +1,6 @@
 package use_case.change_password.make_password_change;
 
-public class MakePasswordChangeInputData {
+public final class MakePasswordChangeInputData {
     private final String username;
     private final String newPassword;
     private final String securityAnswer;

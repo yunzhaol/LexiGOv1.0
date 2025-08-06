@@ -2,7 +2,7 @@ package use_case.profile.profile_set;
 
 import entity.Language;
 
-public class ProfileSetInputData {
+public final class ProfileSetInputData {
     private final String username;
     private final Language newlanguage;
     private final Language oldlanguage;
