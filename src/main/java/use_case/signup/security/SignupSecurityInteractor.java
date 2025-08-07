@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import entity.User;
 import entity.UserFactory;
 import entity.dto.SecurityUserDto;
-import use_case.signup.ProcessorOutput;
+import use_case.signup.validation.ProcessorOutput;
 import use_case.signup.SignUpProcessor;
 import use_case.signup.SignupOutputBoundary;
 import use_case.signup.SignupOutputData;
