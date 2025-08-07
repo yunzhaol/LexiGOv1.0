@@ -1,79 +1,135 @@
-# LexiGO v1.0
 
-*A Java‑Swing desktop app that helps learners master foreign languages through spaced‑repetition study sessions, daily streaks, and friendly competition.*
+[![Discord](https://badgen.net/badge/Discord/Join/5865F2?icon=discord)]()
 
----
+# LexiGO v1.3
 
-## 🧭 Overview
+*A cross-platform Java desktop application combining adaptive flash-card drills, rich word references, and gentle gamification to help English-speakers build lasting foreign-language vocabulary.*
 
-| Item            | Details                                        |
-|-----------------|------------------------------------------------|
-| **Domain**      | Foreign‑language learning                      |
-| **Tech stack**  | Java 17 · Maven · Swing UI                     |
-| **Architecture**| **Clean Architecture** + SOLID principles      |
-| **Core Modules**| Authentication & Profile · Flash‑Card Study · Gamification |
+LexiGO uses a spaced-repetition scheduler to show each word just when you need a review. Around that core are:
 
----
-## 🎬 Live Demos
-
-| Platform | Link |
-|----------|------|
-| YouTube  | [▶ Watch the LexiGO demo](https://youtu.be/4ua4_WRky7s) |
-| Bilibili | [▶ 哔哩哔哩演示视频](https://www.bilibili.com/video/BV1kb8ezxEbn/) |
+- One-tap daily check-ins  
+- example sentences, and translations on every card  
+- Streaks, badges, and leaderboards (optional, friendly competition)
 
 ---
 
-## 👥 Team & Use‑Case Owners
+## Quick Facts
 
-| Member | GitHub | Primary Use‑Cases |
-|--------|--------|-------------------|
-| **Jacky Huo**      | `@Jackymn25` | Start‑check‑in • Study‑session |
-| **Jacob Ke**       | `@Y0m1ya`    | View study history • Change password |
-| **Jincheng Liang** | `@Godoftitan`| Rank leaderboard • Word detail |
-| **Heyuan Zhou**    | `@HeyuanZ621`| Achievement system |
-| **Yunzhao Li**     | `@yunzhaol`  | Profile settings • Finish check‑in |
+| Item             | Details                                                                                 |
+|------------------|-----------------------------------------------------------------------------------------|
+| **Domain**       | Vocabulary acquisition for native English speakers                                      |
+| **Users**        | Age 10+; from casual hobbyists to exam-focused polyglots                                |
+| **Tech stack**   | Java 17 · Maven · Swing · JSON persistence                                              |
+| **Architecture** | Clean Architecture (entities & use-cases & adapters & Swing views)                      |
+| **Modules**      | Auth & Profile · Check-In/Study · Word Reference · Stats Dashboard · Gamification        |
 
-> **Team story:** refine signup rules & polish registration / login flow (handled by the whole team).
-
----
-
-## 📝 User‑Story Matrix
-
-| # | As a…               | I want to…                                    | So that…                             | Owner | Team Story |
-|---|---------------------|-----------------------------------------------|--------------------------------------|-------|-----------|
-| 1 | Language learner    | Start a check‑in and study with flip cards    | Keep my daily learning streak        | Jacky |           |
-| 2 | Security‑conscious  | Change my password with identity verification | Protect my account                   | Jacob |           |
-| 3 | Reflective learner  | View my historical study stats                | Track progress over time             | Jacob |           |
-| 4 | Competitive learner | See the leaderboard rankings                  | Compete with friends                 | Jincheng |         |
-| 5 | Inquisitive learner | Inspect word details during a study session   | Deepen understanding of each word    | Jincheng |         |
-| 6 | Motivated learner   | Earn achievements for milestones              | Feel rewarded and engaged            | Heyuan |           |
-| 7 | Multilingual user   | Manage profile (username, languages)          | Switch between courses easily        | Yunzhao |           |
-| 8 | Learner finishing session | Complete a session & finalize check‑in | Log progress and update streak       | Yunzhao |           |
-| 9 | **First‑time user** | Sign up with （Security Question and Answer）(OPTIONAL)                 | Start learning immediately           | **Team** | ✔ |
+**Codebase structure at a glance:**  
+```text
+app/               start-up bootstrap & DI wiring  
+data_access/       JSON- and in-memory gateways  
+entity/            core domain models (User, Word, Achievement…)  
+use_case/          interactors & boundaries per user-story  
+interface_adapter/ controllers, presenters, view-models  
+view/              Swing panels, navigation, theming  
+```
 
 ---
 
-## 🗄️ Domain Entities (high‑level)
+## Live Demos
 
-| Entity      | Purpose |
-|-------------|---------|
-| **User**        | Credentials & unique identifier |
-| **Profile**     | Display name, native / target language |
-| **Word**        | Vocabulary item (text, audio, metadata) |
-| **WordBook**    | A deck of words for a lesson |
-| **Achievement** | Badge definition & unlock progress |
+- YouTube: ▶ Watch the LexiGO demo  
+*(Full URLs will be posted.)*
 
 ---
 
-## 🛠 Project Setup (Maven)
+## Team & Use-Case Owners
+
+| Member           | GitHub        | Primary Use-Cases                   |
+|------------------|---------------|-------------------------------------|
+| Jacky Huo        | `@Jackymn25`  | Start-check-in • Study-session       |
+| Jacob Ke         | `@Y0m1ya`     | View history • Change password      |
+| Jincheng Liang   | `@Godoftitan` | Leaderboard • Word detail           |
+| Heyuan Zhou      | `@HeyuanZ621` | Achievement system                  |
+| Yunzhao Li       | `@yunzhaol`   | Profile settings • Finish check-in  |
+
+*Team story:* collectively refined signup rules and polished the registration/login flow.
+
+---
+
+## User-Story Matrix
+
+| # | Persona                  | I want to…                                 | So that…                       | Owner    | Team Story |
+|---|--------------------------|--------------------------------------------|--------------------------------|----------|------------|
+| 1 | Language learner         | Start a check-in and study with flip cards | Keep my daily learning streak  | Jacky    |            |
+| 2 | Security-conscious       | Change my password (with verification)     | Protect my account             | Jacob    |            |
+| 3 | Reflective learner       | View my historical stats                   | Track progress over time       | Jacob    |            |
+| 4 | Competitive learner      | See the leaderboard rankings               | Compete with friends           | Jincheng |            |
+| 5 | Inquisitive learner      | Inspect word details during study          | Deepen understanding           | Jincheng |            |
+| 6 | Motivated learner        | Earn achievements for milestones           | Feel rewarded and engaged      | Heyuan   |            |
+| 7 | Multilingual user        | Manage profile (username, languages)       | Switch courses easily          | Yunzhao  |            |
+| 8 | Learner finishing session| Complete a session & finalize check-in     | Log progress and update streak | Yunzhao  |            |
+| 9 | **First-time user**      | Sign up with Security Q&A (optional)       | Start learning immediately     | **Team** | ✔          |
+
+---
+
+## Getting Started
+
+Run these commands in your terminal:
 
 ```bash
-# clone
+# 1. Clone the repo
 git clone https://github.com/Jackymn25/LexiGOv1.0
 cd LexiGOv1.0
 
-# build & test
-mvn clean verify
+# 2. Build (includes style and dependency checks)
+mvn -U clean verify
 
-# run desktop app
+# 3. Launch the app
 mvn exec:java -Dexec.mainClass="app.Main"
+```
+
+**Recommended Developer Environment:**
+1. **IDE:** IntelliJ IDEA 2024.1+ with Google Java Style plugin  
+2. **Java SDK:** AdoptOpenJDK 17 (LTS)  
+3. **Static analysis:** `mvn spotbugs:check` – must pass before push  
+4. **Unit tests:** JUnit 5 per use-case boundary (tests to arrive in v1.1)  
+5. **Release packaging:** `mvn package` produces a self-contained JAR with launcher scripts  
+
+---
+
+## Project Health
+
+| Metric        | Status                                                    |
+|---------------|-----------------------------------------------------------|
+| Test coverage | 97 % (whole project);    |
+| CI pipeline   | GitHub Actions: build → checkstyle → spotbugs → package   |
+| Open issues   | will be updated as needed                                     |
+
+---
+
+## Roadmap
+
+| Milestone                 | Target       | Notes                                           |
+|---------------------------|--------------|-------------------------------------------------|
+| v1.1 – first build  | 15 July 2025  | group case set up   |
+| v1.2 – complete basic cases         | 24 July 2025      | Personal case done!     |
+| v1.3 – Refactors & Test coverages & UI enhancement | 7 Aug 2025         | Merges & bug fixing & Tests & UI!           |
+| v1.4 - Extensions & UI !| Not started | |
+
+---
+
+## Contribution Guide
+
+- feature branch → **small, focused PRs**  
+- Reference a GitHub issue in every PR  
+- Use Conventional Commits: `feat(scope): summary`  
+- Run `mvn verify` locally before pushing
+
+Note: Please dont be pressured to PR, we would fix minor bugs
+
+**Welcome PR**  
+A “welcome” PR for first-time contributors will go out after 20 Aug 2025, tracking new issues.
+
+---
+
+*Updated 7 Aug 2025 by the LexiGO Team*  
