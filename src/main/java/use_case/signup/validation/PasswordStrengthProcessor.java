@@ -55,7 +55,8 @@ public class PasswordStrengthProcessor implements Processor {
 
         // If password does not match the required pattern, return failure
         if (!passwordRule.matcher(pwd1).matches()) {
-            output = ProcessorOutput.fail("Password must be at least 6 characters and contain both letters and numbers.");
+            output = ProcessorOutput
+                    .fail("Password must be at least 6 characters and contain both letters and numbers.");
         }
         // If validation passes, delegate to the next processor if one exists
         else if (next != null) {

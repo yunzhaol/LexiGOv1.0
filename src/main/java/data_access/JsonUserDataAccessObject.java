@@ -40,6 +40,8 @@ public final class JsonUserDataAccessObject implements
 
     private static final String DEFAULT_FILE_PATH = "resources//data//users.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final String SECURITY = "SECURITY";
+    private static final String COMMON = "COMMON";
     private File store;
 
     private final Map<String, User> users = new HashMap<>();
@@ -69,10 +71,10 @@ public final class JsonUserDataAccessObject implements
         String type = null;
         if (u != null) {
             if (u instanceof SecurityUser) {
-                type = "SECURITY";
+                type = SECURITY;
             }
             else if (u instanceof CommonUser) {
-                type = "COMMON";
+                type = COMMON;
             }
         }
         return type;
@@ -161,8 +163,8 @@ public final class JsonUserDataAccessObject implements
                     final JsonObject obj = e.getValue().getAsJsonObject();
                     final String type = obj.get("type").getAsString();
                     final User u = switch (type) {
-                        case "COMMON" -> GSON.fromJson(obj, CommonUser.class);
-                        case "SECURITY" -> GSON.fromJson(obj, SecurityUser.class);
+                        case COMMON -> GSON.fromJson(obj, CommonUser.class);
+                        case SECURITY -> GSON.fromJson(obj, SecurityUser.class);
                         default -> throw new IllegalStateException("Unknown user type: " + type);
                     };
                     users.put(e.getKey(), u);
@@ -178,10 +180,10 @@ public final class JsonUserDataAccessObject implements
                 final JsonObject obj = (JsonObject) GSON.toJsonTree(e.getValue());
                 String type = null;
                 if (e.getValue() instanceof SecurityUser) {
-                    type = "SECURITY";
+                    type = SECURITY;
                 }
                 else {
-                    type = "COMMON";
+                    type = COMMON;
                 }
                 obj.addProperty("type", type);
                 toWrite.put(e.getKey(), obj);

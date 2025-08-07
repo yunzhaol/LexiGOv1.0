@@ -6,15 +6,6 @@ public final class StartCheckInState {
     private String inputNumberError;
     private String username;
 
-//    @Override
-//    public String toString() {
-//        return "StartCheckInState{"
-//                + "Username='" + username + '\''
-//                + "numberWords='" + numberWords + '\''
-//                + ", negativeNumberError='" + inputNumberError + '\''
-//                + '}';
-//    }
-
     public String getNumberWords() {
         return numberWords;
     }

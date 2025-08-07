@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import entity.Card;
-import entity.CommonCard;
 import entity.LearnRecord;
 import entity.LearnRecordFactory;
 
