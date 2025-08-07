@@ -1,7 +1,9 @@
 package use_case.achievement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import entity.Achievement;
 import entity.LearnRecord;
@@ -9,97 +11,125 @@ import use_case.gateway.UserRecordDataAccessInterface;
 
 /**
  * Interactor that evaluates which achievements a user has unlocked.
+ * This class belongs to the "Use Case" layer in Clean Architecture.
+ * Its job is to decide whether a user has unlocked any new achievements
+ * based on their learning history.
  */
 public class AchievementInteractor implements AchievementInputBoundary {
 
+    // These constants represent thresholds for triggering achievements.
+    // (INT = 3 sessions, INT1 = 5 words, INT2 = 10 words)
     public static final int INT = 3;
     public static final int INT1 = 5;
     public static final int INT2 = 10;
 
+    // This presenter will send the result (output data) to the next layer (e.g., view model).
     private final AchievementOutputBoundary presenter;
+
+    // This is the data access interface used to retrieve a user's learning records.
     private final UserRecordDataAccessInterface userData;
 
+    /**
+     * Constructor: injects dependencies needed by the interactor.
+     * @param userData presenter.
+     * @param presenter presenter.
+     */
     public AchievementInteractor(AchievementOutputBoundary presenter,
                                  UserRecordDataAccessInterface userData) {
         this.presenter = presenter;
         this.userData = userData;
     }
 
+    /**
+     * The main use case method. It checks whether the user has unlocked
+     * any new achievements based on their username.
+     */
     @Override
     public void evaluate(AchievementInputData inputData) {
         final String username = inputData.getUsername();
+
+        // Fetch all learning session records for the user.
         final List<LearnRecord> wordsLearned = userData.get(username);
+
+        // This list will store any newly unlocked achievements.
         final List<Achievement> newlyUnlocked = new ArrayList<>();
 
+        // Analyze the data and determine which achievements to unlock.
         calculateAchievements(newlyUnlocked, wordsLearned);
 
+        // Package the result into an output data object and pass it to the presenter.
         final AchievementOutputData response = new AchievementOutputData(newlyUnlocked);
         presenter.present(response);
     }
 
     /**
-     * Populates {@code newlyUnlocked} with achievements that the user has just met.
-     * based on two metrics derived from {@code wordsLearned}:
-     * <ul>
-     *   <li><strong>totalLearnedTimes</strong> – how many study-session records exist</li>
-     *   <li><strong>wordsLearnedCount</strong> – the cumulative number of words learned
-     *       across all sessions</li>
-     * </ul>
+     * This helper method calculates which achievements the user should receive.
      *
-     * <p>The method adds a predefined {@link Achievement} to the list whenever a
-     * threshold (1 / 2 / 3 sessions, 1 / 3 / 5 / 10 / 20 words) is reached.</p>
-     *
-     * @param newlyUnlocked the list into which freshly unlocked achievements are added;
-     *                      must not be {@code null}
-     * @param wordsLearned  all learning records for the current user; must not be {@code null}
+     * @param newlyUnlocked a list to hold newly earned achievements.
+     * @param wordsLearned  the user's full learning history.
      */
     private void calculateAchievements(List<Achievement> newlyUnlocked,
                                        List<LearnRecord> wordsLearned) {
 
+        // Number of learning sessions.
         final int totalLearnedTimes = wordsLearned.size();
+
+        // Total number of words learned (sum of word IDs in all records).
         int wordsLearnedCount = 0;
         for (LearnRecord record : wordsLearned) {
             wordsLearnedCount += record.getLearnedWordIds().size();
         }
 
-        // session-count achievements
+        // Check if the user qualifies for session-count achievements.
         checkTimeLearned(newlyUnlocked, totalLearnedTimes);
 
-        // word-count achievements
+        // Check if the user qualifies for word-count achievements.
         checkWordLearned(newlyUnlocked, wordsLearnedCount);
     }
 
-    private static void checkWordLearned(List<Achievement> newlyUnlocked, int wordsLearnedCount) {
-        if (wordsLearnedCount >= 1) {
-            newlyUnlocked.add(new Achievement("W1", "First Word",
-                    "First Word I Learned!", "\uD83D\uDC4B"));
-        }
-        if (wordsLearnedCount >= INT) {
-            newlyUnlocked.add(new Achievement("W5", "5 Words Learned",
-                    "5 Words Learned!", "\uD83C\uDF89"));
-        }
-        if (wordsLearnedCount >= INT1) {
-            newlyUnlocked.add(new Achievement("W10", "10 Words Learned",
-                    "10 Words Learned!", "\uD83D\uDD25"));
-        }
-        if (wordsLearnedCount >= INT2) {
-            newlyUnlocked.add(new Achievement("W20", "20 Words Learned",
-                    "20 Words Learned!", "\uD83D\uDC53"));
+    /**
+     * Adds word-based achievements to the list if thresholds are met.
+     * @param newlyUnlocked unlocked
+     * @param wordsLearnedCount count
+     */
+    private void checkWordLearned(List<Achievement> newlyUnlocked, int wordsLearnedCount) {
+        final Map<Integer, Achievement> wordAchievements = new HashMap<>();
+        wordAchievements.put(1, new Achievement("W1", "First Word",
+                "First Word I Learned!", "\uD83D\uDC4B"));
+        wordAchievements.put(INT, new Achievement("W5", "5 Words Learned",
+                "5 Words Learned!", "\uD83C\uDF89"));
+        wordAchievements.put(INT1, new Achievement("W10", "10 Words Learned",
+                "10 Words Learned!", "\uD83D\uDD25"));
+        wordAchievements.put(INT2, new Achievement("W20", "20 Words Learned",
+                "20 Words Learned!", "\uD83D\uDC53"));
+
+        // If the user's total words learned reaches the threshold, add the achievement.
+        for (Map.Entry<Integer, Achievement> entry : wordAchievements.entrySet()) {
+            if (wordsLearnedCount >= entry.getKey()) {
+                newlyUnlocked.add(entry.getValue());
+            }
         }
     }
 
-    private static void checkTimeLearned(List<Achievement> newlyUnlocked, int totalLearnedTimes) {
-        if (totalLearnedTimes >= 1) {
-            newlyUnlocked.add(new Achievement("A1", "1 Time Learned",
-                    "You have learned 1 time!", "\uD83D\uDCDA"));
-        }
-        if (totalLearnedTimes >= 2) {
-            newlyUnlocked.add(new Achievement("A2", "2 Times Learned",
-                    "You have learned 2 times!", "\uD83E\uDDE0"));
-        }
-        if (totalLearnedTimes >= INT) {
-            newlyUnlocked.add(new Achievement("A3", "3 Times Learned",
-                    "You have learned 3 times!", "\uD83C\uDFC6"));
+    /**
+     * Adds session-based achievements to the list if thresholds are met.
+     * @param newlyUnlocked unlocked
+     * @param totalLearnedTimes count
+     */
+    private void checkTimeLearned(List<Achievement> newlyUnlocked, int totalLearnedTimes) {
+        final Map<Integer, Achievement> timeAchievements = new HashMap<>();
+        timeAchievements.put(1, new Achievement("A1", "1 Time Learned",
+                "You have learned 1 time!", "\uD83D\uDCDA"));
+        timeAchievements.put(2, new Achievement("A2", "2 Times Learned",
+                "You have learned 2 times!", "\uD83E\uDDE0"));
+        timeAchievements.put(INT, new Achievement("A3", "3 Times Learned",
+                "You have learned 3 times!", "\uD83C\uDFC6"));
+
+        // If the user's total sessions reach the threshold, add the achievement.
+        for (Map.Entry<Integer, Achievement> entry : timeAchievements.entrySet()) {
+            if (totalLearnedTimes >= entry.getKey()) {
+                newlyUnlocked.add(entry.getValue());
+            }
         }
     }
 }
