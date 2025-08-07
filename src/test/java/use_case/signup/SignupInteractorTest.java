@@ -9,7 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import use_case.signup.common.SignupInputData;
 import use_case.signup.common.SignupInteractor;
+import use_case.signup.validation.PasswordMatchProcessor;
 import use_case.signup.validation.PasswordStrengthProcessor;
+import use_case.signup.validation.ProcessorOutput;
+import use_case.signup.validation.UsernameNotExistsProcessor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -292,6 +295,12 @@ public class SignupInteractorTest {
                 Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{6,}$");
         PasswordStrengthProcessor p1 = new PasswordStrengthProcessor(PASSWORD_RULE);
         PasswordStrengthProcessor p2 = new PasswordStrengthProcessor(PASSWORD_RULE);
+        UsernameNotExistsProcessor p3 = new UsernameNotExistsProcessor(userDataAccessObject);
+        PasswordMatchProcessor p4 = new PasswordMatchProcessor();
+
         p1.setNext(p2);
+        p2.setNext(p3);
+        ProcessorOutput o1 = p1.process("test1", "123qwe", "123qwe");
+        ProcessorOutput o2 = p4.process("test1", "123qwe", "123qwe");
     }
 }
