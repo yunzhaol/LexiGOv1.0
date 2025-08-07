@@ -2,7 +2,6 @@ package interface_adapter.start_checkin;
 
 import use_case.start_checkin.StartCheckInInputBoundary;
 import use_case.start_checkin.StartCheckInInputData;
-import use_case.start_checkin.StartCheckInOutputBoundary;
 
 /**
  * Controller layer: translates raw request parameters

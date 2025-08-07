@@ -473,8 +473,8 @@ public class AppBuilder {
 
             @Override public void componentResized(java.awt.event.ComponentEvent e) {
                 if (debounce.getActionListeners().length == 0) {
-                    debounce.addActionListener(ev -> {
-                        final float w = application.getWidth()  / (float) base.width;
+                    debounce.addActionListener(event -> {
+                        final float w = application.getWidth() / (float) base.width;
                         final float h = application.getHeight() / (float) base.height;
                         float scale = Math.min(w, h);
 

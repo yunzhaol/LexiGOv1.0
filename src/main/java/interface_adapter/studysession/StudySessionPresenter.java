@@ -1,7 +1,5 @@
 package interface_adapter.studysession;
 
-import interface_adapter.ViewManagerModel;
-import interface_adapter.studysession.word_detail.WordDetailViewModel;
 import use_case.studysession.StudySessionOutputBoundary;
 import use_case.studysession.StudySessionOutputData;
 
