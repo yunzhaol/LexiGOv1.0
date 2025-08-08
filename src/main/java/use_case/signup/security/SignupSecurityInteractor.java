@@ -41,6 +41,8 @@ public class SignupSecurityInteractor implements SignupSecurityInputBoundary {
         final ProcessorOutput output = processor.signUpProcessor(username, password, repeatPassword);
 
         if (!output.isSuccess()) {
+            // add security checks here, like a processor
+            // e.g output = processorSecurity.process(securityQuestion, securityAnswer), the same design.
             userPresenter.prepareFailView(output.getErrorMessage());
         }
         else {
