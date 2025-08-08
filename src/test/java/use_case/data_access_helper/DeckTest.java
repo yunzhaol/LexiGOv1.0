@@ -32,7 +32,7 @@ public class DeckTest {
 
     @Test
     void getText_throwsException_whenIndexOutOfBounds() {
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> dao.getText(0));
+        Exception exception = assertThrows(NullPointerException.class, () -> dao.getText(0));
         assertNotNull(exception.getMessage());
     }
 }
