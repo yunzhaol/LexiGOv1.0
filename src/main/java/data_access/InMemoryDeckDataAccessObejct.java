@@ -1,6 +1,5 @@
 package data_access;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import entity.Card;
@@ -15,16 +14,16 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
         UserDeckgetterDataAccessInterface,
         WordDetailDataAccessInterface {
 
-    private List<Card> cardList = new ArrayList<>();
+    private WordDeck wordDeck;
 
     @Override
     public List<Card> getWordDeck() {
-        return cardList;
+        return wordDeck.getWordDeck();
     }
 
     @Override
     public void save(WordDeck deck) {
-        cardList = deck.getWordDeck();
+        wordDeck = deck;
     }
 
     @Override
@@ -33,7 +32,7 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
     }
 
     private String getTextHelper(int index) {
-        return cardList.get(index).getText();
+        return wordDeck.getWordDeck().get(index).getText();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
     }
 
     private String getTranslationHelper(int index) {
-        return cardList.get(index).getTranslation();
+        return wordDeck.getWordDeck().get(index).getTranslation();
     }
 
     @Override
@@ -51,6 +50,6 @@ public class InMemoryDeckDataAccessObejct implements UserDeckGetTextDataAccessIn
     }
 
     private String getExampleHelper(int index) {
-        return cardList.get(index).getExample();
+        return wordDeck.getWordDeck().get(index).getExample();
     }
 }
