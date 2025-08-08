@@ -1,12 +1,10 @@
 package use_case.signup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import use_case.signup.validation.PasswordMatchProcessor;
-import use_case.signup.validation.PasswordStrengthProcessor;
-import use_case.signup.validation.Processor;
-import use_case.signup.validation.ProcessorOutput;
-import use_case.signup.validation.UsernameNotExistsProcessor;
+import use_case.signup.validation.*;
 
 /**
  * The {@code SignUpProcessor} class acts as the entry point to a chain of responsibility
@@ -34,17 +32,19 @@ public class SignUpProcessor {
      * @param passwordRule  the compiled regular expression pattern defining password rules
      */
     public SignUpProcessor(SignupUserDataAccessInterface dao, Pattern passwordRule) {
-        // Create individual processors for each validation step
-        final UsernameNotExistsProcessor usernameNotExistsProcessor = new UsernameNotExistsProcessor(dao);
-        final PasswordMatchProcessor passwordMatchProcessor = new PasswordMatchProcessor();
-        final PasswordStrengthProcessor passwordStrengthProcessor = new PasswordStrengthProcessor(passwordRule);
+        // for extension, switch the order or adding more processor here
+        Processor chainHead =
+                builder()
+                        .addUserExistsCheck(dao)
+                        .addPasswordCheck()
+                        .addPasswordStrengthCheck(passwordRule)
+                        // .addYourCheck()
+                        .build();
+        this.chain = chainHead;
+    }
 
-        // Chain them in order: username → password match → password strength
-        usernameNotExistsProcessor.setNext(passwordMatchProcessor);
-        passwordMatchProcessor.setNext(passwordStrengthProcessor);
-
-        // Set chain head as the entry point of validation
-        this.chain = usernameNotExistsProcessor;
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -58,5 +58,49 @@ public class SignUpProcessor {
      */
     public ProcessorOutput signUpProcessor(String username, String pwd1, String pwd2) {
         return chain.process(username, pwd1, pwd2);
+    }
+
+    // inner class
+    private static class Builder {
+        private List<Processor> processors =  new ArrayList<>();
+
+        public Builder addUserExistsCheck(SignupUserDataAccessInterface dao) {
+            final UsernameNotExistsProcessor usernameNotExistsProcessor = new UsernameNotExistsProcessor(dao);
+            processors.add(usernameNotExistsProcessor);
+            return this;
+        }
+
+        public Builder addPasswordCheck() {
+            final PasswordMatchProcessor passwordMatchProcessor = new PasswordMatchProcessor();
+            processors.add(passwordMatchProcessor);
+            return this;
+        }
+
+        public Builder addPasswordStrengthCheck(Pattern passwordRule) {
+            final PasswordStrengthProcessor passwordStrengthProcessor = new PasswordStrengthProcessor(passwordRule);
+            processors.add(passwordStrengthProcessor);
+            return this;
+        }
+
+        public Builder addOtherCheck(Processor otherProcessor) {
+            processors.add(otherProcessor);
+            return this;
+        }
+        // for extension add
+        // public Builder addYourCheck() {.....return this;}
+
+        public Processor build() {
+            if (processors.isEmpty()) {
+                throw new IllegalStateException("No processors configured.");
+            }
+            Processor head = processors.get(0);
+            Processor prev = head;
+            for (int i = 1; i < processors.size(); i++) {
+                Processor cur = processors.get(i);
+                prev.setNext(cur);
+                prev = cur;
+            }
+            return head;
+        }
     }
 }
