@@ -10,15 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import interface_adapter.achievement.AchievementController;
 import interface_adapter.change_password.ChangePasswordController;
@@ -128,12 +120,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
                 rankController.execute(user);
             }
         });
-        addToggle(nav, "Log out", CARD_LOGOUT, () -> {
-            if (logoutController != null) {
-                final String user = vm.getState().getUsername();
-                logoutController.execute(user);
-            }
-        });
+        addToggle(nav, "Log out", CARD_LOGOUT, this::logout);
 
         // Wrap navigation panel to enforce fixed width
         final JPanel wrapper = new JPanel(new BorderLayout());
@@ -146,6 +133,27 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         add(contentPanel, BorderLayout.CENTER);
 
         cards.show(contentPanel, CARD_WELCOME);
+    }
+
+    private void logout() {
+        if (logoutController != null) {
+            final Object[] options = {"Log out", "Cancel"};
+            final int choice = JOptionPane.showOptionDialog(
+                    null,
+                    "Do you confirm log out?",
+                    "Confirm Logout",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1]
+            );
+
+            if (choice == 0) {
+                final String user = vm.getState().getUsername();
+                logoutController.execute(user);
+            }
+        }
     }
 
     /**
