@@ -24,7 +24,7 @@ class AchievementInteractorTest {
             @Override
             public void present(AchievementOutputData responseModel) {
                 assertNotNull(responseModel);
-                assertEquals(7, responseModel.getUnlockedAchievements().size());
+                assertEquals(6Q, responseModel.getUnlockedAchievements().size());
             }
         };
 
