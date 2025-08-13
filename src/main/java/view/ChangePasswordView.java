@@ -8,16 +8,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -190,40 +181,53 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
      */
     @Override
     public void actionPerformed(final ActionEvent event) {
-        if (event.getSource() == submitBtn && controller != null) {
-            final ChangePwState state = viewModel.getState();
+        if (event.getSource() != submitBtn || controller == null) {
+            return;
+        }
 
-            final String newPwd = state.getPassword();
-            final String user = state.getUsername();
+        final ChangePwState state = viewModel.getState();
+        final String newPwd = state.getPassword();
+        final String user   = state.getUsername();
 
-            final boolean needVerification = state.isVerification();
-            needSecurityAnswer = needVerification;
+        // Mirror state flag
+        needSecurityAnswer = state.isVerification();
 
-            if (needSecurityAnswer) {
-                final String answerInput = JOptionPane.showInputDialog(
-                        this,
-                        state.getSecurityQuestion(),
-                        "Enter Security Question Answer:",
-                        JOptionPane.QUESTION_MESSAGE);
-                final String answer;
-                if (answerInput == null) {
-                    answer = null;
+        String answer = null;
+        if (needSecurityAnswer) {
+            final JTextField answerField = new JTextField();
+            final Object[] content = {
+                    new JLabel(state.getSecurityQuestion()),
+                    answerField
+            };
+            final Object[] options = {"Submit", "Cancel"};
+            final int choice = JOptionPane.showOptionDialog(
+                    this,
+                    content,
+                    "Enter Security Question Answer",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+
+            if (choice == 0) {
+                final String typed = answerField.getText().trim();
+                if (!typed.isEmpty()) {
+                    answer = typed;
                 }
-                else {
-                    answer = answerInput.trim();
-                }
-                controller.execute(user, newPwd, answer);
-            }
-            else {
-                controller.execute(user, newPwd, null);
-            }
-
-            final String err = state.getChangeError();
-            if (err != null && !err.isBlank()) {
-                JOptionPane.showMessageDialog(this, err, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+
+        controller.execute(user, newPwd, answer);
+
+        // Re-read in case the state was updated by the controller/presenter
+        final String err = viewModel.getState().getChangeError();
+        if (err != null && !err.isBlank()) {
+            JOptionPane.showMessageDialog(this, err, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
+
 
     // -------------------- ViewModel sync --------------------
 
