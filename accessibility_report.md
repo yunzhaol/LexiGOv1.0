@@ -1,4 +1,5 @@
 ## Accessibility Report
+[← Back to Main README](./README.md)
 
 **Audience.** Introductory-level English learners using a desktop vocabulary app.
 **Model.** We follow the **social model of disability**: barriers live in the product environment, so we design the default UI for everyone—no separate “accessible mode”.
