@@ -1,6 +1,7 @@
 [![Discord](https://badgen.net/badge/Discord/Join/5865F2?icon=discord)](https://github.com/Jackymn25/LexiGOv1.0/discussions)
 
 # LexiGO v1.3
+[View Accessibility Report](./accessibility_report.md)
 
 *A cross-platform Java desktop app that combines adaptive flash-card drills, rich word references, and gentle gamification to help English speakers build lasting foreign-language vocabulary.*
 
